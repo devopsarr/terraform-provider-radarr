@@ -7,9 +7,8 @@ on:
   pull_request:
     paths-ignore:
       - 'README.md'
-  push:
-    paths-ignore:
-      - 'README.md'
+    branches:
+      - 'main'
 
 # Testing only needs permissions to read the repository contents.
 permissions:
@@ -22,6 +21,20 @@ env:
   GO_VERSION: '1.17'
 
 jobs:
+  # Check Lint before building
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/setup-go@v2
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - uses: actions/checkout@v3
+      - uses: golangci/golangci-lint-action@v3.1.0
+        with:
+          version: v1.44.2
+
   # Ensure project builds before running testing matrix
   build:
     name: Build
@@ -31,7 +44,7 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: ${{ env.GO_VERSION }}
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: go mod download
       - run: go build -v .
 
@@ -46,7 +59,6 @@ jobs:
       matrix:
         # list whatever Terraform versions here you would like to support
         terraform:
-          - '1.0.*'
           - '1.1.*'
     steps:
       - uses: actions/setup-go@v2
@@ -56,9 +68,13 @@ jobs:
         with:
           terraform_version: ${{ matrix.terraform }}
           terraform_wrapper: false
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - name: run provider
+        run: docker run -d -v ${{ github.workspace }}/.github/workflows/config.xml:/config/config.xml -p 7878:7878 --health-cmd "curl --fail http://localhost:7878/system/status || exit 1" linuxserver/radarr:4.0.4
       - run: go mod download
       - env:
+          RADARR_URL: "http://localhost:7878"
+          RADARR_API_KEY: "b01df9fca2e64e459d64a09888ce7451"
           TF_ACC: "1"
         run: go test -v -cover ./internal/provider/
         timeout-minutes: 10
