@@ -24,5 +24,5 @@ provider "radarr" {
 
 ### Optional
 
-- **api_key** (String, Sensitive) API key for Radarr authentication. Can be specified via the `RADARR_API_KEY` environment variable.
-- **url** (String) Full Radarr URL with protocol and port (e.g. `https://test.radarr.tv:7878`). You should **NOT** supply any path (`/api`), the SDK will use the appropriate paths. Can be specified via the `RADARR_URL` environment variable.
+- `api_key` (String, Sensitive) API key for Radarr authentication. Can be specified via the `RADARR_API_KEY` environment variable.
+- `url` (String) Full Radarr URL with protocol and port (e.g. `https://test.radarr.tv:7878`). You should **NOT** supply any path (`/api`), the SDK will use the appropriate paths. Can be specified via the `RADARR_URL` environment variable.

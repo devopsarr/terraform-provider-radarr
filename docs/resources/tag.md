@@ -23,10 +23,17 @@ resource "radarr_tag" "example" {
 
 ### Required
 
-- **label** (String) Tag value
+- `label` (String) Tag value
 
 ### Read-Only
 
-- **id** (Number) Tag ID
+- `id` (Number) Tag ID
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+# import using the API/UI ID
+terraform import radarr_tag.example 10
+```
