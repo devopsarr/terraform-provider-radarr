@@ -109,13 +109,17 @@ func (p *provider) Configure(ctx context.Context, req tfsdk.ConfigureProviderReq
 
 func (p *provider) GetResources(ctx context.Context) (map[string]tfsdk.ResourceType, diag.Diagnostics) {
 	return map[string]tfsdk.ResourceType{
-		"radarr_tag": resourceTagType{},
+		"radarr_delay_profile":   resourceDelayProfileType{},
+		"radarr_quality_profile": resourceQualityProfileType{},
+		"radarr_tag":             resourceTagType{},
 	}, nil
 }
 
 func (p *provider) GetDataSources(ctx context.Context) (map[string]tfsdk.DataSourceType, diag.Diagnostics) {
 	return map[string]tfsdk.DataSourceType{
-		"radarr_tags": dataTagsType{},
+		"radarr_delay_profiles":   dataDelayProfilesType{},
+		"radarr_quality_profiles": dataQualityProfilesType{},
+		"radarr_tags":             dataTagsType{},
 	}, nil
 }
 
