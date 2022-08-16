@@ -5,7 +5,7 @@ import (
 	"flag"
 	"log"
 
-	"github.com/Fuochi/terraform-provider-radarr/internal/provider"
+	"github.com/devopsarr/terraform-provider-radarr/internal/provider"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 )
 
@@ -36,7 +36,7 @@ func main() {
 
 	opts := providerserver.ServeOpts{
 		// TODO: Update this string with the published name of your provider.
-		Address: "registry.terraform.io/fuochi/radarr",
+		Address: "registry.terraform.io/devopsarr/radarr",
 		Debug:   debug,
 	}
 
