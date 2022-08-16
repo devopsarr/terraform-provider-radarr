@@ -1,6 +1,6 @@
-module github.com/Fuochi/terraform-provider-radarr
+module github.com/devopsarr/terraform-provider-radarr
 
-go 1.17
+go 1.18
 
 require (
 	github.com/hashicorp/terraform-plugin-docs v0.13.0
