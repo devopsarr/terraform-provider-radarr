@@ -16,7 +16,7 @@ import (
 // needed for tf debug mode
 // var stderr = os.Stderr
 
-// Ensure provider defined types fully satisfy framework interfaces
+// Ensure provider defined types fully satisfy framework interfaces.
 var _ provider.Provider = &radarrProvider{}
 
 // provider satisfies the provider.Provider interface and usually is included
@@ -54,16 +54,17 @@ func (p *radarrProvider) Configure(ctx context.Context, req provider.ConfigureRe
 	}
 
 	// User must provide URL to the provider
-	var url string
 	if data.URL.Unknown {
 		// Cannot connect to client with an unknown value
 		resp.Diagnostics.AddWarning(
 			"Unable to create client",
 			"Cannot use unknown value as url",
 		)
+
 		return
 	}
 
+	var url string
 	if data.URL.Null {
 		url = os.Getenv("RADARR_URL")
 	} else {
@@ -76,20 +77,22 @@ func (p *radarrProvider) Configure(ctx context.Context, req provider.ConfigureRe
 			"Unable to find URL",
 			"URL cannot be an empty string",
 		)
+
 		return
 	}
 
 	// User must provide API key to the provider
-	var key string
 	if data.APIKey.Unknown {
 		// Cannot connect to client with an unknown value
 		resp.Diagnostics.AddWarning(
 			"Unable to create client",
 			"Cannot use unknown value as api_key",
 		)
+
 		return
 	}
 
+	var key string
 	if data.APIKey.Null {
 		key = os.Getenv("RADARR_API_KEY")
 	} else {
@@ -102,6 +105,7 @@ func (p *radarrProvider) Configure(ctx context.Context, req provider.ConfigureRe
 			"Unable to find API key",
 			"API key cannot be an empty string",
 		)
+
 		return
 	}
 	// If the upstream provider SDK or HTTP client requires configuration, such
@@ -125,6 +129,7 @@ func (p *radarrProvider) GetDataSources(ctx context.Context) (map[string]provide
 
 func (p *radarrProvider) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
+		MarkdownDescription: "The Radarr provider is used to interact with any [Radarr](https://radarr.video/) installation. You must configure the provider with the proper credentials before you can use it. Use the left navigation to read about the available resources.",
 		Attributes: map[string]tfsdk.Attribute{
 			"api_key": {
 				MarkdownDescription: "API key for Radarr authentication. Can be specified via the `RADARR_API_KEY` environment variable.",
@@ -164,6 +169,7 @@ func convertProviderType(in provider.Provider) (radarrProvider, diag.Diagnostics
 			"Unexpected Provider Instance Type",
 			fmt.Sprintf("While creating the data source or resource, an unexpected provider type (%T) was received. This is always a bug in the provider code and should be reported to the provider developers.", p),
 		)
+
 		return radarrProvider{}, diags
 	}
 
@@ -172,6 +178,7 @@ func convertProviderType(in provider.Provider) (radarrProvider, diag.Diagnostics
 			"Unexpected Provider Instance Type",
 			"While creating the data source or resource, an unexpected empty provider instance was received. This is always a bug in the provider code and should be reported to the provider developers.",
 		)
+
 		return radarrProvider{}, diags
 	}
 

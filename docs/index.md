@@ -3,12 +3,12 @@
 page_title: "radarr Provider"
 subcategory: ""
 description: |-
-  
+  The Radarr provider is used to interact with any Radarr https://radarr.video/ installation. You must configure the provider with the proper credentials before you can use it. Use the left navigation to read about the available resources.
 ---
 
 # radarr Provider
 
-
+The Radarr provider is used to interact with any [Radarr](https://radarr.video/) installation. You must configure the provider with the proper credentials before you can use it. Use the left navigation to read about the available resources.
 
 ## Example Usage
 
