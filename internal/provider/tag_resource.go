@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
-	"regexp"
 	"strconv"
 
+	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
@@ -16,15 +16,23 @@ import (
 	"golift.io/starr"
 )
 
-// Ensure provider defined types fully satisfy framework interfaces
-var _ provider.ResourceType = resourceTagType{}
-var _ resource.Resource = resourceTag{}
-var _ resource.ResourceWithImportState = resourceTag{}
+// Ensure provider defined types fully satisfy framework interfaces.
+var (
+	_ provider.ResourceType            = resourceTagType{}
+	_ resource.Resource                = resourceTag{}
+	_ resource.ResourceWithImportState = resourceTag{}
+)
 
 type resourceTagType struct{}
 
 type resourceTag struct {
 	provider radarrProvider
+}
+
+// Tag is the tag resource.
+type Tag struct {
+	ID    types.Int64  `tfsdk:"id"`
+	Label types.String `tfsdk:"label"`
 }
 
 func (t resourceTagType) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
@@ -36,7 +44,7 @@ func (t resourceTagType) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diag
 				Required:            true,
 				Type:                types.StringType,
 				Validators: []tfsdk.AttributeValidator{
-					stringLowercase(),
+					helpers.StringLowercase(),
 				},
 			},
 			"id": {
@@ -64,6 +72,7 @@ func (r resourceTag) Create(ctx context.Context, req resource.CreateRequest, res
 	var plan Tag
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -72,21 +81,22 @@ func (r resourceTag) Create(ctx context.Context, req resource.CreateRequest, res
 	request := starr.Tag{
 		Label: plan.Label.Value,
 	}
+
 	response, err := r.provider.client.AddTagContext(ctx, &request)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create tag, got error: %s", err))
+
 		return
 	}
+
 	tflog.Trace(ctx, "created tag: "+strconv.Itoa(response.ID))
 
 	// Generate resource state struct
-	var result = Tag{
-		ID:    types.Int64{Value: int64(response.ID)},
-		Label: types.String{Value: response.Label},
-	}
+	result := writeTag(response)
 
-	diags = resp.State.Set(ctx, result)
+	diags = resp.State.Set(ctx, &result)
 	resp.Diagnostics.Append(diags...)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -97,6 +107,7 @@ func (r resourceTag) Read(ctx context.Context, req resource.ReadRequest, resp *r
 	var state Tag
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -105,12 +116,13 @@ func (r resourceTag) Read(ctx context.Context, req resource.ReadRequest, resp *r
 	response, err := r.provider.client.GetTagContext(ctx, int(state.ID.Value))
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read tags, got error: %s", err))
+
 		return
 	}
 	// Map response body to resource schema attribute
-	state.Label = types.String{Value: response.Label}
+	result := writeTag(response)
 
-	diags = resp.State.Set(ctx, &state)
+	diags = resp.State.Set(ctx, &result)
 	resp.Diagnostics.Append(diags...)
 }
 
@@ -119,14 +131,7 @@ func (r resourceTag) Update(ctx context.Context, req resource.UpdateRequest, res
 	var plan Tag
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
 
-	// Get state values
-	var state Tag
-	diags = req.State.Get(ctx, &state)
-	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -134,23 +139,24 @@ func (r resourceTag) Update(ctx context.Context, req resource.UpdateRequest, res
 	// Update Tag
 	request := starr.Tag{
 		Label: plan.Label.Value,
-		ID:    int(state.ID.Value),
+		ID:    int(plan.ID.Value),
 	}
+
 	response, err := r.provider.client.UpdateTagContext(ctx, &request)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update tag, got error: %s", err))
+
 		return
 	}
+
 	tflog.Trace(ctx, "update tag: "+strconv.Itoa(response.ID))
 
 	// Generate resource state struct
-	var result = Tag{
-		ID:    types.Int64{Value: int64(response.ID)},
-		Label: types.String{Value: response.Label},
-	}
+	result := writeTag(response)
 
-	diags = resp.State.Set(ctx, result)
+	diags = resp.State.Set(ctx, &result)
 	resp.Diagnostics.Append(diags...)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -170,6 +176,7 @@ func (r resourceTag) Delete(ctx context.Context, req resource.DeleteRequest, res
 	err := r.provider.client.DeleteTagContext(ctx, int(state.ID.Value))
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read tags, got error: %s", err))
+
 		return
 	}
 
@@ -177,54 +184,23 @@ func (r resourceTag) Delete(ctx context.Context, req resource.DeleteRequest, res
 }
 
 func (r resourceTag) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	//resource.ResourceImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	// resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 	id, err := strconv.Atoi(req.ID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unexpected Import Identifier",
 			fmt.Sprintf("Expected import identifier with format: ID. Got: %q", req.ID),
 		)
+
 		return
 	}
+
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), id)...)
 }
 
-// TODO: move into validators file
-type stringLowercaseValidator struct {
-}
-
-// Description returns a plain text description of the validator's behavior, suitable for a practitioner to understand its impact.
-func (v stringLowercaseValidator) Description(ctx context.Context) string {
-	return "string must be lowercase"
-}
-
-// MarkdownDescription returns a markdown formatted description of the validator's behavior, suitable for a practitioner to understand its impact.
-func (v stringLowercaseValidator) MarkdownDescription(ctx context.Context) string {
-	return "string must be lowercase"
-}
-
-// Validate runs the main validation logic of the validator, reading configuration data out of `req` and updating `resp` with diagnostics.
-func (v stringLowercaseValidator) Validate(ctx context.Context, req tfsdk.ValidateAttributeRequest, resp *tfsdk.ValidateAttributeResponse) {
-	var str types.String
-	diags := tfsdk.ValueAs(ctx, req.AttributeConfig, &str)
-	resp.Diagnostics.Append(diags...)
-	if diags.HasError() {
-		return
+func writeTag(tag *starr.Tag) *Tag {
+	return &Tag{
+		ID:    types.Int64{Value: int64(tag.ID)},
+		Label: types.String{Value: tag.Label},
 	}
-	if str.Unknown || str.Null {
-		return
-	}
-	upper, _ := regexp.Match(`^.*[A-Z]+.*$`, []byte(str.Value))
-	if upper {
-		resp.Diagnostics.AddAttributeError(
-			req.AttributePath,
-			"Invalid String Content",
-			"String cannot contains uppercase values",
-		)
-		return
-	}
-}
-
-func stringLowercase() stringLowercaseValidator {
-	return stringLowercaseValidator{}
 }
