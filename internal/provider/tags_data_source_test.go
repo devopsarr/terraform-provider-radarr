@@ -15,13 +15,13 @@ func TestAccTagsDataSource(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create a tag to have a value to check
 			{
-				Config: testAccTagResourceConfig("test-1", "1080p") + testAccTagResourceConfig("test-2", "4k"),
+				Config: testAccTagResourceConfig("test-1", "english") + testAccTagResourceConfig("test-2", "4k"),
 			},
 			// Read testing
 			{
 				Config: testAccTagsDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckTypeSetElemNestedAttrs("data.radarr_tags.test", "tags.*", map[string]string{"label": "1080p"}),
+					resource.TestCheckTypeSetElemNestedAttrs("data.radarr_tags.test", "tags.*", map[string]string{"label": "english"}),
 				),
 			},
 		},

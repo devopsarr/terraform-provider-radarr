@@ -129,6 +129,7 @@ func (p *radarrProvider) GetDataSources(ctx context.Context) (map[string]provide
 
 func (p *radarrProvider) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
+		MarkdownDescription: "The Radarr provider is used to interact with any [Radarr](https://radarr.video/) installation. You must configure the provider with the proper credentials before you can use it. Use the left navigation to read about the available resources.",
 		Attributes: map[string]tfsdk.Attribute{
 			"api_key": {
 				MarkdownDescription: "API key for Radarr authentication. Can be specified via the `RADARR_API_KEY` environment variable.",
