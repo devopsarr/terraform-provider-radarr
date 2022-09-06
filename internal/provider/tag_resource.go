@@ -37,7 +37,7 @@ type Tag struct {
 
 func (t resourceTagType) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
-		MarkdownDescription: "Tag resource",
+		MarkdownDescription: "[subcategory:Tags]: #\nTag resource.\nFor more information refer to [Tags](https://wiki.servarr.com/radarr/settings#tags) documentation.",
 		Attributes: map[string]tfsdk.Attribute{
 			"label": {
 				MarkdownDescription: "Tag value",
@@ -93,7 +93,6 @@ func (r resourceTag) Create(ctx context.Context, req resource.CreateRequest, res
 
 	// Generate resource state struct
 	result := writeTag(response)
-
 	diags = resp.State.Set(ctx, &result)
 	resp.Diagnostics.Append(diags...)
 
@@ -121,7 +120,6 @@ func (r resourceTag) Read(ctx context.Context, req resource.ReadRequest, resp *r
 	}
 	// Map response body to resource schema attribute
 	result := writeTag(response)
-
 	diags = resp.State.Set(ctx, &result)
 	resp.Diagnostics.Append(diags...)
 }
@@ -153,7 +151,6 @@ func (r resourceTag) Update(ctx context.Context, req resource.UpdateRequest, res
 
 	// Generate resource state struct
 	result := writeTag(response)
-
 	diags = resp.State.Set(ctx, &result)
 	resp.Diagnostics.Append(diags...)
 

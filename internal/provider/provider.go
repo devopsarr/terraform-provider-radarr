@@ -123,7 +123,9 @@ func (p *radarrProvider) GetResources(ctx context.Context) (map[string]provider.
 
 func (p *radarrProvider) GetDataSources(ctx context.Context) (map[string]provider.DataSourceType, diag.Diagnostics) {
 	return map[string]provider.DataSourceType{
-		"radarr_tags": dataTagsType{},
+		"radarr_system_status": dataSystemStatusType{},
+		"radarr_tag":           dataTagType{},
+		"radarr_tags":          dataTagsType{},
 	}, nil
 }
 
