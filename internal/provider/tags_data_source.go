@@ -14,8 +14,10 @@ import (
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ provider.DataSourceType = dataTagsType{}
-var _ datasource.DataSource = dataTags{}
+var (
+	_ provider.DataSourceType = dataTagsType{}
+	_ datasource.DataSource   = dataTags{}
+)
 
 type dataTagsType struct{}
 
@@ -23,9 +25,9 @@ type dataTags struct {
 	provider radarrProvider
 }
 
-// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 // Tags is a list of Tag.
 type Tags struct {
+	// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 	ID   types.String `tfsdk:"id"`
 	Tags types.Set    `tfsdk:"tags"`
 }
@@ -33,7 +35,7 @@ type Tags struct {
 func (t dataTagsType) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "List all available tags",
+		MarkdownDescription: "[subcategory:Tags]: #\nList all available [Tags](../resources/tag).",
 		Attributes: map[string]tfsdk.Attribute{
 			// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 			"id": {
@@ -70,7 +72,7 @@ func (t dataTagsType) NewDataSource(ctx context.Context, in provider.Provider) (
 
 func (d dataTags) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data Tags
-	diags := resp.State.Get(ctx, &data)
+	diags := req.Config.Get(ctx, &data)
 	resp.Diagnostics.Append(diags...)
 
 	if resp.Diagnostics.HasError() {
