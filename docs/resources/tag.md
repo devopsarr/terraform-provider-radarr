@@ -26,11 +26,11 @@ resource "radarr_tag" "example" {
 
 ### Required
 
-- `label` (String) Tag value
+- `label` (String) Tag label. It must be lowercase.
 
 ### Read-Only
 
-- `id` (Number) Tag ID
+- `id` (Number) Tag ID.
 
 ## Import
 
