@@ -139,6 +139,7 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 
 func (p *RadarrProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
+		NewRootFolderDataSource,
 		NewRootFoldersDataSource,
 		NewSystemStatusDataSource,
 		NewTagDataSource,
