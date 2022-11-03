@@ -1,0 +1,337 @@
+package provider
+
+import (
+	"context"
+	"fmt"
+	"strconv"
+
+	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
+	"golift.io/starr/radarr"
+)
+
+// Ensure provider defined types fully satisfy framework interfaces.
+var _ resource.Resource = &MediaManagementResource{}
+var _ resource.ResourceWithImportState = &MediaManagementResource{}
+
+func NewMediaManagementResource() resource.Resource {
+	return &MediaManagementResource{}
+}
+
+// MediaManagementResource defines the media management implementation.
+type MediaManagementResource struct {
+	client *radarr.Radarr
+}
+
+// MediaManagement describes the media management data model.
+type MediaManagement struct {
+	AutoRenameFolders                       types.Bool   `tfsdk:"auto_rename_folders"`
+	AutoUnmonitorPreviouslyDownloadedMovies types.Bool   `tfsdk:"auto_unmonitor_previously_downloaded_movies"`
+	CopyUsingHardlinks                      types.Bool   `tfsdk:"copy_using_hardlinks"`
+	CreateEmptyMovieFolders                 types.Bool   `tfsdk:"create_empty_movie_folders"`
+	DeleteEmptyFolders                      types.Bool   `tfsdk:"delete_empty_folders"`
+	EnableMediaInfo                         types.Bool   `tfsdk:"enable_media_info"`
+	ImportExtraFiles                        types.Bool   `tfsdk:"import_extra_files"`
+	PathsDefaultStatic                      types.Bool   `tfsdk:"paths_default_static"`
+	SetPermissionsLinux                     types.Bool   `tfsdk:"set_permissions_linux"`
+	SkipFreeSpaceCheckWhenImporting         types.Bool   `tfsdk:"skip_free_space_check_when_importing"`
+	ID                                      types.Int64  `tfsdk:"id"`
+	MinimumFreeSpaceWhenImporting           types.Int64  `tfsdk:"minimum_free_space_when_importing"`
+	RecycleBinCleanupDays                   types.Int64  `tfsdk:"recycle_bin_cleanup_days"`
+	ChmodFolder                             types.String `tfsdk:"chmod_folder"`
+	ChownGroup                              types.String `tfsdk:"chown_group"`
+	DownloadPropersAndRepacks               types.String `tfsdk:"download_propers_and_repacks"`
+	ExtraFileExtensions                     types.String `tfsdk:"extra_file_extensions"`
+	FileDate                                types.String `tfsdk:"file_date"`
+	RecycleBin                              types.String `tfsdk:"recycle_bin"`
+	RescanAfterRefresh                      types.String `tfsdk:"rescan_after_refresh"`
+}
+
+func (r *MediaManagementResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_media_management"
+}
+
+func (r *MediaManagementResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
+	return tfsdk.Schema{
+		MarkdownDescription: "[subcategory:Media Management]: #\nMedia Management resource.\nFor more information refer to [Naming](https://wiki.servarr.com/radarr/settings#file-management) documentation.",
+		Attributes: map[string]tfsdk.Attribute{
+			"id": {
+				MarkdownDescription: "Media Management ID.",
+				Computed:            true,
+				Type:                types.Int64Type,
+				PlanModifiers: tfsdk.AttributePlanModifiers{
+					resource.UseStateForUnknown(),
+				},
+			},
+			"auto_rename_folders": {
+				MarkdownDescription: "Auto rename folders.",
+				Required:            true,
+				Type:                types.BoolType,
+			},
+			"auto_unmonitor_previously_downloaded_movies": {
+				MarkdownDescription: "Auto unmonitor previously downloaded movies.",
+				Required:            true,
+				Type:                types.BoolType,
+			},
+			"copy_using_hardlinks": {
+				MarkdownDescription: "Use hardlinks instead of copy.",
+				Required:            true,
+				Type:                types.BoolType,
+			},
+			"create_empty_movie_folders": {
+				MarkdownDescription: "Create empty movies directories.",
+				Required:            true,
+				Type:                types.BoolType,
+			},
+			"delete_empty_folders": {
+				MarkdownDescription: "Delete empty movies directories.",
+				Required:            true,
+				Type:                types.BoolType,
+			},
+			"enable_media_info": {
+				MarkdownDescription: "Scan files details.",
+				Required:            true,
+				Type:                types.BoolType,
+			},
+			"import_extra_files": {
+				MarkdownDescription: "Import extra files. If enabled it will leverage 'extra_file_extensions'.",
+				Required:            true,
+				Type:                types.BoolType,
+			},
+			"paths_default_static": {
+				MarkdownDescription: "Path default static.",
+				Required:            true,
+				Type:                types.BoolType,
+			},
+			"set_permissions_linux": {
+				MarkdownDescription: "Set permission for imported files.",
+				Required:            true,
+				Type:                types.BoolType,
+			},
+			"skip_free_space_check_when_importing": {
+				MarkdownDescription: "Skip free space check before importing.",
+				Required:            true,
+				Type:                types.BoolType,
+			},
+			"minimum_free_space_when_importing": {
+				MarkdownDescription: "Minimum free space in MB to allow import.",
+				Required:            true,
+				Type:                types.Int64Type,
+			},
+			"recycle_bin_cleanup_days": {
+				MarkdownDescription: "Recyle bin days of retention.",
+				Required:            true,
+				Type:                types.Int64Type,
+			},
+			"chmod_folder": {
+				MarkdownDescription: "Permission in linux format.",
+				Required:            true,
+				Type:                types.StringType,
+			},
+			"chown_group": {
+				MarkdownDescription: "Group used for permission.",
+				Required:            true,
+				Type:                types.StringType,
+			},
+			"download_propers_and_repacks": {
+				MarkdownDescription: "Download proper and repack policy. valid inputs are: 'preferAndUpgrade', 'doNotUpgrade', and 'doNotPrefer'.",
+				Required:            true,
+				Type:                types.StringType,
+				Validators: []tfsdk.AttributeValidator{
+					helpers.StringMatch([]string{"preferAndUpgrade", "doNotUpgrade", "doNotPrefer"}),
+				},
+			},
+			"extra_file_extensions": {
+				MarkdownDescription: "Comma separated list of extra files to import (.nfo will be imported as .nfo-orig).",
+				Required:            true,
+				Type:                types.StringType,
+			},
+			"file_date": {
+				MarkdownDescription: "Define the file date modification. valid inputs are: 'none', 'cinemas, and 'release'.",
+				Required:            true,
+				Type:                types.StringType,
+				Validators: []tfsdk.AttributeValidator{
+					helpers.StringMatch([]string{"none", "cinemas", "release"}),
+				},
+			},
+			"recycle_bin": {
+				MarkdownDescription: "Recycle bin absolute path.",
+				Required:            true,
+				Type:                types.StringType,
+			},
+			"rescan_after_refresh": {
+				MarkdownDescription: "Rescan after refresh policy. valid inputs are: 'always', 'afterManual' and 'never'.",
+				Required:            true,
+				Type:                types.StringType,
+				Validators: []tfsdk.AttributeValidator{
+					helpers.StringMatch([]string{"always", "afterManual", "never"}),
+				},
+			},
+		},
+	}, nil
+}
+
+func (r *MediaManagementResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+	// Prevent panic if the provider has not been configured.
+	if req.ProviderData == nil {
+		return
+	}
+
+	client, ok := req.ProviderData.(*radarr.Radarr)
+	if !ok {
+		resp.Diagnostics.AddError(
+			UnexpectedResourceConfigureType,
+			fmt.Sprintf("Expected *radarr.Radarr, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+		)
+
+		return
+	}
+
+	r.client = client
+}
+
+func (r *MediaManagementResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	// Retrieve values from plan
+	var plan MediaManagement
+
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Build Create resource
+	data := readMediaManagement(&plan)
+	data.ID = 1
+
+	// Create new MediaManagement
+	response, err := r.client.UpdateMediaManagementContext(ctx, data)
+	if err != nil {
+		resp.Diagnostics.AddError(ClientError, fmt.Sprintf("Unable to create mediamanagement, got error: %s", err))
+
+		return
+	}
+
+	tflog.Trace(ctx, "created media_management: "+strconv.Itoa(int(response.ID)))
+	// Generate resource state struct
+	result := writeMediaManagement(response)
+	resp.Diagnostics.Append(resp.State.Set(ctx, result)...)
+}
+
+func (r *MediaManagementResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	// Get current state
+	var state MediaManagement
+
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Get mediamanagement current value
+	response, err := r.client.GetMediaManagementContext(ctx)
+	if err != nil {
+		resp.Diagnostics.AddError(ClientError, fmt.Sprintf("Unable to read mediamanagements, got error: %s", err))
+
+		return
+	}
+
+	tflog.Trace(ctx, "read media_management: "+strconv.Itoa(int(response.ID)))
+	// Map response body to resource schema attribute
+	result := writeMediaManagement(response)
+	resp.Diagnostics.Append(resp.State.Set(ctx, result)...)
+}
+
+func (r *MediaManagementResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	// Get plan values
+	var plan MediaManagement
+
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Build Update resource
+	data := readMediaManagement(&plan)
+
+	// Update MediaManagement
+	response, err := r.client.UpdateMediaManagementContext(ctx, data)
+	if err != nil {
+		resp.Diagnostics.AddError(ClientError, fmt.Sprintf("Unable to update mediamanagement, got error: %s", err))
+
+		return
+	}
+
+	tflog.Trace(ctx, "updated media_management: "+strconv.Itoa(int(response.ID)))
+	// Generate resource state struct
+	result := writeMediaManagement(response)
+	resp.Diagnostics.Append(resp.State.Set(ctx, result)...)
+}
+
+func (r *MediaManagementResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	// Mediamanagement cannot be really deleted just removing configuration
+	tflog.Trace(ctx, "decoupled media_management: 1")
+	resp.State.RemoveResource(ctx)
+}
+
+func (r *MediaManagementResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	// resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	tflog.Trace(ctx, "imported media_management: 1")
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), 1)...)
+}
+
+func writeMediaManagement(mediaMgt *radarr.MediaManagement) *MediaManagement {
+	return &MediaManagement{
+		AutoRenameFolders:                       types.Bool{Value: mediaMgt.AutoRenameFolders},
+		AutoUnmonitorPreviouslyDownloadedMovies: types.Bool{Value: mediaMgt.AutoUnmonitorPreviouslyDownloadedMovies},
+		CopyUsingHardlinks:                      types.Bool{Value: mediaMgt.CopyUsingHardlinks},
+		CreateEmptyMovieFolders:                 types.Bool{Value: mediaMgt.CreateEmptyMovieFolders},
+		DeleteEmptyFolders:                      types.Bool{Value: mediaMgt.DeleteEmptyFolders},
+		EnableMediaInfo:                         types.Bool{Value: mediaMgt.EnableMediaInfo},
+		ImportExtraFiles:                        types.Bool{Value: mediaMgt.ImportExtraFiles},
+		PathsDefaultStatic:                      types.Bool{Value: mediaMgt.PathsDefaultStatic},
+		SetPermissionsLinux:                     types.Bool{Value: mediaMgt.SetPermissionsLinux},
+		SkipFreeSpaceCheckWhenImporting:         types.Bool{Value: mediaMgt.SkipFreeSpaceCheckWhenImporting},
+		ID:                                      types.Int64{Value: mediaMgt.ID},
+		MinimumFreeSpaceWhenImporting:           types.Int64{Value: mediaMgt.MinimumFreeSpaceWhenImporting},
+		RecycleBinCleanupDays:                   types.Int64{Value: mediaMgt.RecycleBinCleanupDays},
+		ChmodFolder:                             types.String{Value: mediaMgt.ChmodFolder},
+		ChownGroup:                              types.String{Value: mediaMgt.ChownGroup},
+		DownloadPropersAndRepacks:               types.String{Value: mediaMgt.DownloadPropersAndRepacks},
+		ExtraFileExtensions:                     types.String{Value: mediaMgt.ExtraFileExtensions},
+		FileDate:                                types.String{Value: mediaMgt.FileDate},
+		RecycleBin:                              types.String{Value: mediaMgt.RecycleBin},
+		RescanAfterRefresh:                      types.String{Value: mediaMgt.RescanAfterRefresh},
+	}
+}
+
+func readMediaManagement(mediaMgt *MediaManagement) *radarr.MediaManagement {
+	return &radarr.MediaManagement{
+		AutoRenameFolders:                       mediaMgt.AutoRenameFolders.Value,
+		AutoUnmonitorPreviouslyDownloadedMovies: mediaMgt.AutoUnmonitorPreviouslyDownloadedMovies.Value,
+		CopyUsingHardlinks:                      mediaMgt.CopyUsingHardlinks.Value,
+		CreateEmptyMovieFolders:                 mediaMgt.CreateEmptyMovieFolders.Value,
+		DeleteEmptyFolders:                      mediaMgt.DeleteEmptyFolders.Value,
+		EnableMediaInfo:                         mediaMgt.EnableMediaInfo.Value,
+		ImportExtraFiles:                        mediaMgt.ImportExtraFiles.Value,
+		PathsDefaultStatic:                      mediaMgt.PathsDefaultStatic.Value,
+		SetPermissionsLinux:                     mediaMgt.SetPermissionsLinux.Value,
+		SkipFreeSpaceCheckWhenImporting:         mediaMgt.SkipFreeSpaceCheckWhenImporting.Value,
+		ID:                                      mediaMgt.ID.Value,
+		MinimumFreeSpaceWhenImporting:           mediaMgt.MinimumFreeSpaceWhenImporting.Value,
+		RecycleBinCleanupDays:                   mediaMgt.RecycleBinCleanupDays.Value,
+		ChmodFolder:                             mediaMgt.ChmodFolder.Value,
+		ChownGroup:                              mediaMgt.ChownGroup.Value,
+		DownloadPropersAndRepacks:               mediaMgt.DownloadPropersAndRepacks.Value,
+		ExtraFileExtensions:                     mediaMgt.ExtraFileExtensions.Value,
+		FileDate:                                mediaMgt.FileDate.Value,
+		RecycleBin:                              mediaMgt.RecycleBin.Value,
+		RescanAfterRefresh:                      mediaMgt.RescanAfterRefresh.Value,
+	}
+}
