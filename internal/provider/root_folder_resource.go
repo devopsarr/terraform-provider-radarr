@@ -156,7 +156,7 @@ func (r *RootFolderResource) Read(ctx context.Context, req resource.ReadRequest,
 	}
 
 	// Get rootFolder current value
-	response, err := r.client.GetRootFolderContext(ctx, int(state.ID.Value))
+	response, err := r.client.GetRootFolderContext(ctx, state.ID.Value)
 	if err != nil {
 		resp.Diagnostics.AddError(ClientError, fmt.Sprintf("Unable to read rootFolders, got error: %s", err))
 
@@ -183,7 +183,7 @@ func (r *RootFolderResource) Delete(ctx context.Context, req resource.DeleteRequ
 	}
 
 	// Delete rootFolder current value
-	err := r.client.DeleteRootFolderContext(ctx, int(state.ID.Value))
+	err := r.client.DeleteRootFolderContext(ctx, state.ID.Value)
 	if err != nil {
 		resp.Diagnostics.AddError(ClientError, fmt.Sprintf("Unable to read rootFolders, got error: %s", err))
 

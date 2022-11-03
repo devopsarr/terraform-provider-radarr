@@ -30,26 +30,33 @@ type SystemStatus struct {
 	IsProduction      types.Bool `tfsdk:"is_production"`
 	IsAdmin           types.Bool `tfsdk:"is_admin"`
 	IsUserInteractive types.Bool `tfsdk:"is_user_interactive"`
-	IsMono            types.Bool `tfsdk:"is_mono"`
 	IsNetCore         types.Bool `tfsdk:"is_net_core"`
+	IsDocker          types.Bool `tfsdk:"is_docker"`
 	IsLinux           types.Bool `tfsdk:"is_linux"`
 	IsOsx             types.Bool `tfsdk:"is_osx"`
 	IsWindows         types.Bool `tfsdk:"is_windows"`
 	// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
-	ID               types.Int64  `tfsdk:"id"`
-	MigrationVersion types.Int64  `tfsdk:"migration_version"`
-	Version          types.String `tfsdk:"version"`
-	StartupPath      types.String `tfsdk:"startup_path"`
-	AppData          types.String `tfsdk:"app_data"`
-	OsName           types.String `tfsdk:"os_name"`
-	OsVersion        types.String `tfsdk:"os_version"`
-	Branch           types.String `tfsdk:"branch"`
-	Authentication   types.String `tfsdk:"authentication"`
-	SqliteVersion    types.String `tfsdk:"sqlite_version"`
-	URLBase          types.String `tfsdk:"url_base"`
-	RuntimeVersion   types.String `tfsdk:"runtime_version"`
-	RuntimeName      types.String `tfsdk:"runtime_name"`
-	BuildTime        types.String `tfsdk:"build_time"`
+	ID                     types.Int64  `tfsdk:"id"`
+	MigrationVersion       types.Int64  `tfsdk:"migration_version"`
+	Version                types.String `tfsdk:"version"`
+	StartupPath            types.String `tfsdk:"startup_path"`
+	AppData                types.String `tfsdk:"app_data"`
+	OsName                 types.String `tfsdk:"os_name"`
+	Branch                 types.String `tfsdk:"branch"`
+	Authentication         types.String `tfsdk:"authentication"`
+	URLBase                types.String `tfsdk:"url_base"`
+	RuntimeVersion         types.String `tfsdk:"runtime_version"`
+	RuntimeName            types.String `tfsdk:"runtime_name"`
+	BuildTime              types.String `tfsdk:"build_time"`
+	AppName                types.String `tfsdk:"app_name"`
+	DatabaseType           types.String `tfsdk:"database_type"`
+	DatabaseVersion        types.String `tfsdk:"database_version"`
+	InstanceName           types.String `tfsdk:"instance_name"`
+	Mode                   types.String `tfsdk:"mode"`
+	PackageAuthor          types.String `tfsdk:"package_author"`
+	PackageUpdateMechanism types.String `tfsdk:"package_update_mechanism"`
+	PackageVersion         types.String `tfsdk:"package_version"`
+	StartTime              types.String `tfsdk:"start_time"`
 }
 
 func (d *SystemStatusDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -63,7 +70,7 @@ func (d *SystemStatusDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, d
 		Attributes: map[string]tfsdk.Attribute{
 			// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 			"id": {
-				MarkdownDescription: "Delay Profile ID.",
+				MarkdownDescription: "Status ID.",
 				Computed:            true,
 				Type:                types.Int64Type,
 			},
@@ -92,8 +99,8 @@ func (d *SystemStatusDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, d
 				Computed:            true,
 				Type:                types.BoolType,
 			},
-			"is_mono": {
-				MarkdownDescription: "Is mono flag.",
+			"is_docker": {
+				MarkdownDescription: "Is docker flag.",
 				Computed:            true,
 				Type:                types.BoolType,
 			},
@@ -137,8 +144,8 @@ func (d *SystemStatusDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, d
 				Computed:            true,
 				Type:                types.StringType,
 			},
-			"os_version": {
-				MarkdownDescription: "OS version.",
+			"app_name": {
+				MarkdownDescription: "Application name.",
 				Computed:            true,
 				Type:                types.StringType,
 			},
@@ -152,18 +159,43 @@ func (d *SystemStatusDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, d
 				Computed:            true,
 				Type:                types.StringType,
 			},
-			"sqlite_version": {
-				MarkdownDescription: "SQLite version.",
-				Computed:            true,
-				Type:                types.StringType,
-			},
 			"url_base": {
 				MarkdownDescription: "Base URL.",
 				Computed:            true,
 				Type:                types.StringType,
 			},
-			"runtime_version": {
-				MarkdownDescription: "Runtime version.",
+			"database_type": {
+				MarkdownDescription: "Database type.",
+				Computed:            true,
+				Type:                types.StringType,
+			},
+			"database_version": {
+				MarkdownDescription: "Database version.",
+				Computed:            true,
+				Type:                types.StringType,
+			},
+			"instance_name": {
+				MarkdownDescription: "Instance name.",
+				Computed:            true,
+				Type:                types.StringType,
+			},
+			"mode": {
+				MarkdownDescription: "Mode.",
+				Computed:            true,
+				Type:                types.StringType,
+			},
+			"package_author": {
+				MarkdownDescription: "Package author.",
+				Computed:            true,
+				Type:                types.StringType,
+			},
+			"package_update_mechanism": {
+				MarkdownDescription: "Package update mechanism.",
+				Computed:            true,
+				Type:                types.StringType,
+			},
+			"package_version": {
+				MarkdownDescription: "Package version.",
 				Computed:            true,
 				Type:                types.StringType,
 			},
@@ -172,8 +204,18 @@ func (d *SystemStatusDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, d
 				Computed:            true,
 				Type:                types.StringType,
 			},
+			"runtime_version": {
+				MarkdownDescription: "Runtime version.",
+				Computed:            true,
+				Type:                types.StringType,
+			},
 			"build_time": {
 				MarkdownDescription: "Build time.",
+				Computed:            true,
+				Type:                types.StringType,
+			},
+			"start_time": {
+				MarkdownDescription: "Start time.",
 				Computed:            true,
 				Type:                types.StringType,
 			},
@@ -217,28 +259,35 @@ func (d *SystemStatusDataSource) Read(ctx context.Context, req datasource.ReadRe
 
 func writeSystemStatus(status *radarr.SystemStatus) *SystemStatus {
 	return &SystemStatus{
-		IsDebug:           types.Bool{Value: status.IsDebug},
-		IsProduction:      types.Bool{Value: status.IsProduction},
-		IsAdmin:           types.Bool{Value: status.IsProduction},
-		IsUserInteractive: types.Bool{Value: status.IsUserInteractive},
-		IsMono:            types.Bool{Value: status.IsMono},
-		IsNetCore:         types.Bool{Value: status.IsNetCore},
-		IsLinux:           types.Bool{Value: status.IsLinux},
-		IsOsx:             types.Bool{Value: status.IsOsx},
-		IsWindows:         types.Bool{Value: status.IsWindows},
-		ID:                types.Int64{Value: int64(1)},
-		MigrationVersion:  types.Int64{Value: int64(status.MigrationVersion)},
-		Version:           types.String{Value: status.Version},
-		StartupPath:       types.String{Value: status.StartupPath},
-		AppData:           types.String{Value: status.AppData},
-		OsName:            types.String{Value: status.OsName},
-		OsVersion:         types.String{Value: status.OsVersion},
-		Branch:            types.String{Value: status.Branch},
-		Authentication:    types.String{Value: status.Authentication},
-		SqliteVersion:     types.String{Value: status.SqliteVersion},
-		URLBase:           types.String{Value: status.URLBase},
-		RuntimeVersion:    types.String{Value: status.RuntimeVersion},
-		RuntimeName:       types.String{Value: status.RuntimeName},
-		BuildTime:         types.String{Value: status.BuildTime.String()},
+		IsDebug:                types.Bool{Value: status.IsDebug},
+		IsProduction:           types.Bool{Value: status.IsProduction},
+		IsAdmin:                types.Bool{Value: status.IsProduction},
+		IsUserInteractive:      types.Bool{Value: status.IsUserInteractive},
+		IsNetCore:              types.Bool{Value: status.IsNetCore},
+		IsDocker:               types.Bool{Value: status.IsDocker},
+		IsLinux:                types.Bool{Value: status.IsLinux},
+		IsOsx:                  types.Bool{Value: status.IsOsx},
+		IsWindows:              types.Bool{Value: status.IsWindows},
+		ID:                     types.Int64{Value: int64(1)},
+		MigrationVersion:       types.Int64{Value: status.MigrationVersion},
+		Version:                types.String{Value: status.Version},
+		StartupPath:            types.String{Value: status.StartupPath},
+		AppData:                types.String{Value: status.AppData},
+		OsName:                 types.String{Value: status.OsName},
+		Branch:                 types.String{Value: status.Branch},
+		Authentication:         types.String{Value: status.Authentication},
+		URLBase:                types.String{Value: status.URLBase},
+		RuntimeVersion:         types.String{Value: status.RuntimeVersion},
+		RuntimeName:            types.String{Value: status.RuntimeName},
+		AppName:                types.String{Value: status.AppName},
+		DatabaseType:           types.String{Value: status.DatabaseType},
+		DatabaseVersion:        types.String{Value: status.DatabaseVersion},
+		InstanceName:           types.String{Value: status.InstanceName},
+		Mode:                   types.String{Value: status.Mode},
+		PackageAuthor:          types.String{Value: status.PackageAuthor},
+		PackageUpdateMechanism: types.String{Value: status.PackageUpdateMechanism},
+		PackageVersion:         types.String{Value: status.PackageVersion},
+		BuildTime:              types.String{Value: status.BuildTime.String()},
+		StartTime:              types.String{Value: status.StartTime.String()},
 	}
 }
