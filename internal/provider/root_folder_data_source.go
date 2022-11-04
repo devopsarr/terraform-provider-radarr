@@ -31,7 +31,7 @@ func (d *RootFolderDataSource) Metadata(ctx context.Context, req datasource.Meta
 func (d *RootFolderDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "[subcategory:Media Management]: #\nSingle [Root Folder](../resources/root_folder).",
+		MarkdownDescription: "<!-- subcategory:Media Management -->Single [Root Folder](../resources/root_folder).",
 		Attributes: map[string]tfsdk.Attribute{
 			"path": {
 				MarkdownDescription: "Root Folder absolute path.",
@@ -104,7 +104,7 @@ func (d *RootFolderDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	}
 
 	// Map response body to resource schema attribute
-	rootFolder, err := findRootFolder(data.Path.Value, response)
+	rootFolder, err := findRootFolder(data.Path.ValueString(), response)
 	if err != nil {
 		resp.Diagnostics.AddError(DataSourceError, fmt.Sprintf("Unable to find root folders, got error: %s", err))
 

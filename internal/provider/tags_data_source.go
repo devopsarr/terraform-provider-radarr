@@ -40,7 +40,7 @@ func (d *TagsDataSource) Metadata(ctx context.Context, req datasource.MetadataRe
 func (d *TagsDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "[subcategory:Tags]: #\nList all available [Tags](../resources/tag).",
+		MarkdownDescription: "<!-- subcategory:Tags -->List all available [Tags](../resources/tag).",
 		Attributes: map[string]tfsdk.Attribute{
 			// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 			"id": {
@@ -108,7 +108,7 @@ func (d *TagsDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 	tags := *writeTags(response)
 	tfsdk.ValueFrom(ctx, tags, data.Tags.Type(context.Background()), &data.Tags)
 	// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
-	data.ID = types.String{Value: strconv.Itoa(len(response))}
+	data.ID = types.StringValue(strconv.Itoa(len(response)))
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
