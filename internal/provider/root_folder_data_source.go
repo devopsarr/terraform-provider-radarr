@@ -104,7 +104,7 @@ func (d *RootFolderDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	}
 
 	// Map response body to resource schema attribute
-	rootFolder, err := findRootFolder(data.Path.Value, response)
+	rootFolder, err := findRootFolder(data.Path.ValueString(), response)
 	if err != nil {
 		resp.Diagnostics.AddError(DataSourceError, fmt.Sprintf("Unable to find root folders, got error: %s", err))
 

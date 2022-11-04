@@ -225,26 +225,26 @@ func (r *NamingResource) ImportState(ctx context.Context, req resource.ImportSta
 
 func writeNaming(naming *radarr.Naming) *Naming {
 	return &Naming{
-		IncludeQuality:           types.Bool{Value: naming.IncludeQuality},
-		RenameMovies:             types.Bool{Value: naming.RenameMovies},
-		ReplaceIllegalCharacters: types.Bool{Value: naming.ReplaceIllegalCharacters},
-		ReplaceSpaces:            types.Bool{Value: naming.ReplaceSpaces},
-		ID:                       types.Int64{Value: naming.ID},
-		ColonReplacementFormat:   types.String{Value: naming.ColonReplacementFormat},
-		StandardMovieFormat:      types.String{Value: naming.StandardMovieFormat},
-		MovieFolderFormat:        types.String{Value: naming.MovieFolderFormat},
+		IncludeQuality:           types.BoolValue(naming.IncludeQuality),
+		RenameMovies:             types.BoolValue(naming.RenameMovies),
+		ReplaceIllegalCharacters: types.BoolValue(naming.ReplaceIllegalCharacters),
+		ReplaceSpaces:            types.BoolValue(naming.ReplaceSpaces),
+		ID:                       types.Int64Value(naming.ID),
+		ColonReplacementFormat:   types.StringValue(naming.ColonReplacementFormat),
+		StandardMovieFormat:      types.StringValue(naming.StandardMovieFormat),
+		MovieFolderFormat:        types.StringValue(naming.MovieFolderFormat),
 	}
 }
 
 func readNaming(naming *Naming) *radarr.Naming {
 	return &radarr.Naming{
-		IncludeQuality:           naming.IncludeQuality.Value,
-		RenameMovies:             naming.RenameMovies.Value,
-		ReplaceIllegalCharacters: naming.ReplaceIllegalCharacters.Value,
-		ReplaceSpaces:            naming.ReplaceSpaces.Value,
-		ID:                       naming.ID.Value,
-		ColonReplacementFormat:   naming.ColonReplacementFormat.Value,
-		StandardMovieFormat:      naming.StandardMovieFormat.Value,
-		MovieFolderFormat:        naming.MovieFolderFormat.Value,
+		IncludeQuality:           naming.IncludeQuality.ValueBool(),
+		RenameMovies:             naming.RenameMovies.ValueBool(),
+		ReplaceIllegalCharacters: naming.ReplaceIllegalCharacters.ValueBool(),
+		ReplaceSpaces:            naming.ReplaceSpaces.ValueBool(),
+		ID:                       naming.ID.ValueInt64(),
+		ColonReplacementFormat:   naming.ColonReplacementFormat.ValueString(),
+		StandardMovieFormat:      naming.StandardMovieFormat.ValueString(),
+		MovieFolderFormat:        naming.MovieFolderFormat.ValueString(),
 	}
 }

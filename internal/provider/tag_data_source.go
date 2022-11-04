@@ -84,7 +84,7 @@ func (d *TagDataSource) Read(ctx context.Context, req datasource.ReadRequest, re
 		return
 	}
 
-	tag, err := findTag(data.Label.Value, response)
+	tag, err := findTag(data.Label.ValueString(), response)
 	if err != nil {
 		resp.Diagnostics.AddError(DataSourceError, fmt.Sprintf("Unable to find tags, got error: %s", err))
 

@@ -156,7 +156,7 @@ func (r *RootFolderResource) Read(ctx context.Context, req resource.ReadRequest,
 	}
 
 	// Get rootFolder current value
-	response, err := r.client.GetRootFolderContext(ctx, state.ID.Value)
+	response, err := r.client.GetRootFolderContext(ctx, state.ID.ValueInt64())
 	if err != nil {
 		resp.Diagnostics.AddError(ClientError, fmt.Sprintf("Unable to read rootFolders, got error: %s", err))
 
@@ -183,14 +183,14 @@ func (r *RootFolderResource) Delete(ctx context.Context, req resource.DeleteRequ
 	}
 
 	// Delete rootFolder current value
-	err := r.client.DeleteRootFolderContext(ctx, state.ID.Value)
+	err := r.client.DeleteRootFolderContext(ctx, state.ID.ValueInt64())
 	if err != nil {
 		resp.Diagnostics.AddError(ClientError, fmt.Sprintf("Unable to read rootFolders, got error: %s", err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "deleted root_folder: "+strconv.Itoa(int(state.ID.Value)))
+	tflog.Trace(ctx, "deleted root_folder: "+strconv.Itoa(int(state.ID.ValueInt64())))
 	resp.State.RemoveResource(ctx)
 }
 
@@ -212,9 +212,9 @@ func (r *RootFolderResource) ImportState(ctx context.Context, req resource.Impor
 
 func writeRootFolder(ctx context.Context, rootFolder *radarr.RootFolder) *RootFolder {
 	output := RootFolder{
-		Accessible:      types.Bool{Value: rootFolder.Accessible},
-		ID:              types.Int64{Value: rootFolder.ID},
-		Path:            types.String{Value: rootFolder.Path},
+		Accessible:      types.BoolValue(rootFolder.Accessible),
+		ID:              types.Int64Value(rootFolder.ID),
+		Path:            types.StringValue(rootFolder.Path),
 		UnmappedFolders: types.Set{ElemType: RootFolderResource{}.getUnmappedFolderSchema().Type()},
 	}
 	unmapped := writeUnmappedFolders(rootFolder.UnmappedFolders)
@@ -228,8 +228,8 @@ func writeUnmappedFolders(folders []*starr.Path) *[]Path {
 	output := make([]Path, len(folders))
 	for i, f := range folders {
 		output[i] = Path{
-			Name: types.String{Value: f.Name},
-			Path: types.String{Value: f.Path},
+			Name: types.StringValue(f.Name),
+			Path: types.StringValue(f.Path),
 		}
 	}
 
