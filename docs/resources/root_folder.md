@@ -9,8 +9,7 @@ description: |-
 
 # radarr_root_folder (Resource)
 
-[subcategory:Media Management]: #
-Root Folder resource.
+<!-- subcategory:Media Management -->Root Folder resource.
 For more information refer to [Root Folders](https://wiki.servarr.com/radarr/settings#root-folders) documentation.
 
 ## Example Usage

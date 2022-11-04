@@ -9,8 +9,7 @@ description: |-
 
 # radarr_tag (Resource)
 
-[subcategory:Tags]: #
-Tag resource.
+<!-- subcategory:Tags -->Tag resource.
 For more information refer to [Tags](https://wiki.servarr.com/radarr/settings#tags) documentation.
 
 ## Example Usage

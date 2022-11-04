@@ -8,8 +8,7 @@ description: |-
 
 # radarr_naming (Data Source)
 
-[subcategory:Media Management]: #
-[Naming](../resources/naming).
+<!-- subcategory:Media Management -->[Naming](../resources/naming).
 
 ## Example Usage
 

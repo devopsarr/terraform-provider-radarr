@@ -48,7 +48,7 @@ func (r *RootFolderResource) Metadata(ctx context.Context, req resource.Metadata
 
 func (r *RootFolderResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
-		MarkdownDescription: "[subcategory:Media Management]: #\nRoot Folder resource.\nFor more information refer to [Root Folders](https://wiki.servarr.com/radarr/settings#root-folders) documentation.",
+		MarkdownDescription: "<!-- subcategory:Media Management -->Root Folder resource.\nFor more information refer to [Root Folders](https://wiki.servarr.com/radarr/settings#root-folders) documentation.",
 		Attributes: map[string]tfsdk.Attribute{
 			// TODO: add validator
 			"path": {
