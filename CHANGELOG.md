@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.3.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v1.2.0...v1.3.0) (2022-11-14)
+
+
+### Features
+
+* add delay profile datasource ([9fc9669](https://github.com/devopsarr/terraform-provider-radarr/commit/9fc9669914b6cc9b2451627e8fe403e6a958d0d5))
+* add delay profile resource ([a839652](https://github.com/devopsarr/terraform-provider-radarr/commit/a839652566bc02e1a7682685cd267539e7d96166))
+* add delay profiles datasource ([4bddbd1](https://github.com/devopsarr/terraform-provider-radarr/commit/4bddbd199fcd7d11ca8e765c1bb7a8c3292e249e))
+* add notification custom script resource ([8f1ca4c](https://github.com/devopsarr/terraform-provider-radarr/commit/8f1ca4cfc7179fa6a4dbe2a198fa3f36a2cf30ae))
+* add notification datasource ([5ddf2d3](https://github.com/devopsarr/terraform-provider-radarr/commit/5ddf2d3f92f1a48121d6d190f6dc3cb2cefc8b4b))
+* add notification resource ([f59290c](https://github.com/devopsarr/terraform-provider-radarr/commit/f59290c69d9a9483eded499a5c94c3f80212abf5))
+* add notification webhook resource ([808c3b2](https://github.com/devopsarr/terraform-provider-radarr/commit/808c3b239e7fe04f8603a9b528a547f3342ce72d))
+* add notifications data source ([3b39c57](https://github.com/devopsarr/terraform-provider-radarr/commit/3b39c5732f8a187266d9efa78b474fa2d7262624))
+
 ## [1.2.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v1.1.0...v1.2.0) (2022-11-04)
 
 
