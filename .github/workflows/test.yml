@@ -70,9 +70,19 @@ jobs:
           terraform_wrapper: false
       - uses: actions/checkout@v3
       - name: config rights
-        run:  sudo chown 1000:1000 ${{ github.workspace }}/.github/workflows/config.xml
+        run: >
+          sudo chown 1000:1000 ${{ github.workspace }}/.github/workflows/config.xml &&
+          sudo chmod +x ${{ github.workspace }}/.github/workflows/test.sh
       - name: run provider
-        run: docker run -e PUID=1000 -e PGID=1000 -d -v ${{ github.workspace }}/.github/workflows/config.xml:/config/config.xml -p 7878:7878 --health-cmd "curl --fail http://localhost:7878/system/status || exit 1" linuxserver/radarr:4.0.4
+        run: >
+          docker run -d
+          -e PUID=1000
+          -e PGID=1000
+          -v ${{ github.workspace }}/.github/workflows/test.sh:/scripts/test.sh
+          -v ${{ github.workspace }}/.github/workflows/config.xml:/config/config.xml
+          -p 7878:7878
+          --health-cmd "curl --fail http://localhost:7878/system/status || exit 1"
+          linuxserver/radarr
       - run: go mod download
       - env:
           RADARR_URL: "http://localhost:7878"
