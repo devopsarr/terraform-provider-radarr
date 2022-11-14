@@ -132,6 +132,7 @@ func (p *RadarrProvider) Configure(ctx context.Context, req provider.ConfigureRe
 
 func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
+		NewDelayProfileResource,
 		NewMediaManagementResource,
 		NewNamingResource,
 		NewRootFolderResource,
@@ -141,6 +142,8 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 
 func (p *RadarrProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
+		NewDelayProfileDataSource,
+		NewDelayProfilesDataSource,
 		NewMediaManagementDataSource,
 		NewNamingDataSource,
 		NewRootFolderDataSource,
