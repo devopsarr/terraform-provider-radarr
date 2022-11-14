@@ -134,8 +134,8 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 	return []func() resource.Resource{
 		NewDelayProfileResource,
 		NewMediaManagementResource,
-		NewNotificationResource,
 		NewNamingResource,
+		NewNotificationResource,
 		NewRootFolderResource,
 		NewTagResource,
 	}
@@ -147,6 +147,7 @@ func (p *RadarrProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewDelayProfilesDataSource,
 		NewMediaManagementDataSource,
 		NewNamingDataSource,
+		NewNotificationsDataSource,
 		NewRootFolderDataSource,
 		NewRootFoldersDataSource,
 		NewSystemStatusDataSource,
