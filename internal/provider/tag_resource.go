@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
+	"github.com/devopsarr/terraform-provider-sonarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -48,7 +48,7 @@ func (r *TagResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnos
 				Required:            true,
 				Type:                types.StringType,
 				Validators: []tfsdk.AttributeValidator{
-					helpers.StringLowercase(),
+					tools.StringLowercase(),
 				},
 			},
 			"id": {
@@ -72,7 +72,7 @@ func (r *TagResource) Configure(ctx context.Context, req resource.ConfigureReque
 	client, ok := req.ProviderData.(*radarr.Radarr)
 	if !ok {
 		resp.Diagnostics.AddError(
-			UnexpectedResourceConfigureType,
+			tools.UnexpectedResourceConfigureType,
 			fmt.Sprintf("Expected *radarr.Radarr, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
@@ -99,7 +99,7 @@ func (r *TagResource) Create(ctx context.Context, req resource.CreateRequest, re
 
 	response, err := r.client.AddTagContext(ctx, &request)
 	if err != nil {
-		resp.Diagnostics.AddError(ClientError, fmt.Sprintf("Unable to create tag, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create tag, got error: %s", err))
 
 		return
 	}
@@ -123,7 +123,7 @@ func (r *TagResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 	// Get tag current value
 	response, err := r.client.GetTagContext(ctx, int(state.ID.ValueInt64()))
 	if err != nil {
-		resp.Diagnostics.AddError(ClientError, fmt.Sprintf("Unable to read tags, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read tags, got error: %s", err))
 
 		return
 	}
@@ -152,7 +152,7 @@ func (r *TagResource) Update(ctx context.Context, req resource.UpdateRequest, re
 
 	response, err := r.client.UpdateTagContext(ctx, &request)
 	if err != nil {
-		resp.Diagnostics.AddError(ClientError, fmt.Sprintf("Unable to update tag, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update tag, got error: %s", err))
 
 		return
 	}
@@ -175,7 +175,7 @@ func (r *TagResource) Delete(ctx context.Context, req resource.DeleteRequest, re
 	// Delete tag current value
 	err := r.client.DeleteTagContext(ctx, int(state.ID.ValueInt64()))
 	if err != nil {
-		resp.Diagnostics.AddError(ClientError, fmt.Sprintf("Unable to read tags, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read tags, got error: %s", err))
 
 		return
 	}
@@ -189,7 +189,7 @@ func (r *TagResource) ImportState(ctx context.Context, req resource.ImportStateR
 	id, err := strconv.Atoi(req.ID)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			UnexpectedImportIdentifier,
+			tools.UnexpectedImportIdentifier,
 			fmt.Sprintf("Expected import identifier with format: ID. Got: %q", req.ID),
 		)
 
