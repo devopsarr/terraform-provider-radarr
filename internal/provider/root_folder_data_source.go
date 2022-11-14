@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/devopsarr/terraform-provider-sonarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
@@ -77,7 +78,7 @@ func (d *RootFolderDataSource) Configure(ctx context.Context, req datasource.Con
 	client, ok := req.ProviderData.(*radarr.Radarr)
 	if !ok {
 		resp.Diagnostics.AddError(
-			UnexpectedDataSourceConfigureType,
+			tools.UnexpectedDataSourceConfigureType,
 			fmt.Sprintf("Expected *radarr.Radarr, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
@@ -98,7 +99,7 @@ func (d *RootFolderDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	// Get rootfolders current value
 	response, err := d.client.GetRootFoldersContext(ctx)
 	if err != nil {
-		resp.Diagnostics.AddError(ClientError, fmt.Sprintf("Unable to read root folders, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read root folders, got error: %s", err))
 
 		return
 	}
@@ -106,7 +107,7 @@ func (d *RootFolderDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	// Map response body to resource schema attribute
 	rootFolder, err := findRootFolder(data.Path.ValueString(), response)
 	if err != nil {
-		resp.Diagnostics.AddError(DataSourceError, fmt.Sprintf("Unable to find root folders, got error: %s", err))
+		resp.Diagnostics.AddError(tools.DataSourceError, fmt.Sprintf("Unable to find root folders, got error: %s", err))
 
 		return
 	}

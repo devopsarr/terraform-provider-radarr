@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/devopsarr/terraform-provider-sonarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -100,7 +101,7 @@ func (d *RootFoldersDataSource) Configure(ctx context.Context, req datasource.Co
 	client, ok := req.ProviderData.(*radarr.Radarr)
 	if !ok {
 		resp.Diagnostics.AddError(
-			UnexpectedDataSourceConfigureType,
+			tools.UnexpectedDataSourceConfigureType,
 			fmt.Sprintf("Expected *radarr.Radarr, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
@@ -121,7 +122,7 @@ func (d *RootFoldersDataSource) Read(ctx context.Context, req datasource.ReadReq
 	// Get rootfolders current value
 	response, err := d.client.GetRootFoldersContext(ctx)
 	if err != nil {
-		resp.Diagnostics.AddError(ClientError, fmt.Sprintf("Unable to read rootfolders, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read rootfolders, got error: %s", err))
 
 		return
 	}

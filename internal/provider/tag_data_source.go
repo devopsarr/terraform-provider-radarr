@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/devopsarr/terraform-provider-sonarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
@@ -57,7 +58,7 @@ func (d *TagDataSource) Configure(ctx context.Context, req datasource.ConfigureR
 	client, ok := req.ProviderData.(*radarr.Radarr)
 	if !ok {
 		resp.Diagnostics.AddError(
-			UnexpectedDataSourceConfigureType,
+			tools.UnexpectedDataSourceConfigureType,
 			fmt.Sprintf("Expected *radarr.Radarr, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
@@ -79,14 +80,14 @@ func (d *TagDataSource) Read(ctx context.Context, req datasource.ReadRequest, re
 	// Get tags current value
 	response, err := d.client.GetTagsContext(ctx)
 	if err != nil {
-		resp.Diagnostics.AddError(ClientError, fmt.Sprintf("Unable to read tags, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read tags, got error: %s", err))
 
 		return
 	}
 
 	tag, err := findTag(data.Label.ValueString(), response)
 	if err != nil {
-		resp.Diagnostics.AddError(DataSourceError, fmt.Sprintf("Unable to find tags, got error: %s", err))
+		resp.Diagnostics.AddError(tools.DataSourceError, fmt.Sprintf("Unable to find tags, got error: %s", err))
 
 		return
 	}

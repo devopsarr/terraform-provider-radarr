@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
+	"github.com/devopsarr/terraform-provider-sonarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -81,7 +81,7 @@ func (r *NamingResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diag
 				Required:            true,
 				Type:                types.StringType,
 				Validators: []tfsdk.AttributeValidator{
-					helpers.StringMatch([]string{"delete", "dash", "spaceDash", "spaceDashSpace"}),
+					tools.StringMatch([]string{"delete", "dash", "spaceDash", "spaceDashSpace"}),
 				},
 			},
 			"movie_folder_format": {
@@ -107,7 +107,7 @@ func (r *NamingResource) Configure(ctx context.Context, req resource.ConfigureRe
 	client, ok := req.ProviderData.(*radarr.Radarr)
 	if !ok {
 		resp.Diagnostics.AddError(
-			UnexpectedResourceConfigureType,
+			tools.UnexpectedResourceConfigureType,
 			fmt.Sprintf("Expected *radarr.Radarr, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
@@ -130,14 +130,14 @@ func (r *NamingResource) Create(ctx context.Context, req resource.CreateRequest,
 	// Init call if we remove this it the very first update on a brand new instance will fail
 	init, err := r.client.GetNamingContext(ctx)
 	if err != nil {
-		resp.Diagnostics.AddError(ClientError, fmt.Sprintf("Unable to init naming, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to init naming, got error: %s", err))
 
 		return
 	}
 
 	_, err = r.client.UpdateNamingContext(ctx, init)
 	if err != nil {
-		resp.Diagnostics.AddError(ClientError, fmt.Sprintf("Unable to init naming, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to init naming, got error: %s", err))
 
 		return
 	}
@@ -149,7 +149,7 @@ func (r *NamingResource) Create(ctx context.Context, req resource.CreateRequest,
 	// Create new Naming
 	response, err := r.client.UpdateNamingContext(ctx, data)
 	if err != nil {
-		resp.Diagnostics.AddError(ClientError, fmt.Sprintf("Unable to create naming, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create naming, got error: %s", err))
 
 		return
 	}
@@ -173,7 +173,7 @@ func (r *NamingResource) Read(ctx context.Context, req resource.ReadRequest, res
 	// Get naming current value
 	response, err := r.client.GetNamingContext(ctx)
 	if err != nil {
-		resp.Diagnostics.AddError(ClientError, fmt.Sprintf("Unable to read namings, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read namings, got error: %s", err))
 
 		return
 	}
@@ -200,7 +200,7 @@ func (r *NamingResource) Update(ctx context.Context, req resource.UpdateRequest,
 	// Update Naming
 	response, err := r.client.UpdateNamingContext(ctx, data)
 	if err != nil {
-		resp.Diagnostics.AddError(ClientError, fmt.Sprintf("Unable to update naming, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update naming, got error: %s", err))
 
 		return
 	}

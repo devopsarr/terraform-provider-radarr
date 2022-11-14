@@ -11,6 +11,8 @@ require (
 	golift.io/starr v0.14.0
 )
 
+require github.com/devopsarr/terraform-provider-sonarr v1.2.3-0.20221114074200-e446fc4cef7f
+
 require (
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver/v3 v3.1.1 // indirect
@@ -63,6 +65,7 @@ require (
 	github.com/vmihailenco/tagparser v0.1.2 // indirect
 	github.com/zclconf/go-cty v1.12.1 // indirect
 	golang.org/x/crypto v0.2.0 // indirect
+	golang.org/x/exp v0.0.0-20221111204811-129d8d6c17ab
 	golang.org/x/net v0.2.0 // indirect
 	golang.org/x/sys v0.2.0 // indirect
 	golang.org/x/text v0.4.0 // indirect

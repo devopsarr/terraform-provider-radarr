@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/devopsarr/terraform-provider-sonarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
@@ -113,7 +114,7 @@ func (d *DelayProfilesDataSource) Configure(ctx context.Context, req datasource.
 	client, ok := req.ProviderData.(*radarr.Radarr)
 	if !ok {
 		resp.Diagnostics.AddError(
-			UnexpectedDataSourceConfigureType,
+			tools.UnexpectedDataSourceConfigureType,
 			fmt.Sprintf("Expected *radarr.Radarr, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
@@ -134,7 +135,7 @@ func (d *DelayProfilesDataSource) Read(ctx context.Context, req datasource.ReadR
 	// Get delayprofiles current value
 	response, err := d.client.GetDelayProfilesContext(ctx)
 	if err != nil {
-		resp.Diagnostics.AddError(ClientError, fmt.Sprintf("Unable to read %s, got error: %s", delayProfileResourceName, err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", delayProfileResourceName, err))
 
 		return
 	}
