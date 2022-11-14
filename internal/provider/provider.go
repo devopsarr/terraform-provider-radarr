@@ -137,6 +137,7 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewNamingResource,
 		NewNotificationResource,
 		NewNotificationCustomScriptResource,
+		NewNotificationWebhookResource,
 		NewRootFolderResource,
 		NewTagResource,
 	}

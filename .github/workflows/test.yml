@@ -69,6 +69,8 @@ jobs:
           terraform_version: ${{ matrix.terraform }}
           terraform_wrapper: false
       - uses: actions/checkout@v3
+      - name: run downloadclient
+        run: docker run -d --name transmission linuxserver/transmission
       - name: config rights
         run: >
           sudo chown 1000:1000 ${{ github.workspace }}/.github/workflows/config.xml &&
@@ -78,6 +80,7 @@ jobs:
           docker run -d
           -e PUID=1000
           -e PGID=1000
+          --link transmission
           -v ${{ github.workspace }}/.github/workflows/test.sh:/scripts/test.sh
           -v ${{ github.workspace }}/.github/workflows/config.xml:/config/config.xml
           -p 7878:7878
