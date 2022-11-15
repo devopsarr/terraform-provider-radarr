@@ -30,26 +30,26 @@ type MediaManagementResource struct {
 
 // MediaManagement describes the media management data model.
 type MediaManagement struct {
-	AutoRenameFolders                       types.Bool   `tfsdk:"auto_rename_folders"`
-	AutoUnmonitorPreviouslyDownloadedMovies types.Bool   `tfsdk:"auto_unmonitor_previously_downloaded_movies"`
-	CopyUsingHardlinks                      types.Bool   `tfsdk:"copy_using_hardlinks"`
-	CreateEmptyMovieFolders                 types.Bool   `tfsdk:"create_empty_movie_folders"`
-	DeleteEmptyFolders                      types.Bool   `tfsdk:"delete_empty_folders"`
-	EnableMediaInfo                         types.Bool   `tfsdk:"enable_media_info"`
-	ImportExtraFiles                        types.Bool   `tfsdk:"import_extra_files"`
-	PathsDefaultStatic                      types.Bool   `tfsdk:"paths_default_static"`
-	SetPermissionsLinux                     types.Bool   `tfsdk:"set_permissions_linux"`
-	SkipFreeSpaceCheckWhenImporting         types.Bool   `tfsdk:"skip_free_space_check_when_importing"`
+	ChmodFolder                             types.String `tfsdk:"chmod_folder"`
+	RescanAfterRefresh                      types.String `tfsdk:"rescan_after_refresh"`
+	RecycleBin                              types.String `tfsdk:"recycle_bin"`
+	FileDate                                types.String `tfsdk:"file_date"`
+	ExtraFileExtensions                     types.String `tfsdk:"extra_file_extensions"`
+	DownloadPropersAndRepacks               types.String `tfsdk:"download_propers_and_repacks"`
+	ChownGroup                              types.String `tfsdk:"chown_group"`
 	ID                                      types.Int64  `tfsdk:"id"`
 	MinimumFreeSpaceWhenImporting           types.Int64  `tfsdk:"minimum_free_space_when_importing"`
 	RecycleBinCleanupDays                   types.Int64  `tfsdk:"recycle_bin_cleanup_days"`
-	ChmodFolder                             types.String `tfsdk:"chmod_folder"`
-	ChownGroup                              types.String `tfsdk:"chown_group"`
-	DownloadPropersAndRepacks               types.String `tfsdk:"download_propers_and_repacks"`
-	ExtraFileExtensions                     types.String `tfsdk:"extra_file_extensions"`
-	FileDate                                types.String `tfsdk:"file_date"`
-	RecycleBin                              types.String `tfsdk:"recycle_bin"`
-	RescanAfterRefresh                      types.String `tfsdk:"rescan_after_refresh"`
+	SetPermissionsLinux                     types.Bool   `tfsdk:"set_permissions_linux"`
+	SkipFreeSpaceCheckWhenImporting         types.Bool   `tfsdk:"skip_free_space_check_when_importing"`
+	AutoRenameFolders                       types.Bool   `tfsdk:"auto_rename_folders"`
+	PathsDefaultStatic                      types.Bool   `tfsdk:"paths_default_static"`
+	ImportExtraFiles                        types.Bool   `tfsdk:"import_extra_files"`
+	EnableMediaInfo                         types.Bool   `tfsdk:"enable_media_info"`
+	DeleteEmptyFolders                      types.Bool   `tfsdk:"delete_empty_folders"`
+	CreateEmptyMovieFolders                 types.Bool   `tfsdk:"create_empty_movie_folders"`
+	CopyUsingHardlinks                      types.Bool   `tfsdk:"copy_using_hardlinks"`
+	AutoUnmonitorPreviouslyDownloadedMovies types.Bool   `tfsdk:"auto_unmonitor_previously_downloaded_movies"`
 }
 
 func (r *MediaManagementResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {

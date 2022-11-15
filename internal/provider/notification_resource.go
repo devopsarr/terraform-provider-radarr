@@ -42,33 +42,33 @@ type NotificationResource struct {
 
 // Notification describes the notification data model.
 type Notification struct {
-	OnGrab                      types.Bool   `tfsdk:"on_grab"`
-	OnDownload                  types.Bool   `tfsdk:"on_download"`
-	OnUpgrade                   types.Bool   `tfsdk:"on_upgrade"`
-	OnRename                    types.Bool   `tfsdk:"on_rename"`
-	OnMovieAdded                types.Bool   `tfsdk:"on_movie_added"`
-	OnMovieDelete               types.Bool   `tfsdk:"on_movie_delete"`
-	OnMovieFileDelete           types.Bool   `tfsdk:"on_movie_file_delete"`
-	OnMovieFileDeleteForUpgrade types.Bool   `tfsdk:"on_movie_file_delete_for_upgrade"`
-	OnHealthIssue               types.Bool   `tfsdk:"on_health_issue"`
-	OnApplicationUpdate         types.Bool   `tfsdk:"on_application_update"`
-	IncludeHealthWarnings       types.Bool   `tfsdk:"include_health_warnings"`
+	Tags                        types.Set    `tfsdk:"tags"`
+	FieldTags                   types.Set    `tfsdk:"field_tags"`
+	ChannelTags                 types.Set    `tfsdk:"channel_tags"`
+	Topics                      types.Set    `tfsdk:"topics"`
+	DeviceIds                   types.Set    `tfsdk:"device_ids"`
+	Devices                     types.Set    `tfsdk:"devices"`
+	Recipients                  types.Set    `tfsdk:"recipients"`
+	DeviceNames                 types.String `tfsdk:"device_names"`
+	AccessToken                 types.String `tfsdk:"access_token"`
+	Host                        types.String `tfsdk:"host"`
+	InstanceName                types.String `tfsdk:"instance_name"`
 	Name                        types.String `tfsdk:"name"`
 	Implementation              types.String `tfsdk:"implementation"`
 	ConfigContract              types.String `tfsdk:"config_contract"`
-	Tags                        types.Set    `tfsdk:"tags"`
-	ID                          types.Int64  `tfsdk:"id"`
+	ClickURL                    types.String `tfsdk:"click_url"`
+	ConsumerSecret              types.String `tfsdk:"consumer_secret"`
 	Path                        types.String `tfsdk:"path"`
 	Arguments                   types.String `tfsdk:"arguments"`
-	UpdateLibrary               types.Bool   `tfsdk:"update_library"`
-	UseEuEndpoint               types.Bool   `tfsdk:"use_eu_endpoint"`
-	Notify                      types.Bool   `tfsdk:"notify"`
-	UseSSL                      types.Bool   `tfsdk:"use_ssl"`
-	SendSilently                types.Bool   `tfsdk:"send_silently"`
-	RequireEncryption           types.Bool   `tfsdk:"require_encryption"`
-	DirectMessage               types.Bool   `tfsdk:"direct_message"`
-	CleanLibrary                types.Bool   `tfsdk:"clean_library"`
-	AlwaysUpdate                types.Bool   `tfsdk:"always_update"`
+	ConsumerKey                 types.String `tfsdk:"consumer_key"`
+	ChatID                      types.String `tfsdk:"chat_id"`
+	From                        types.String `tfsdk:"from"`
+	Cc                          types.String `tfsdk:"cc"`
+	Icon                        types.String `tfsdk:"icon"`
+	Password                    types.String `tfsdk:"password"`
+	Event                       types.String `tfsdk:"event"`
+	Key                         types.String `tfsdk:"key"`
+	DisplayTime                 types.String `tfsdk:"display_time"`
 	RefreshToken                types.String `tfsdk:"refresh_token"`
 	WebHookURL                  types.String `tfsdk:"web_hook_url"`
 	Username                    types.String `tfsdk:"username"`
@@ -85,45 +85,45 @@ type Notification struct {
 	SenderID                    types.String `tfsdk:"sender_id"`
 	BotToken                    types.String `tfsdk:"bot_token"`
 	SenderDomain                types.String `tfsdk:"sender_domain"`
-	Icon                        types.String `tfsdk:"icon"`
-	Host                        types.String `tfsdk:"host"`
-	From                        types.String `tfsdk:"from"`
+	MapTo                       types.String `tfsdk:"map_to"`
+	MapFrom                     types.String `tfsdk:"map_from"`
+	Channel                     types.String `tfsdk:"channel"`
 	Expires                     types.String `tfsdk:"expires"`
-	AccessToken                 types.String `tfsdk:"access_token"`
+	ServerURL                   types.String `tfsdk:"server_url"`
 	AccessTokenSecret           types.String `tfsdk:"access_token_secret"`
 	APIKey                      types.String `tfsdk:"api_key"`
 	AppToken                    types.String `tfsdk:"app_token"`
 	Author                      types.String `tfsdk:"author"`
 	AuthToken                   types.String `tfsdk:"auth_token"`
 	AuthUser                    types.String `tfsdk:"auth_user"`
-	Password                    types.String `tfsdk:"password"`
-	Cc                          types.String `tfsdk:"cc"`
-	Channel                     types.String `tfsdk:"channel"`
-	ChatID                      types.String `tfsdk:"chat_id"`
-	ConsumerKey                 types.String `tfsdk:"consumer_key"`
-	ConsumerSecret              types.String `tfsdk:"consumer_secret"`
-	DeviceNames                 types.String `tfsdk:"device_names"`
-	InstanceName                types.String `tfsdk:"instance_name"`
-	ServerURL                   types.String `tfsdk:"server_url"`
-	ClickURL                    types.String `tfsdk:"click_url"`
-	MapFrom                     types.String `tfsdk:"map_from"`
-	MapTo                       types.String `tfsdk:"map_to"`
-	DisplayTime                 types.String `tfsdk:"display_time"`
-	Key                         types.String `tfsdk:"key"`
-	Event                       types.String `tfsdk:"event"`
 	Priority                    types.Int64  `tfsdk:"priority"`
 	Port                        types.Int64  `tfsdk:"port"`
 	Method                      types.Int64  `tfsdk:"method"`
 	Retry                       types.Int64  `tfsdk:"retry"`
 	Expire                      types.Int64  `tfsdk:"expire"`
+	ID                          types.Int64  `tfsdk:"id"`
 	ImportFields                types.Int64  `tfsdk:"import_fields"`
 	GrabFields                  types.Int64  `tfsdk:"grab_fields"`
-	Recipients                  types.Set    `tfsdk:"recipients"`
-	Devices                     types.Set    `tfsdk:"devices"`
-	DeviceIds                   types.Set    `tfsdk:"device_ids"`
-	Topics                      types.Set    `tfsdk:"topics"`
-	ChannelTags                 types.Set    `tfsdk:"channel_tags"`
-	FieldTags                   types.Set    `tfsdk:"field_tags"`
+	CleanLibrary                types.Bool   `tfsdk:"clean_library"`
+	OnGrab                      types.Bool   `tfsdk:"on_grab"`
+	OnMovieAdded                types.Bool   `tfsdk:"on_movie_added"`
+	SendSilently                types.Bool   `tfsdk:"send_silently"`
+	AlwaysUpdate                types.Bool   `tfsdk:"always_update"`
+	OnHealthIssue               types.Bool   `tfsdk:"on_health_issue"`
+	DirectMessage               types.Bool   `tfsdk:"direct_message"`
+	RequireEncryption           types.Bool   `tfsdk:"require_encryption"`
+	UseSSL                      types.Bool   `tfsdk:"use_ssl"`
+	Notify                      types.Bool   `tfsdk:"notify"`
+	UseEuEndpoint               types.Bool   `tfsdk:"use_eu_endpoint"`
+	UpdateLibrary               types.Bool   `tfsdk:"update_library"`
+	OnMovieFileDeleteForUpgrade types.Bool   `tfsdk:"on_movie_file_delete_for_upgrade"`
+	IncludeHealthWarnings       types.Bool   `tfsdk:"include_health_warnings"`
+	OnMovieFileDelete           types.Bool   `tfsdk:"on_movie_file_delete"`
+	OnMovieDelete               types.Bool   `tfsdk:"on_movie_delete"`
+	OnApplicationUpdate         types.Bool   `tfsdk:"on_application_update"`
+	OnRename                    types.Bool   `tfsdk:"on_rename"`
+	OnUpgrade                   types.Bool   `tfsdk:"on_upgrade"`
+	OnDownload                  types.Bool   `tfsdk:"on_download"`
 }
 
 func (r *NotificationResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
