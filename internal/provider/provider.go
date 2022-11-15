@@ -134,6 +134,7 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 	return []func() resource.Resource{
 		NewDelayProfileResource,
 		NewIndexerConfigResource,
+		NewIndexerResource,
 		NewMediaManagementResource,
 		NewNamingResource,
 		NewNotificationResource,
