@@ -32,13 +32,13 @@ type IndexerConfigResource struct {
 
 // IndexerConfig describes the indexer config data model.
 type IndexerConfig struct {
+	WhitelistedHardcodedSubs types.String `tfsdk:"whitelisted_hardcoded_subs"`
 	ID                       types.Int64  `tfsdk:"id"`
 	MaximumSize              types.Int64  `tfsdk:"maximum_size"`
 	MinimumAge               types.Int64  `tfsdk:"minimum_age"`
 	Retention                types.Int64  `tfsdk:"retention"`
 	RssSyncInterval          types.Int64  `tfsdk:"rss_sync_interval"`
 	AvailabilityDelay        types.Int64  `tfsdk:"availability_delay"`
-	WhitelistedHardcodedSubs types.String `tfsdk:"whitelisted_hardcoded_subs"`
 	PreferIndexerFlags       types.Bool   `tfsdk:"prefer_indexer_flags"`
 	AllowHardcodedSubs       types.Bool   `tfsdk:"allow_hardcoded_subs"`
 }
