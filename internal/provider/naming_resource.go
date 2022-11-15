@@ -30,14 +30,14 @@ type NamingResource struct {
 
 // Naming describes the naming data model.
 type Naming struct {
+	ColonReplacementFormat   types.String `tfsdk:"colon_replacement_format"`
+	StandardMovieFormat      types.String `tfsdk:"standard_movie_format"`
+	MovieFolderFormat        types.String `tfsdk:"movie_folder_format"`
+	ID                       types.Int64  `tfsdk:"id"`
 	IncludeQuality           types.Bool   `tfsdk:"include_quality"`
 	RenameMovies             types.Bool   `tfsdk:"rename_movies"`
 	ReplaceIllegalCharacters types.Bool   `tfsdk:"replace_illegal_characters"`
 	ReplaceSpaces            types.Bool   `tfsdk:"replace_spaces"`
-	ID                       types.Int64  `tfsdk:"id"`
-	ColonReplacementFormat   types.String `tfsdk:"colon_replacement_format"`
-	StandardMovieFormat      types.String `tfsdk:"standard_movie_format"`
-	MovieFolderFormat        types.String `tfsdk:"movie_folder_format"`
 }
 
 func (r *NamingResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {

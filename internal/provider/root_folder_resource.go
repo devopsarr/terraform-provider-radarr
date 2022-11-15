@@ -31,10 +31,10 @@ type RootFolderResource struct {
 
 // RootFolder describes the root folder data model.
 type RootFolder struct {
-	Accessible      types.Bool   `tfsdk:"accessible"`
-	ID              types.Int64  `tfsdk:"id"`
-	Path            types.String `tfsdk:"path"`
 	UnmappedFolders types.Set    `tfsdk:"unmapped_folders"`
+	Path            types.String `tfsdk:"path"`
+	ID              types.Int64  `tfsdk:"id"`
+	Accessible      types.Bool   `tfsdk:"accessible"`
 }
 
 // Path part of RootFolder.

@@ -31,8 +31,8 @@ type TagResource struct {
 
 // Tag describes the tag data model.
 type Tag struct {
-	ID    types.Int64  `tfsdk:"id"`
 	Label types.String `tfsdk:"label"`
+	ID    types.Int64  `tfsdk:"id"`
 }
 
 func (r *TagResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
