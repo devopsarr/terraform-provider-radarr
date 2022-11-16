@@ -164,6 +164,7 @@ func (p *RadarrProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewNamingDataSource,
 		NewNotificationDataSource,
 		NewNotificationsDataSource,
+		NewRemotePathMappingDataSource,
 		NewRemotePathMappingsDataSource,
 		NewRestrictionDataSource,
 		NewRestrictionsDataSource,
