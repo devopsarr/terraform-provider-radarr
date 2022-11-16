@@ -142,5 +142,5 @@ func findDelayProfile(id int64, profiles []*radarr.DelayProfile) (*radarr.DelayP
 		}
 	}
 
-	return nil, fmt.Errorf("no %s with path %s", delayProfileDataSourceName, strconv.Itoa(int(id)))
+	return nil, tools.ErrDataNotFoundError(delayProfileDataSourceName, "id", strconv.Itoa(int(id)))
 }

@@ -28,7 +28,6 @@ linters:
     - nilerr
     - nolintlint
     - staticcheck
-    - structcheck
     - unconvert
     - unparam
     - varcheck
@@ -39,8 +38,19 @@ linters:
     - nlreturn
     - paralleltest
     - thelper
+    - gocognit
+    - govet
+    - forcetypeassert
+    - goerr113
 
 linters-settings:
+  govet:
+    check-shadowing: true
+    enable:
+      - fieldalignment
+  misspell:
+    ignore-words:
+    - "intial"
   errcheck:
     ignore: github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema:ForceNew|Set,fmt:.*,io:Close
   gomnd:
