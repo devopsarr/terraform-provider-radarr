@@ -13,6 +13,8 @@ import (
 	"golift.io/starr/radarr"
 )
 
+const mediaManagementDataSourceName = "media_management"
+
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ datasource.DataSource = &MediaManagementDataSource{}
 
@@ -26,7 +28,7 @@ type MediaManagementDataSource struct {
 }
 
 func (d *MediaManagementDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_media_management"
+	resp.TypeName = req.ProviderTypeName + "_" + mediaManagementDataSourceName
 }
 
 func (d *MediaManagementDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
@@ -161,13 +163,14 @@ func (d *MediaManagementDataSource) Read(ctx context.Context, req datasource.Rea
 	// Get indexer config current value
 	response, err := d.client.GetMediaManagementContext(ctx)
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read indexer cofig, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", mediaManagementDataSourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read madia_management")
+	tflog.Trace(ctx, "read "+mediaManagementDataSourceName)
 
-	result := writeMediaManagement(response)
-	resp.Diagnostics.Append(resp.State.Set(ctx, &result)...)
+	state := MediaManagement{}
+	state.write(response)
+	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }

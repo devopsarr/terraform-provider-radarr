@@ -15,6 +15,8 @@ import (
 	"golift.io/starr/radarr"
 )
 
+const namingResourceName = "naming"
+
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &NamingResource{}
 var _ resource.ResourceWithImportState = &NamingResource{}
@@ -41,7 +43,7 @@ type Naming struct {
 }
 
 func (r *NamingResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_naming"
+	resp.TypeName = req.ProviderTypeName + "_" + namingResourceName
 }
 
 func (r *NamingResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
@@ -119,52 +121,44 @@ func (r *NamingResource) Configure(ctx context.Context, req resource.ConfigureRe
 
 func (r *NamingResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	// Retrieve values from plan
-	var plan Naming
+	var naming *Naming
 
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &naming)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Init call if we remove this it the very first update on a brand new instance will fail
-	init, err := r.client.GetNamingContext(ctx)
-	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to init naming, got error: %s", err))
-
-		return
-	}
-
-	_, err = r.client.UpdateNamingContext(ctx, init)
-	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to init naming, got error: %s", err))
+	if _, err := r.client.GetNamingContext(ctx); err != nil {
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to init %s, got error: %s", namingResourceName, err))
 
 		return
 	}
 
 	// Build Create resource
-	data := readNaming(&plan)
+	data := naming.read()
 	data.ID = 1
 
 	// Create new Naming
 	response, err := r.client.UpdateNamingContext(ctx, data)
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create naming, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create %s, got error: %s", namingResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "created naming: "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "created "+namingResourceName+": "+strconv.Itoa(int(response.ID)))
 	// Generate resource state struct
-	result := writeNaming(response)
-	resp.Diagnostics.Append(resp.State.Set(ctx, result)...)
+	naming.write(response)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &naming)...)
 }
 
 func (r *NamingResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	// Get current state
-	var state Naming
+	var naming *Naming
 
-	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	resp.Diagnostics.Append(req.State.Get(ctx, &naming)...)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -173,78 +167,76 @@ func (r *NamingResource) Read(ctx context.Context, req resource.ReadRequest, res
 	// Get naming current value
 	response, err := r.client.GetNamingContext(ctx)
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read namings, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", namingResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read naming: "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "read "+namingResourceName+": "+strconv.Itoa(int(response.ID)))
 	// Map response body to resource schema attribute
-	result := writeNaming(response)
-	resp.Diagnostics.Append(resp.State.Set(ctx, result)...)
+	naming.write(response)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &naming)...)
 }
 
 func (r *NamingResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	// Get plan values
-	var plan Naming
+	var naming *Naming
 
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &naming)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Build Update resource
-	data := readNaming(&plan)
+	data := naming.read()
 
 	// Update Naming
 	response, err := r.client.UpdateNamingContext(ctx, data)
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update naming, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update %s, got error: %s", namingResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "updated naming: "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "updated "+namingResourceName+": "+strconv.Itoa(int(response.ID)))
 	// Generate resource state struct
-	result := writeNaming(response)
-	resp.Diagnostics.Append(resp.State.Set(ctx, result)...)
+	naming.write(response)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &naming)...)
 }
 
 func (r *NamingResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	// Naming cannot be really deleted just removing configuration
-	tflog.Trace(ctx, "decoupled naming: 1")
+	tflog.Trace(ctx, "decoupled "+namingResourceName+": 1")
 	resp.State.RemoveResource(ctx)
 }
 
 func (r *NamingResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	// resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
-	tflog.Trace(ctx, "imported naming: 1")
+	tflog.Trace(ctx, "imported "+namingResourceName+": 1")
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), 1)...)
 }
 
-func writeNaming(naming *radarr.Naming) *Naming {
-	return &Naming{
-		IncludeQuality:           types.BoolValue(naming.IncludeQuality),
-		RenameMovies:             types.BoolValue(naming.RenameMovies),
-		ReplaceIllegalCharacters: types.BoolValue(naming.ReplaceIllegalCharacters),
-		ReplaceSpaces:            types.BoolValue(naming.ReplaceSpaces),
-		ID:                       types.Int64Value(naming.ID),
-		ColonReplacementFormat:   types.StringValue(naming.ColonReplacementFormat),
-		StandardMovieFormat:      types.StringValue(naming.StandardMovieFormat),
-		MovieFolderFormat:        types.StringValue(naming.MovieFolderFormat),
-	}
+func (n *Naming) write(naming *radarr.Naming) {
+	n.IncludeQuality = types.BoolValue(naming.IncludeQuality)
+	n.RenameMovies = types.BoolValue(naming.RenameMovies)
+	n.ReplaceIllegalCharacters = types.BoolValue(naming.ReplaceIllegalCharacters)
+	n.ReplaceSpaces = types.BoolValue(naming.ReplaceSpaces)
+	n.ID = types.Int64Value(naming.ID)
+	n.ColonReplacementFormat = types.StringValue(naming.ColonReplacementFormat)
+	n.StandardMovieFormat = types.StringValue(naming.StandardMovieFormat)
+	n.MovieFolderFormat = types.StringValue(naming.MovieFolderFormat)
 }
 
-func readNaming(naming *Naming) *radarr.Naming {
+func (n *Naming) read() *radarr.Naming {
 	return &radarr.Naming{
-		IncludeQuality:           naming.IncludeQuality.ValueBool(),
-		RenameMovies:             naming.RenameMovies.ValueBool(),
-		ReplaceIllegalCharacters: naming.ReplaceIllegalCharacters.ValueBool(),
-		ReplaceSpaces:            naming.ReplaceSpaces.ValueBool(),
-		ID:                       naming.ID.ValueInt64(),
-		ColonReplacementFormat:   naming.ColonReplacementFormat.ValueString(),
-		StandardMovieFormat:      naming.StandardMovieFormat.ValueString(),
-		MovieFolderFormat:        naming.MovieFolderFormat.ValueString(),
+		IncludeQuality:           n.IncludeQuality.ValueBool(),
+		RenameMovies:             n.RenameMovies.ValueBool(),
+		ReplaceIllegalCharacters: n.ReplaceIllegalCharacters.ValueBool(),
+		ReplaceSpaces:            n.ReplaceSpaces.ValueBool(),
+		ID:                       n.ID.ValueInt64(),
+		ColonReplacementFormat:   n.ColonReplacementFormat.ValueString(),
+		StandardMovieFormat:      n.StandardMovieFormat.ValueString(),
+		MovieFolderFormat:        n.MovieFolderFormat.ValueString(),
 	}
 }

@@ -13,6 +13,8 @@ import (
 	"golift.io/starr/radarr"
 )
 
+const rootFolderDataSourceName = "root_folder"
+
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ datasource.DataSource = &RootFolderDataSource{}
 
@@ -26,7 +28,7 @@ type RootFolderDataSource struct {
 }
 
 func (d *RootFolderDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_root_folder"
+	resp.TypeName = req.ProviderTypeName + "_" + rootFolderDataSourceName
 }
 
 func (d *RootFolderDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
@@ -89,9 +91,9 @@ func (d *RootFolderDataSource) Configure(ctx context.Context, req datasource.Con
 }
 
 func (d *RootFolderDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var data RootFolder
+	var folder *RootFolder
 
-	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+	resp.Diagnostics.Append(req.Config.Get(ctx, &folder)...)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -99,22 +101,22 @@ func (d *RootFolderDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	// Get rootfolders current value
 	response, err := d.client.GetRootFoldersContext(ctx)
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read root folders, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", rootFolderDataSourceName, err))
 
 		return
 	}
 
 	// Map response body to resource schema attribute
-	rootFolder, err := findRootFolder(data.Path.ValueString(), response)
+	rootFolder, err := findRootFolder(folder.Path.ValueString(), response)
 	if err != nil {
-		resp.Diagnostics.AddError(tools.DataSourceError, fmt.Sprintf("Unable to find root folders, got error: %s", err))
+		resp.Diagnostics.AddError(tools.DataSourceError, fmt.Sprintf("Unable to find %s, got error: %s", rootFolderDataSourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read root_folder")
-	result := writeRootFolder(ctx, rootFolder)
-	resp.Diagnostics.Append(resp.State.Set(ctx, &result)...)
+	tflog.Trace(ctx, "read "+rootFolderDataSourceName)
+	folder.write(ctx, rootFolder)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &folder)...)
 }
 
 func findRootFolder(path string, folders []*radarr.RootFolder) (*radarr.RootFolder, error) {
@@ -124,5 +126,5 @@ func findRootFolder(path string, folders []*radarr.RootFolder) (*radarr.RootFold
 		}
 	}
 
-	return nil, fmt.Errorf("no rootfolder with path %s", path)
+	return nil, tools.ErrDataNotFoundError(rootFolderDataSourceName, "path", path)
 }

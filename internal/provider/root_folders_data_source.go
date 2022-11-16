@@ -15,6 +15,8 @@ import (
 	"golift.io/starr/radarr"
 )
 
+const rootFoldersDataSourceName = "root_folders"
+
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ datasource.DataSource = &RootFoldersDataSource{}
 
@@ -29,13 +31,12 @@ type RootFoldersDataSource struct {
 
 // RootFolders describes the root folders data model.
 type RootFolders struct {
-	// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
-	ID          types.String `tfsdk:"id"`
 	RootFolders types.Set    `tfsdk:"root_folders"`
+	ID          types.String `tfsdk:"id"`
 }
 
 func (d *RootFoldersDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_root_folders"
+	resp.TypeName = req.ProviderTypeName + "_" + rootFoldersDataSourceName
 }
 
 func (d *RootFoldersDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
@@ -112,7 +113,7 @@ func (d *RootFoldersDataSource) Configure(ctx context.Context, req datasource.Co
 }
 
 func (d *RootFoldersDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var data RootFolders
+	var data *RootFolders
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
 
@@ -122,24 +123,24 @@ func (d *RootFoldersDataSource) Read(ctx context.Context, req datasource.ReadReq
 	// Get rootfolders current value
 	response, err := d.client.GetRootFoldersContext(ctx)
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read rootfolders, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", rootFoldersDataSourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read root folders")
+	tflog.Trace(ctx, "read "+rootFoldersDataSourceName)
 	// Map response body to resource schema attribute
-	rootFolders := *writeRootFolders(ctx, response)
+	rootFolders := *writes(ctx, response)
 	tfsdk.ValueFrom(ctx, rootFolders, data.RootFolders.Type(context.Background()), &data.RootFolders)
 	// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 	data.ID = types.StringValue(strconv.Itoa(len(response)))
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func writeRootFolders(ctx context.Context, folders []*radarr.RootFolder) *[]RootFolder {
+func writes(ctx context.Context, folders []*radarr.RootFolder) *[]RootFolder {
 	output := make([]RootFolder, len(folders))
 	for i, f := range folders {
-		output[i] = *writeRootFolder(ctx, f)
+		output[i].write(ctx, f)
 	}
 
 	return &output

@@ -16,6 +16,8 @@ import (
 	"golift.io/starr/radarr"
 )
 
+const rootFolderResourceName = "root_folder"
+
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &RootFolderResource{}
 var _ resource.ResourceWithImportState = &RootFolderResource{}
@@ -44,7 +46,7 @@ type Path struct {
 }
 
 func (r *RootFolderResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_root_folder"
+	resp.TypeName = req.ProviderTypeName + "_" + rootFolderResourceName
 }
 
 func (r *RootFolderResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
@@ -120,9 +122,9 @@ func (r *RootFolderResource) Configure(ctx context.Context, req resource.Configu
 
 func (r *RootFolderResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	// Retrieve values from plan
-	var plan string
+	var folder *RootFolder
 
-	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, path.Root("path"), &plan)...)
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &folder)...)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -130,44 +132,44 @@ func (r *RootFolderResource) Create(ctx context.Context, req resource.CreateRequ
 
 	// Create new RootFolder
 	request := radarr.RootFolder{
-		Path: plan,
+		Path: folder.Path.ValueString(),
 	}
 
 	response, err := r.client.AddRootFolderContext(ctx, &request)
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create rootFolder, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create %s, got error: %s", rootFolderResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "created root_folder: "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "created "+rootFolderResourceName+": "+strconv.Itoa(int(response.ID)))
 	// Generate resource state struct
-	result := writeRootFolder(ctx, response)
-	resp.Diagnostics.Append(resp.State.Set(ctx, result)...)
+	folder.write(ctx, response)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &folder)...)
 }
 
 func (r *RootFolderResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	// Get current state
-	var state RootFolder
+	var folder *RootFolder
 
-	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	resp.Diagnostics.Append(req.State.Get(ctx, &folder)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Get rootFolder current value
-	response, err := r.client.GetRootFolderContext(ctx, state.ID.ValueInt64())
+	response, err := r.client.GetRootFolderContext(ctx, folder.ID.ValueInt64())
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read rootFolders, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", rootFolderResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read root_folder: "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "read "+rootFolderResourceName+": "+strconv.Itoa(int(response.ID)))
 	// Map response body to resource schema attribute
-	result := writeRootFolder(ctx, response)
-	resp.Diagnostics.Append(resp.State.Set(ctx, result)...)
+	folder.write(ctx, response)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &folder)...)
 }
 
 // never used.
@@ -175,23 +177,23 @@ func (r *RootFolderResource) Update(ctx context.Context, req resource.UpdateRequ
 }
 
 func (r *RootFolderResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state RootFolder
+	var folder *RootFolder
 
-	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	resp.Diagnostics.Append(req.State.Get(ctx, &folder)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Delete rootFolder current value
-	err := r.client.DeleteRootFolderContext(ctx, state.ID.ValueInt64())
+	err := r.client.DeleteRootFolderContext(ctx, folder.ID.ValueInt64())
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read rootFolders, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", rootFolderResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "deleted root_folder: "+strconv.Itoa(int(state.ID.ValueInt64())))
+	tflog.Trace(ctx, "deleted "+rootFolderResourceName+": "+strconv.Itoa(int(folder.ID.ValueInt64())))
 	resp.State.RemoveResource(ctx)
 }
 
@@ -207,32 +209,25 @@ func (r *RootFolderResource) ImportState(ctx context.Context, req resource.Impor
 		return
 	}
 
-	tflog.Trace(ctx, "imported root_folder: "+strconv.Itoa(id))
+	tflog.Trace(ctx, "imported "+rootFolderResourceName+": "+strconv.Itoa(id))
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), id)...)
 }
 
-func writeRootFolder(ctx context.Context, rootFolder *radarr.RootFolder) *RootFolder {
-	output := RootFolder{
-		Accessible:      types.BoolValue(rootFolder.Accessible),
-		ID:              types.Int64Value(rootFolder.ID),
-		Path:            types.StringValue(rootFolder.Path),
-		UnmappedFolders: types.Set{ElemType: RootFolderResource{}.getUnmappedFolderSchema().Type()},
+func (r *RootFolder) write(ctx context.Context, rootFolder *radarr.RootFolder) {
+	r.Accessible = types.BoolValue(rootFolder.Accessible)
+	r.ID = types.Int64Value(rootFolder.ID)
+	r.Path = types.StringValue(rootFolder.Path)
+	r.UnmappedFolders = types.SetValueMust(RootFolderResource{}.getUnmappedFolderSchema().Type(), nil)
+
+	unmapped := make([]Path, len(rootFolder.UnmappedFolders))
+	for i, f := range rootFolder.UnmappedFolders {
+		unmapped[i].write(f)
 	}
-	unmapped := writeUnmappedFolders(rootFolder.UnmappedFolders)
 
-	tfsdk.ValueFrom(ctx, unmapped, output.UnmappedFolders.Type(ctx), output.UnmappedFolders)
-
-	return &output
+	tfsdk.ValueFrom(ctx, unmapped, r.UnmappedFolders.Type(ctx), r.UnmappedFolders)
 }
 
-func writeUnmappedFolders(folders []*starr.Path) *[]Path {
-	output := make([]Path, len(folders))
-	for i, f := range folders {
-		output[i] = Path{
-			Name: types.StringValue(f.Name),
-			Path: types.StringValue(f.Path),
-		}
-	}
-
-	return &output
+func (p *Path) write(folder *starr.Path) {
+	p.Name = types.StringValue(folder.Name)
+	p.Path = types.StringValue(folder.Path)
 }

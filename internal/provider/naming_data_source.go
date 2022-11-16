@@ -13,6 +13,8 @@ import (
 	"golift.io/starr/radarr"
 )
 
+const namingDataSourceName = "naming"
+
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ datasource.DataSource = &NamingDataSource{}
 
@@ -26,7 +28,7 @@ type NamingDataSource struct {
 }
 
 func (d *NamingDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_naming"
+	resp.TypeName = req.ProviderTypeName + "_" + namingDataSourceName
 }
 
 func (d *NamingDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
@@ -101,13 +103,14 @@ func (d *NamingDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 	// Get naming current value
 	response, err := d.client.GetNamingContext(ctx)
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read naming, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", namingDataSourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read naming")
+	tflog.Trace(ctx, "read "+namingDataSourceName)
 
-	result := writeNaming(response)
-	resp.Diagnostics.Append(resp.State.Set(ctx, &result)...)
+	state := Naming{}
+	state.write(response)
+	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
