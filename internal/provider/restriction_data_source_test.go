@@ -6,7 +6,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccRemotePathMappingDataSource(t *testing.T) {
+func TestAccRestrictionDataSource(t *testing.T) {
 	t.Parallel()
 
 	resource.Test(t, resource.TestCase{
@@ -15,7 +15,7 @@ func TestAccRemotePathMappingDataSource(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Read testing
 			{
-				Config: testAccRemotePathMappingDataSourceConfig,
+				Config: testAccRestrictionDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.radarr_restriction.test", "id"),
 					resource.TestCheckResourceAttr("data.radarr_restriction.test", "ignored", "datatest1")),
@@ -24,7 +24,7 @@ func TestAccRemotePathMappingDataSource(t *testing.T) {
 	})
 }
 
-const testAccRemotePathMappingDataSourceConfig = `
+const testAccRestrictionDataSourceConfig = `
 resource "radarr_restriction" "test" {
 	ignored = "datatest1"
     required = "datatest2"

@@ -133,6 +133,9 @@ func (p *RadarrProvider) Configure(ctx context.Context, req provider.ConfigureRe
 func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewDelayProfileResource,
+		NewDownloadClientConfigResource,
+		NewDownloadClientResource,
+		NewDownloadClientTransmissionResource,
 		NewIndexerConfigResource,
 		NewIndexerResource,
 		NewIndexerNewznabResource,
@@ -142,6 +145,7 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewNotificationResource,
 		NewNotificationCustomScriptResource,
 		NewNotificationWebhookResource,
+		NewRemotePathMappingResource,
 		NewRestrictionResource,
 		NewRootFolderResource,
 		NewTagResource,
@@ -152,6 +156,9 @@ func (p *RadarrProvider) DataSources(ctx context.Context) []func() datasource.Da
 	return []func() datasource.DataSource{
 		NewDelayProfileDataSource,
 		NewDelayProfilesDataSource,
+		NewDownloadClientConfigDataSource,
+		NewDownloadClientDataSource,
+		NewDownloadClientsDataSource,
 		NewIndexerConfigDataSource,
 		NewIndexerDataSource,
 		NewIndexersDataSource,
@@ -159,6 +166,8 @@ func (p *RadarrProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewNamingDataSource,
 		NewNotificationDataSource,
 		NewNotificationsDataSource,
+		NewRemotePathMappingDataSource,
+		NewRemotePathMappingsDataSource,
 		NewRestrictionDataSource,
 		NewRestrictionsDataSource,
 		NewRootFolderDataSource,

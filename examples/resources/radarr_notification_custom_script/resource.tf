@@ -13,5 +13,5 @@ resource "radarr_notification_custom_script" "example" {
   include_health_warnings = false
   name                    = "Example"
 
-  path = "/scripts/sonarr.sh"
+  path = "/scripts/radarr.sh"
 }
