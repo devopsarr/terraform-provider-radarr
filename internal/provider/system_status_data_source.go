@@ -13,6 +13,8 @@ import (
 	"golift.io/starr/radarr"
 )
 
+const systemStatusDataSourceName = "system_status"
+
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ datasource.DataSource = &SystemStatusDataSource{}
 
@@ -60,7 +62,7 @@ type SystemStatus struct {
 }
 
 func (d *SystemStatusDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_system_status"
+	resp.TypeName = req.ProviderTypeName + "_" + systemStatusDataSourceName
 }
 
 func (d *SystemStatusDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
@@ -246,48 +248,47 @@ func (d *SystemStatusDataSource) Read(ctx context.Context, req datasource.ReadRe
 	// Get naming current value
 	response, err := d.client.GetSystemStatusContext(ctx)
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read system status, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", systemStatusDataSourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read system status")
+	tflog.Trace(ctx, "read "+systemStatusDataSourceName)
 
-	result := writeSystemStatus(response)
-	resp.Diagnostics.Append(resp.State.Set(ctx, &result)...)
+	status := SystemStatus{}
+	status.write(response)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &status)...)
 }
 
-func writeSystemStatus(status *radarr.SystemStatus) *SystemStatus {
-	return &SystemStatus{
-		IsDebug:                types.BoolValue(status.IsDebug),
-		IsProduction:           types.BoolValue(status.IsProduction),
-		IsAdmin:                types.BoolValue(status.IsProduction),
-		IsUserInteractive:      types.BoolValue(status.IsUserInteractive),
-		IsNetCore:              types.BoolValue(status.IsNetCore),
-		IsDocker:               types.BoolValue(status.IsDocker),
-		IsLinux:                types.BoolValue(status.IsLinux),
-		IsOsx:                  types.BoolValue(status.IsOsx),
-		IsWindows:              types.BoolValue(status.IsWindows),
-		ID:                     types.Int64Value(int64(1)),
-		MigrationVersion:       types.Int64Value(status.MigrationVersion),
-		Version:                types.StringValue(status.Version),
-		StartupPath:            types.StringValue(status.StartupPath),
-		AppData:                types.StringValue(status.AppData),
-		OsName:                 types.StringValue(status.OsName),
-		Branch:                 types.StringValue(status.Branch),
-		Authentication:         types.StringValue(status.Authentication),
-		URLBase:                types.StringValue(status.URLBase),
-		RuntimeVersion:         types.StringValue(status.RuntimeVersion),
-		RuntimeName:            types.StringValue(status.RuntimeName),
-		AppName:                types.StringValue(status.AppName),
-		DatabaseType:           types.StringValue(status.DatabaseType),
-		DatabaseVersion:        types.StringValue(status.DatabaseVersion),
-		InstanceName:           types.StringValue(status.InstanceName),
-		Mode:                   types.StringValue(status.Mode),
-		PackageAuthor:          types.StringValue(status.PackageAuthor),
-		PackageUpdateMechanism: types.StringValue(status.PackageUpdateMechanism),
-		PackageVersion:         types.StringValue(status.PackageVersion),
-		BuildTime:              types.StringValue(status.BuildTime.String()),
-		StartTime:              types.StringValue(status.StartTime.String()),
-	}
+func (s *SystemStatus) write(status *radarr.SystemStatus) {
+	s.IsDebug = types.BoolValue(status.IsDebug)
+	s.IsProduction = types.BoolValue(status.IsProduction)
+	s.IsAdmin = types.BoolValue(status.IsProduction)
+	s.IsUserInteractive = types.BoolValue(status.IsUserInteractive)
+	s.IsNetCore = types.BoolValue(status.IsNetCore)
+	s.IsDocker = types.BoolValue(status.IsDocker)
+	s.IsLinux = types.BoolValue(status.IsLinux)
+	s.IsOsx = types.BoolValue(status.IsOsx)
+	s.IsWindows = types.BoolValue(status.IsWindows)
+	s.ID = types.Int64Value(int64(1))
+	s.MigrationVersion = types.Int64Value(status.MigrationVersion)
+	s.Version = types.StringValue(status.Version)
+	s.StartupPath = types.StringValue(status.StartupPath)
+	s.AppData = types.StringValue(status.AppData)
+	s.OsName = types.StringValue(status.OsName)
+	s.Branch = types.StringValue(status.Branch)
+	s.Authentication = types.StringValue(status.Authentication)
+	s.URLBase = types.StringValue(status.URLBase)
+	s.RuntimeVersion = types.StringValue(status.RuntimeVersion)
+	s.RuntimeName = types.StringValue(status.RuntimeName)
+	s.AppName = types.StringValue(status.AppName)
+	s.DatabaseType = types.StringValue(status.DatabaseType)
+	s.DatabaseVersion = types.StringValue(status.DatabaseVersion)
+	s.InstanceName = types.StringValue(status.InstanceName)
+	s.Mode = types.StringValue(status.Mode)
+	s.PackageAuthor = types.StringValue(status.PackageAuthor)
+	s.PackageUpdateMechanism = types.StringValue(status.PackageUpdateMechanism)
+	s.PackageVersion = types.StringValue(status.PackageVersion)
+	s.BuildTime = types.StringValue(status.BuildTime.String())
+	s.StartTime = types.StringValue(status.StartTime.String())
 }

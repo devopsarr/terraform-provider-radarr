@@ -16,6 +16,8 @@ import (
 	"golift.io/starr/radarr"
 )
 
+const tagResourceName = "tag"
+
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &TagResource{}
 var _ resource.ResourceWithImportState = &TagResource{}
@@ -36,7 +38,7 @@ type Tag struct {
 }
 
 func (r *TagResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_tag"
+	resp.TypeName = req.ProviderTypeName + "_" + tagResourceName
 }
 
 func (r *TagResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
@@ -84,9 +86,9 @@ func (r *TagResource) Configure(ctx context.Context, req resource.ConfigureReque
 
 func (r *TagResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	// Retrieve values from plan
-	var plan Tag
+	var tag *Tag
 
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &tag)...)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -94,51 +96,51 @@ func (r *TagResource) Create(ctx context.Context, req resource.CreateRequest, re
 
 	// Create new Tag
 	request := starr.Tag{
-		Label: plan.Label.ValueString(),
+		Label: tag.Label.ValueString(),
 	}
 
 	response, err := r.client.AddTagContext(ctx, &request)
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create tag, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create %s, got error: %s", tagResourceName, err))
 
 		return
 	}
 
 	tflog.Trace(ctx, "created tag: "+strconv.Itoa(response.ID))
 	// Generate resource state struct
-	result := writeTag(response)
-	resp.Diagnostics.Append(resp.State.Set(ctx, &result)...)
+	tag.write(response)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &tag)...)
 }
 
 func (r *TagResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	// Get current state
-	var state Tag
+	var tag *Tag
 
-	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	resp.Diagnostics.Append(req.State.Get(ctx, &tag)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Get tag current value
-	response, err := r.client.GetTagContext(ctx, int(state.ID.ValueInt64()))
+	response, err := r.client.GetTagContext(ctx, int(tag.ID.ValueInt64()))
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read tags, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", tagResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read tag: "+strconv.Itoa(response.ID))
+	tflog.Trace(ctx, "read "+tagResourceName+": "+strconv.Itoa(response.ID))
 	// Map response body to resource schema attribute
-	result := writeTag(response)
-	resp.Diagnostics.Append(resp.State.Set(ctx, &result)...)
+	tag.write(response)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &tag)...)
 }
 
 func (r *TagResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	// Get plan values
-	var plan Tag
+	var tag *Tag
 
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &tag)...)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -146,41 +148,41 @@ func (r *TagResource) Update(ctx context.Context, req resource.UpdateRequest, re
 
 	// Update Tag
 	request := starr.Tag{
-		Label: plan.Label.ValueString(),
-		ID:    int(plan.ID.ValueInt64()),
+		Label: tag.Label.ValueString(),
+		ID:    int(tag.ID.ValueInt64()),
 	}
 
 	response, err := r.client.UpdateTagContext(ctx, &request)
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update tag, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update %s, got error: %s", tagResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "updated tag: "+strconv.Itoa(response.ID))
+	tflog.Trace(ctx, "updated "+tagResourceName+": "+strconv.Itoa(response.ID))
 	// Generate resource state struct
-	result := writeTag(response)
-	resp.Diagnostics.Append(resp.State.Set(ctx, &result)...)
+	tag.write(response)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &tag)...)
 }
 
 func (r *TagResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state Tag
+	var tag *Tag
 
-	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	resp.Diagnostics.Append(req.State.Get(ctx, &tag)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Delete tag current value
-	err := r.client.DeleteTagContext(ctx, int(state.ID.ValueInt64()))
+	err := r.client.DeleteTagContext(ctx, int(tag.ID.ValueInt64()))
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read tags, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", tagResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "deleted tag: "+strconv.Itoa(int(state.ID.ValueInt64())))
+	tflog.Trace(ctx, "deleted "+tagResourceName+": "+strconv.Itoa(int(tag.ID.ValueInt64())))
 	resp.State.RemoveResource(ctx)
 }
 
@@ -196,13 +198,11 @@ func (r *TagResource) ImportState(ctx context.Context, req resource.ImportStateR
 		return
 	}
 
-	tflog.Trace(ctx, "imported tag: "+strconv.Itoa(id))
+	tflog.Trace(ctx, "imported "+tagResourceName+": "+strconv.Itoa(id))
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), id)...)
 }
 
-func writeTag(tag *starr.Tag) *Tag {
-	return &Tag{
-		ID:    types.Int64Value(int64(tag.ID)),
-		Label: types.StringValue(tag.Label),
-	}
+func (t *Tag) write(tag *starr.Tag) {
+	t.ID = types.Int64Value(int64(tag.ID))
+	t.Label = types.StringValue(tag.Label)
 }

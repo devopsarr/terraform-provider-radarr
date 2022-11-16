@@ -11,9 +11,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"golift.io/starr"
 	"golift.io/starr/radarr"
 )
+
+const tagsDataSourceName = "tags"
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ datasource.DataSource = &TagsDataSource{}
@@ -29,13 +30,12 @@ type TagsDataSource struct {
 
 // Tags describes the tags data model.
 type Tags struct {
-	// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
-	ID   types.String `tfsdk:"id"`
 	Tags types.Set    `tfsdk:"tags"`
+	ID   types.String `tfsdk:"id"`
 }
 
 func (d *TagsDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_tags"
+	resp.TypeName = req.ProviderTypeName + "_" + tagsDataSourceName
 }
 
 func (d *TagsDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
@@ -88,7 +88,7 @@ func (d *TagsDataSource) Configure(ctx context.Context, req datasource.Configure
 }
 
 func (d *TagsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var data Tags
+	var data *Tags
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
 
@@ -99,25 +99,20 @@ func (d *TagsDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 	// Get tags current value
 	response, err := d.client.GetTagsContext(ctx)
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read tags, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", tagsDataSourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read tags")
+	tflog.Trace(ctx, "read "+tagsDataSourceName)
 	// Map response body to resource schema attribute
-	tags := *writeTags(response)
+	tags := make([]Tag, len(response))
+	for i, t := range response {
+		tags[i].write(t)
+	}
+
 	tfsdk.ValueFrom(ctx, tags, data.Tags.Type(context.Background()), &data.Tags)
 	// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 	data.ID = types.StringValue(strconv.Itoa(len(response)))
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-}
-
-func writeTags(tags []*starr.Tag) *[]Tag {
-	output := make([]Tag, len(tags))
-	for i, t := range tags {
-		output[i] = *writeTag(t)
-	}
-
-	return &output
 }

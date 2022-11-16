@@ -15,6 +15,8 @@ import (
 	"golift.io/starr/radarr"
 )
 
+const mediaManagementResourceName = "media_management"
+
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &MediaManagementResource{}
 var _ resource.ResourceWithImportState = &MediaManagementResource{}
@@ -53,7 +55,7 @@ type MediaManagement struct {
 }
 
 func (r *MediaManagementResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_media_management"
+	resp.TypeName = req.ProviderTypeName + "_" + mediaManagementResourceName
 }
 
 func (r *MediaManagementResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
@@ -197,16 +199,16 @@ func (r *MediaManagementResource) Configure(ctx context.Context, req resource.Co
 
 func (r *MediaManagementResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	// Retrieve values from plan
-	var plan MediaManagement
+	var management *MediaManagement
 
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &management)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Build Create resource
-	data := readMediaManagement(&plan)
+	data := management.read()
 	data.ID = 1
 
 	// Create new MediaManagement
@@ -219,15 +221,15 @@ func (r *MediaManagementResource) Create(ctx context.Context, req resource.Creat
 
 	tflog.Trace(ctx, "created media_management: "+strconv.Itoa(int(response.ID)))
 	// Generate resource state struct
-	result := writeMediaManagement(response)
-	resp.Diagnostics.Append(resp.State.Set(ctx, result)...)
+	management.write(response)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &management)...)
 }
 
 func (r *MediaManagementResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	// Get current state
-	var state MediaManagement
+	var management *MediaManagement
 
-	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	resp.Diagnostics.Append(req.State.Get(ctx, &management)...)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -236,102 +238,100 @@ func (r *MediaManagementResource) Read(ctx context.Context, req resource.ReadReq
 	// Get mediamanagement current value
 	response, err := r.client.GetMediaManagementContext(ctx)
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read mediamanagements, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", mediaManagementResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read media_management: "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "read "+mediaManagementResourceName+": "+strconv.Itoa(int(response.ID)))
 	// Map response body to resource schema attribute
-	result := writeMediaManagement(response)
-	resp.Diagnostics.Append(resp.State.Set(ctx, result)...)
+	management.write(response)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &management)...)
 }
 
 func (r *MediaManagementResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	// Get plan values
-	var plan MediaManagement
+	var management *MediaManagement
 
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &management)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Build Update resource
-	data := readMediaManagement(&plan)
+	data := management.read()
 
 	// Update MediaManagement
 	response, err := r.client.UpdateMediaManagementContext(ctx, data)
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update mediamanagement, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update %s, got error: %s", mediaManagementResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "updated media_management: "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "updated "+mediaManagementResourceName+": "+strconv.Itoa(int(response.ID)))
 	// Generate resource state struct
-	result := writeMediaManagement(response)
-	resp.Diagnostics.Append(resp.State.Set(ctx, result)...)
+	management.write(response)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &management)...)
 }
 
 func (r *MediaManagementResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	// Mediamanagement cannot be really deleted just removing configuration
-	tflog.Trace(ctx, "decoupled media_management: 1")
+	tflog.Trace(ctx, "decoupled "+mediaManagementResourceName+": 1")
 	resp.State.RemoveResource(ctx)
 }
 
 func (r *MediaManagementResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	// resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
-	tflog.Trace(ctx, "imported media_management: 1")
+	tflog.Trace(ctx, "imported "+mediaManagementResourceName+": 1")
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), 1)...)
 }
 
-func writeMediaManagement(mediaMgt *radarr.MediaManagement) *MediaManagement {
-	return &MediaManagement{
-		AutoRenameFolders:                       types.BoolValue(mediaMgt.AutoRenameFolders),
-		AutoUnmonitorPreviouslyDownloadedMovies: types.BoolValue(mediaMgt.AutoUnmonitorPreviouslyDownloadedMovies),
-		CopyUsingHardlinks:                      types.BoolValue(mediaMgt.CopyUsingHardlinks),
-		CreateEmptyMovieFolders:                 types.BoolValue(mediaMgt.CreateEmptyMovieFolders),
-		DeleteEmptyFolders:                      types.BoolValue(mediaMgt.DeleteEmptyFolders),
-		EnableMediaInfo:                         types.BoolValue(mediaMgt.EnableMediaInfo),
-		ImportExtraFiles:                        types.BoolValue(mediaMgt.ImportExtraFiles),
-		PathsDefaultStatic:                      types.BoolValue(mediaMgt.PathsDefaultStatic),
-		SetPermissionsLinux:                     types.BoolValue(mediaMgt.SetPermissionsLinux),
-		SkipFreeSpaceCheckWhenImporting:         types.BoolValue(mediaMgt.SkipFreeSpaceCheckWhenImporting),
-		ID:                                      types.Int64Value(mediaMgt.ID),
-		MinimumFreeSpaceWhenImporting:           types.Int64Value(mediaMgt.MinimumFreeSpaceWhenImporting),
-		RecycleBinCleanupDays:                   types.Int64Value(mediaMgt.RecycleBinCleanupDays),
-		ChmodFolder:                             types.StringValue(mediaMgt.ChmodFolder),
-		ChownGroup:                              types.StringValue(mediaMgt.ChownGroup),
-		DownloadPropersAndRepacks:               types.StringValue(mediaMgt.DownloadPropersAndRepacks),
-		ExtraFileExtensions:                     types.StringValue(mediaMgt.ExtraFileExtensions),
-		FileDate:                                types.StringValue(mediaMgt.FileDate),
-		RecycleBin:                              types.StringValue(mediaMgt.RecycleBin),
-		RescanAfterRefresh:                      types.StringValue(mediaMgt.RescanAfterRefresh),
-	}
+func (m *MediaManagement) write(mediaMgt *radarr.MediaManagement) {
+	m.AutoRenameFolders = types.BoolValue(mediaMgt.AutoRenameFolders)
+	m.AutoUnmonitorPreviouslyDownloadedMovies = types.BoolValue(mediaMgt.AutoUnmonitorPreviouslyDownloadedMovies)
+	m.CopyUsingHardlinks = types.BoolValue(mediaMgt.CopyUsingHardlinks)
+	m.CreateEmptyMovieFolders = types.BoolValue(mediaMgt.CreateEmptyMovieFolders)
+	m.DeleteEmptyFolders = types.BoolValue(mediaMgt.DeleteEmptyFolders)
+	m.EnableMediaInfo = types.BoolValue(mediaMgt.EnableMediaInfo)
+	m.ImportExtraFiles = types.BoolValue(mediaMgt.ImportExtraFiles)
+	m.PathsDefaultStatic = types.BoolValue(mediaMgt.PathsDefaultStatic)
+	m.SetPermissionsLinux = types.BoolValue(mediaMgt.SetPermissionsLinux)
+	m.SkipFreeSpaceCheckWhenImporting = types.BoolValue(mediaMgt.SkipFreeSpaceCheckWhenImporting)
+	m.ID = types.Int64Value(mediaMgt.ID)
+	m.MinimumFreeSpaceWhenImporting = types.Int64Value(mediaMgt.MinimumFreeSpaceWhenImporting)
+	m.RecycleBinCleanupDays = types.Int64Value(mediaMgt.RecycleBinCleanupDays)
+	m.ChmodFolder = types.StringValue(mediaMgt.ChmodFolder)
+	m.ChownGroup = types.StringValue(mediaMgt.ChownGroup)
+	m.DownloadPropersAndRepacks = types.StringValue(mediaMgt.DownloadPropersAndRepacks)
+	m.ExtraFileExtensions = types.StringValue(mediaMgt.ExtraFileExtensions)
+	m.FileDate = types.StringValue(mediaMgt.FileDate)
+	m.RecycleBin = types.StringValue(mediaMgt.RecycleBin)
+	m.RescanAfterRefresh = types.StringValue(mediaMgt.RescanAfterRefresh)
 }
 
-func readMediaManagement(mediaMgt *MediaManagement) *radarr.MediaManagement {
+func (m *MediaManagement) read() *radarr.MediaManagement {
 	return &radarr.MediaManagement{
-		AutoRenameFolders:                       mediaMgt.AutoRenameFolders.ValueBool(),
-		AutoUnmonitorPreviouslyDownloadedMovies: mediaMgt.AutoUnmonitorPreviouslyDownloadedMovies.ValueBool(),
-		CopyUsingHardlinks:                      mediaMgt.CopyUsingHardlinks.ValueBool(),
-		CreateEmptyMovieFolders:                 mediaMgt.CreateEmptyMovieFolders.ValueBool(),
-		DeleteEmptyFolders:                      mediaMgt.DeleteEmptyFolders.ValueBool(),
-		EnableMediaInfo:                         mediaMgt.EnableMediaInfo.ValueBool(),
-		ImportExtraFiles:                        mediaMgt.ImportExtraFiles.ValueBool(),
-		PathsDefaultStatic:                      mediaMgt.PathsDefaultStatic.ValueBool(),
-		SetPermissionsLinux:                     mediaMgt.SetPermissionsLinux.ValueBool(),
-		SkipFreeSpaceCheckWhenImporting:         mediaMgt.SkipFreeSpaceCheckWhenImporting.ValueBool(),
-		ID:                                      mediaMgt.ID.ValueInt64(),
-		MinimumFreeSpaceWhenImporting:           mediaMgt.MinimumFreeSpaceWhenImporting.ValueInt64(),
-		RecycleBinCleanupDays:                   mediaMgt.RecycleBinCleanupDays.ValueInt64(),
-		ChmodFolder:                             mediaMgt.ChmodFolder.ValueString(),
-		ChownGroup:                              mediaMgt.ChownGroup.ValueString(),
-		DownloadPropersAndRepacks:               mediaMgt.DownloadPropersAndRepacks.ValueString(),
-		ExtraFileExtensions:                     mediaMgt.ExtraFileExtensions.ValueString(),
-		FileDate:                                mediaMgt.FileDate.ValueString(),
-		RecycleBin:                              mediaMgt.RecycleBin.ValueString(),
-		RescanAfterRefresh:                      mediaMgt.RescanAfterRefresh.ValueString(),
+		AutoRenameFolders:                       m.AutoRenameFolders.ValueBool(),
+		AutoUnmonitorPreviouslyDownloadedMovies: m.AutoUnmonitorPreviouslyDownloadedMovies.ValueBool(),
+		CopyUsingHardlinks:                      m.CopyUsingHardlinks.ValueBool(),
+		CreateEmptyMovieFolders:                 m.CreateEmptyMovieFolders.ValueBool(),
+		DeleteEmptyFolders:                      m.DeleteEmptyFolders.ValueBool(),
+		EnableMediaInfo:                         m.EnableMediaInfo.ValueBool(),
+		ImportExtraFiles:                        m.ImportExtraFiles.ValueBool(),
+		PathsDefaultStatic:                      m.PathsDefaultStatic.ValueBool(),
+		SetPermissionsLinux:                     m.SetPermissionsLinux.ValueBool(),
+		SkipFreeSpaceCheckWhenImporting:         m.SkipFreeSpaceCheckWhenImporting.ValueBool(),
+		ID:                                      m.ID.ValueInt64(),
+		MinimumFreeSpaceWhenImporting:           m.MinimumFreeSpaceWhenImporting.ValueInt64(),
+		RecycleBinCleanupDays:                   m.RecycleBinCleanupDays.ValueInt64(),
+		ChmodFolder:                             m.ChmodFolder.ValueString(),
+		ChownGroup:                              m.ChownGroup.ValueString(),
+		DownloadPropersAndRepacks:               m.DownloadPropersAndRepacks.ValueString(),
+		ExtraFileExtensions:                     m.ExtraFileExtensions.ValueString(),
+		FileDate:                                m.FileDate.ValueString(),
+		RecycleBin:                              m.RecycleBin.ValueString(),
+		RescanAfterRefresh:                      m.RescanAfterRefresh.ValueString(),
 	}
 }

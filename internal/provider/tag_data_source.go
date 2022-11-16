@@ -14,6 +14,8 @@ import (
 	"golift.io/starr/radarr"
 )
 
+const tagDataSourceName = "tag"
+
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ datasource.DataSource = &TagDataSource{}
 
@@ -27,7 +29,7 @@ type TagDataSource struct {
 }
 
 func (d *TagDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_tag"
+	resp.TypeName = req.ProviderTypeName + "_" + tagDataSourceName
 }
 
 func (d *TagDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
@@ -69,9 +71,9 @@ func (d *TagDataSource) Configure(ctx context.Context, req datasource.ConfigureR
 }
 
 func (d *TagDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var data Tag
+	var tag *Tag
 
-	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+	resp.Diagnostics.Append(req.Config.Get(ctx, &tag)...)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -80,23 +82,22 @@ func (d *TagDataSource) Read(ctx context.Context, req datasource.ReadRequest, re
 	// Get tags current value
 	response, err := d.client.GetTagsContext(ctx)
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read tags, got error: %s", err))
+		resp.Diagnostics.AddError(tools.ClientError, tools.UnableToRead(tagDataSourceName, err))
 
 		return
 	}
 
-	tag, err := findTag(data.Label.ValueString(), response)
+	value, err := findTag(tag.Label.ValueString(), response)
 	if err != nil {
-		resp.Diagnostics.AddError(tools.DataSourceError, fmt.Sprintf("Unable to find tags, got error: %s", err))
+		resp.Diagnostics.AddError(tools.DataSourceError, fmt.Sprintf("Unable to find %s, got error: %s", tagDataSourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read tag")
-
-	result := writeTag(tag)
+	tflog.Trace(ctx, "read "+tagDataSourceName)
+	tag.write(value)
 	// Map response body to resource schema attribute
-	resp.Diagnostics.Append(resp.State.Set(ctx, &result)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &tag)...)
 }
 
 func findTag(label string, tags []*starr.Tag) (*starr.Tag, error) {
@@ -106,5 +107,5 @@ func findTag(label string, tags []*starr.Tag) (*starr.Tag, error) {
 		}
 	}
 
-	return nil, fmt.Errorf("no tag with label %s", label)
+	return nil, tools.ErrDataNotFoundError(tagDataSourceName, "label", label)
 }
