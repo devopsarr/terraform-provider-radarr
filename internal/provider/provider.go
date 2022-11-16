@@ -156,6 +156,7 @@ func (p *RadarrProvider) DataSources(ctx context.Context) []func() datasource.Da
 	return []func() datasource.DataSource{
 		NewDelayProfileDataSource,
 		NewDelayProfilesDataSource,
+		NewDownloadClientConfigDataSource,
 		NewDownloadClientDataSource,
 		NewDownloadClientsDataSource,
 		NewIndexerConfigDataSource,
