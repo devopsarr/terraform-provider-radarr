@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.4.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v1.3.0...v1.4.0) (2022-11-16)
+
+
+### Features
+
+* add download client config datasource ([72f88de](https://github.com/devopsarr/terraform-provider-radarr/commit/72f88de68d91d128e5fca365161f17dcf675317f))
+* add download client config resource ([891e8d9](https://github.com/devopsarr/terraform-provider-radarr/commit/891e8d9b01f9b313f5666bbe350c7e006cedcadb))
+* add download client datasource ([e3e6b4d](https://github.com/devopsarr/terraform-provider-radarr/commit/e3e6b4d03c416b0570e3b356bd4c375af97ad788))
+* add download client resource ([07b177f](https://github.com/devopsarr/terraform-provider-radarr/commit/07b177fc4af796e3dd563cfb93e734de04ea6f8e))
+* add download client transmission resource ([8952e56](https://github.com/devopsarr/terraform-provider-radarr/commit/8952e569cd2b6b51749ef595d7cc7d06f53167b4))
+* add download clients datasource ([9205c6c](https://github.com/devopsarr/terraform-provider-radarr/commit/9205c6ce449f47e9646ee64c201a39f02a2b061c))
+* add indexer config datasource ([3f78e87](https://github.com/devopsarr/terraform-provider-radarr/commit/3f78e878f6db144562f42ff144c411f973fc09bb))
+* add indexer config resource ([e55a128](https://github.com/devopsarr/terraform-provider-radarr/commit/e55a1282fc11da8e8f304cdaa024ab1584585491))
+* add indexer datasource ([b6db72e](https://github.com/devopsarr/terraform-provider-radarr/commit/b6db72ef4776d460345c1781b175a0d6c30097fe))
+* add indexer newznab resource ([b5e20e6](https://github.com/devopsarr/terraform-provider-radarr/commit/b5e20e6d0415dcc87ece3a0a395d154b0e5173ce))
+* add indexer rargb resource ([44f27df](https://github.com/devopsarr/terraform-provider-radarr/commit/44f27df6cbe1f29714dc76c840432d1aa0059977))
+* add indexer resource ([3d260df](https://github.com/devopsarr/terraform-provider-radarr/commit/3d260dff37bd2e03b588cbbba7308340e60ea26a))
+* add indexers datasource ([998f2dd](https://github.com/devopsarr/terraform-provider-radarr/commit/998f2dd523f801f0e42911bba98c6f1b0e49369c))
+* add remote path mapping datasource ([194b59a](https://github.com/devopsarr/terraform-provider-radarr/commit/194b59a653d9474f0787947a412497e3d9513ca8))
+* add remote path mapping resource ([07ccc74](https://github.com/devopsarr/terraform-provider-radarr/commit/07ccc7438c3d3bb2ac97fbe5759711d8951b57de))
+* add remote path mappings datasource ([19d2d59](https://github.com/devopsarr/terraform-provider-radarr/commit/19d2d590fb2fd651b70fc626350f38ac7f13c787))
+* add restriction data source ([5969d6f](https://github.com/devopsarr/terraform-provider-radarr/commit/5969d6fb1fb55459114a00d441b24097083ed3b8))
+* add restriction resource ([d5ee234](https://github.com/devopsarr/terraform-provider-radarr/commit/d5ee2341895cce7fe34fcc2ae66a7819dd24e7ba))
+* add restrictions datasource ([89623f3](https://github.com/devopsarr/terraform-provider-radarr/commit/89623f305071f704c94e977cd83c98bbb6db24a8))
+
 ## [1.3.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v1.2.0...v1.3.0) (2022-11-14)
 
 
