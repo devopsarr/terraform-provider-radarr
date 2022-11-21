@@ -11,6 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+	"golift.io/starr"
 	"golift.io/starr/radarr"
 )
 
@@ -110,7 +111,7 @@ func (d *RemotePathMappingDataSource) Read(ctx context.Context, req datasource.R
 	resp.Diagnostics.Append(resp.State.Set(ctx, &remoteMapping)...)
 }
 
-func findRemotePathMapping(id int64, mappings []*radarr.RemotePathMapping) (*radarr.RemotePathMapping, error) {
+func findRemotePathMapping(id int64, mappings []*starr.RemotePathMapping) (*starr.RemotePathMapping, error) {
 	for _, m := range mappings {
 		if m.ID == id {
 			return m, nil

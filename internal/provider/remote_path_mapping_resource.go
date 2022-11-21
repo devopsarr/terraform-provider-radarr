@@ -12,6 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+	"golift.io/starr"
 	"golift.io/starr/radarr"
 )
 
@@ -206,15 +207,15 @@ func (r *RemotePathMappingResource) ImportState(ctx context.Context, req resourc
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), id)...)
 }
 
-func (r *RemotePathMapping) write(remotePathMapping *radarr.RemotePathMapping) {
+func (r *RemotePathMapping) write(remotePathMapping *starr.RemotePathMapping) {
 	r.ID = types.Int64Value(remotePathMapping.ID)
 	r.Host = types.StringValue(remotePathMapping.Host)
 	r.RemotePath = types.StringValue(remotePathMapping.RemotePath)
 	r.LocalPath = types.StringValue(remotePathMapping.LocalPath)
 }
 
-func (r *RemotePathMapping) read() *radarr.RemotePathMapping {
-	return &radarr.RemotePathMapping{
+func (r *RemotePathMapping) read() *starr.RemotePathMapping {
+	return &starr.RemotePathMapping{
 		ID:         r.ID.ValueInt64(),
 		Host:       r.Host.ValueString(),
 		RemotePath: r.RemotePath.ValueString(),
