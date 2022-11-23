@@ -36,8 +36,8 @@ github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ3
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/devopsarr/terraform-provider-sonarr v1.2.3-0.20221116081055-b4d6d2957175 h1:KDVjxpaKkZJlAYB2Iz+BnOtCyj0Ewdau08w8gBJ4NpY=
-github.com/devopsarr/terraform-provider-sonarr v1.2.3-0.20221116081055-b4d6d2957175/go.mod h1:sey8lgPCH1+4oMO9yZmnIUaAo7X2U/jo9zxUuZCugCI=
+github.com/devopsarr/terraform-provider-sonarr v1.2.3-0.20221122132412-17740de3ba61 h1:q+D7MSQl0kpMNiHNCuMpk8SBkfVZTOusPfrHsEuNt0M=
+github.com/devopsarr/terraform-provider-sonarr v1.2.3-0.20221122132412-17740de3ba61/go.mod h1:sey8lgPCH1+4oMO9yZmnIUaAo7X2U/jo9zxUuZCugCI=
 github.com/emirpasic/gods v1.12.0 h1:QAUIPSaCu4G+POclxeqb3F+WPpdKqFGlw36+yOzGlrg=
 github.com/emirpasic/gods v1.12.0/go.mod h1:YfzfFFoVP/catgzJb4IKIqXjX78Ha8FMSDh3ymbK86o=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
@@ -75,8 +75,8 @@ github.com/golang/protobuf v1.4.1/go.mod h1:U8fpvMrcmy5pZrNK1lt4xCsGvpyWQ/VVv6QD
 github.com/golang/protobuf v1.5.0/go.mod h1:FsONVRAS9T7sI+LIUmWTfcYkHO4aIWwzhcaSAoJOfIk=
 github.com/golang/protobuf v1.5.2 h1:ROPKBNFfQgOUMifHyP+KYbvpjbdoFNs+aK7DXlji0Tw=
 github.com/golang/protobuf v1.5.2/go.mod h1:XVQd3VNwM+JqD3oG2Ue2ip4fOMUkwXdXDdiuN0vRsmY=
-github.com/golift/starr v0.14.1-0.20221121043025-7260aa06b298 h1:qRxqFNg8H0ZNtEC9SQFTt+XmVsRf3ggQhW+zRec/HcI=
-github.com/golift/starr v0.14.1-0.20221121043025-7260aa06b298/go.mod h1:Gnw4J6ZOPSzQFnvqqXx/UP+GK+FsLL1kfzLIg3mJVCY=
+github.com/golift/starr v0.14.1-0.20221122113709-252842d88383 h1:11UcAw9RoekBLNcE9mO0yppb0W56CqE3RebkHYdCzvY=
+github.com/golift/starr v0.14.1-0.20221122113709-252842d88383/go.mod h1:Gnw4J6ZOPSzQFnvqqXx/UP+GK+FsLL1kfzLIg3mJVCY=
 github.com/google/go-cmp v0.2.0/go.mod h1:oXzfMopK8JAjlY9xF4vHSVASa0yLyX7SntLO5aqRK0M=
 github.com/google/go-cmp v0.3.0/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMywk6iLU=
 github.com/google/go-cmp v0.3.1/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMywk6iLU=
