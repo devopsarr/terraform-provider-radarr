@@ -132,6 +132,7 @@ func (p *RadarrProvider) Configure(ctx context.Context, req provider.ConfigureRe
 
 func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
+		NewCustomFormatResource,
 		NewDelayProfileResource,
 		NewDownloadClientConfigResource,
 		NewDownloadClientResource,
@@ -155,6 +156,8 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 
 func (p *RadarrProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
+		NewCustomFormatDataSource,
+		NewCustomFormatsDataSource,
 		NewDelayProfileDataSource,
 		NewDelayProfilesDataSource,
 		NewDownloadClientConfigDataSource,

@@ -13,7 +13,7 @@ description: |-
 ## Example Usage
 
 ```terraform
-data "radarr_download_client" "test" {
+data "radarr_download_client" "example" {
   name = "Example"
 }
 ```

@@ -3,7 +3,7 @@ module github.com/devopsarr/terraform-provider-radarr
 go 1.19
 
 require (
-	github.com/devopsarr/terraform-provider-sonarr v1.2.2
+	github.com/devopsarr/terraform-provider-sonarr v1.2.3-0.20221122132412-17740de3ba61
 	github.com/hashicorp/terraform-plugin-docs v0.13.0
 	github.com/hashicorp/terraform-plugin-framework v0.16.0
 	github.com/hashicorp/terraform-plugin-go v0.14.2
@@ -76,10 +76,7 @@ require (
 )
 
 // To be removed with next starr update
-replace golift.io/starr => github.com/golift/starr v0.14.1-0.20221121043025-7260aa06b298
+replace golift.io/starr => github.com/golift/starr v0.14.1-0.20221122113709-252842d88383
 
 // To be removed once terraform docs allows subcategories
 replace github.com/hashicorp/terraform-plugin-docs => github.com/fuochi/terraform-plugin-docs v0.0.0-20221102115635-d0b02bd5fc0f
-
-// to be removed on next update
-replace github.com/devopsarr/terraform-provider-sonarr => github.com/devopsarr/terraform-provider-sonarr v1.2.3-0.20221116081055-b4d6d2957175
