@@ -1,3 +1,3 @@
-data "radarr_indexer" "test" {
+data "radarr_indexer" "example" {
   name = "Example"
 }

@@ -61,7 +61,6 @@ func testAccCustomFormatResourceConfig(name, enable string) string {
 				required = false
 				value = "31"
 			}
-		]
-		
+		]	
 	}`, enable, name)
 }
