@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v1.4.0...v1.5.0) (2022-11-23)
+
+
+### Features
+
+* add custom format datasource ([b969064](https://github.com/devopsarr/terraform-provider-radarr/commit/b96906463f52eb54b0af7b44f875d947d776c4c9))
+* add custom format resource ([f4b7fa0](https://github.com/devopsarr/terraform-provider-radarr/commit/f4b7fa032300e90a5f4be58592d1c6f017310869))
+* add custom formats datasource ([908bc1b](https://github.com/devopsarr/terraform-provider-radarr/commit/908bc1b63fe07f62bea71878e9a95aa2f77e1b47))
+* add quality profile datasource ([c0db28c](https://github.com/devopsarr/terraform-provider-radarr/commit/c0db28c2574b49a47d989bbde70e3423c66df298))
+* add quality profile resource ([8a7e8bb](https://github.com/devopsarr/terraform-provider-radarr/commit/8a7e8bba2f820507cf37dd4ddbd3508aa207b4bb))
+* add quality profiles datasource ([c176978](https://github.com/devopsarr/terraform-provider-radarr/commit/c176978c63fbae6fe3b5009c1e0ce60f21a2f313))
+
 ## [1.4.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v1.3.0...v1.4.0) (2022-11-16)
 
 
