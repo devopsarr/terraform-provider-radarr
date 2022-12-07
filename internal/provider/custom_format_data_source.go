@@ -6,9 +6,7 @@ import (
 
 	"github.com/devopsarr/terraform-provider-sonarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
-	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"golift.io/starr/radarr"
 )
@@ -31,70 +29,62 @@ func (d *CustomFormatDataSource) Metadata(ctx context.Context, req datasource.Me
 	resp.TypeName = req.ProviderTypeName + "_" + customFormatDataSourceName
 }
 
-func (d *CustomFormatDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
+func (d *CustomFormatDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
 		MarkdownDescription: "<!-- subcategory:Profiles -->Single [Download Client](../resources/custom_format).",
-		Attributes: map[string]tfsdk.Attribute{
-			"include_custom_format_when_renaming": {
+		Attributes: map[string]schema.Attribute{
+			"include_custom_format_when_renaming": schema.BoolAttribute{
 				MarkdownDescription: "Include custom format when renaming flag.",
 				Computed:            true,
-				Type:                types.BoolType,
 			},
-			"name": {
+			"name": schema.StringAttribute{
 				MarkdownDescription: "Custom Format name.",
 				Required:            true,
-				Type:                types.StringType,
 			},
-			"id": {
+			"id": schema.Int64Attribute{
 				MarkdownDescription: "Custom Format ID.",
 				Computed:            true,
-				Type:                types.Int64Type,
 			},
-			"specifications": {
+			"specifications": schema.SetNestedAttribute{
 				MarkdownDescription: "Specifications.",
 				Computed:            true,
-				Attributes: tfsdk.SetNestedAttributes(map[string]tfsdk.Attribute{
-					"negate": {
-						MarkdownDescription: "Negate flag.",
-						Computed:            true,
-						Type:                types.BoolType,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"negate": schema.BoolAttribute{
+							MarkdownDescription: "Negate flag.",
+							Computed:            true,
+						},
+						"required": schema.BoolAttribute{
+							MarkdownDescription: "Computed flag.",
+							Computed:            true,
+						},
+						"name": schema.StringAttribute{
+							MarkdownDescription: "Specification name.",
+							Computed:            true,
+						},
+						"implementation": schema.StringAttribute{
+							MarkdownDescription: "Implementation.",
+							Computed:            true,
+						},
+						// Field values
+						"value": schema.StringAttribute{
+							MarkdownDescription: "Value.",
+							Computed:            true,
+						},
+						"min": schema.Int64Attribute{
+							MarkdownDescription: "Min.",
+							Computed:            true,
+						},
+						"max": schema.Int64Attribute{
+							MarkdownDescription: "Max.",
+							Computed:            true,
+						},
 					},
-					"required": {
-						MarkdownDescription: "Computed flag.",
-						Computed:            true,
-						Type:                types.BoolType,
-					},
-					"name": {
-						MarkdownDescription: "Specification name.",
-						Computed:            true,
-						Type:                types.StringType,
-					},
-					"implementation": {
-						MarkdownDescription: "Implementation.",
-						Computed:            true,
-						Type:                types.StringType,
-					},
-					// Field values
-					"value": {
-						MarkdownDescription: "Value.",
-						Computed:            true,
-						Type:                types.StringType,
-					},
-					"min": {
-						MarkdownDescription: "Min.",
-						Computed:            true,
-						Type:                types.Int64Type,
-					},
-					"max": {
-						MarkdownDescription: "Max.",
-						Computed:            true,
-						Type:                types.Int64Type,
-					},
-				}),
+				},
 			},
 		},
-	}, nil
+	}
 }
 
 func (d *CustomFormatDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {

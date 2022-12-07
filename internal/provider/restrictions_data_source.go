@@ -7,7 +7,7 @@ import (
 
 	"github.com/devopsarr/terraform-provider-sonarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -38,46 +38,42 @@ func (d *RestrictionsDataSource) Metadata(ctx context.Context, req datasource.Me
 	resp.TypeName = req.ProviderTypeName + "_" + restrictionsDataSourceName
 }
 
-func (d *RestrictionsDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
+func (d *RestrictionsDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
 		MarkdownDescription: "<!-- subcategory:Indexers -->List all available [Restrictions](../resources/restriction).",
-		Attributes: map[string]tfsdk.Attribute{
+		Attributes: map[string]schema.Attribute{
 			// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
-			"id": {
+			"id": schema.StringAttribute{
 				Computed: true,
-				Type:     types.StringType,
 			},
-			"restrictions": {
+			"restrictions": schema.SetNestedAttribute{
 				MarkdownDescription: "Restriction list.",
 				Computed:            true,
-				Attributes: tfsdk.SetNestedAttributes(map[string]tfsdk.Attribute{
-					"required": {
-						MarkdownDescription: "Required.",
-						Computed:            true,
-						Type:                types.StringType,
-					},
-					"ignored": {
-						MarkdownDescription: "Ignored.",
-						Computed:            true,
-						Type:                types.StringType,
-					},
-					"tags": {
-						MarkdownDescription: "List of associated tags.",
-						Computed:            true,
-						Type: types.SetType{
-							ElemType: types.Int64Type,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"required": schema.StringAttribute{
+							MarkdownDescription: "Required.",
+							Computed:            true,
+						},
+						"ignored": schema.StringAttribute{
+							MarkdownDescription: "Ignored.",
+							Computed:            true,
+						},
+						"tags": schema.SetAttribute{
+							MarkdownDescription: "List of associated tags.",
+							Computed:            true,
+							ElementType:         types.Int64Type,
+						},
+						"id": schema.Int64Attribute{
+							MarkdownDescription: "Restriction ID.",
+							Computed:            true,
 						},
 					},
-					"id": {
-						MarkdownDescription: "Restriction ID.",
-						Computed:            true,
-						Type:                types.Int64Type,
-					},
-				}),
+				},
 			},
 		},
-	}, nil
+	}
 }
 
 func (d *RestrictionsDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {

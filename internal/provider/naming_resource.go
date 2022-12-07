@@ -6,10 +6,13 @@ import (
 	"strconv"
 
 	"github.com/devopsarr/terraform-provider-sonarr/tools"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"golift.io/starr/radarr"
@@ -46,58 +49,50 @@ func (r *NamingResource) Metadata(ctx context.Context, req resource.MetadataRequ
 	resp.TypeName = req.ProviderTypeName + "_" + namingResourceName
 }
 
-func (r *NamingResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
+func (r *NamingResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Media Management -->Naming resource.\nFor more information refer to [Naming](https://wiki.servarr.com/radarr/settings#community-naming-suggestions) documentation.",
-		Attributes: map[string]tfsdk.Attribute{
-			"id": {
+		Attributes: map[string]schema.Attribute{
+			"id": schema.Int64Attribute{
 				MarkdownDescription: "Naming ID.",
 				Computed:            true,
-				Type:                types.Int64Type,
-				PlanModifiers: tfsdk.AttributePlanModifiers{
-					resource.UseStateForUnknown(),
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.UseStateForUnknown(),
 				},
 			},
-			"include_quality": {
+			"include_quality": schema.BoolAttribute{
 				MarkdownDescription: "Include quality in file name.",
 				Required:            true,
-				Type:                types.BoolType,
 			},
-			"rename_movies": {
+			"rename_movies": schema.BoolAttribute{
 				MarkdownDescription: "Radarr will use the existing file name if false.",
 				Required:            true,
-				Type:                types.BoolType,
 			},
-			"replace_illegal_characters": {
+			"replace_illegal_characters": schema.BoolAttribute{
 				MarkdownDescription: "Replace illegal characters. They will be removed if false.",
 				Required:            true,
-				Type:                types.BoolType,
 			},
-			"replace_spaces": {
+			"replace_spaces": schema.BoolAttribute{
 				MarkdownDescription: "Replace spaces.",
 				Required:            true,
-				Type:                types.BoolType,
 			},
-			"colon_replacement_format": {
+			"colon_replacement_format": schema.StringAttribute{
 				MarkdownDescription: "Change how Radarr handles colon replacement. Valid values are: 'delete', 'dash', 'spaceDash', and 'spaceDashSpace'.",
 				Required:            true,
-				Type:                types.StringType,
-				Validators: []tfsdk.AttributeValidator{
-					tools.StringMatch([]string{"delete", "dash", "spaceDash", "spaceDashSpace"}),
+				Validators: []validator.String{
+					stringvalidator.OneOf("delete", "dash", "spaceDash", "spaceDashSpace"),
 				},
 			},
-			"movie_folder_format": {
+			"movie_folder_format": schema.StringAttribute{
 				MarkdownDescription: "Movie folder format.",
 				Required:            true,
-				Type:                types.StringType,
 			},
-			"standard_movie_format": {
+			"standard_movie_format": schema.StringAttribute{
 				MarkdownDescription: "Standard movie formatss.",
 				Required:            true,
-				Type:                types.StringType,
 			},
 		},
-	}, nil
+	}
 }
 
 func (r *NamingResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {

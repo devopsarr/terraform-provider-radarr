@@ -6,9 +6,7 @@ import (
 
 	"github.com/devopsarr/terraform-provider-sonarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
-	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"golift.io/starr/radarr"
 )
@@ -31,113 +29,93 @@ func (d *MediaManagementDataSource) Metadata(ctx context.Context, req datasource
 	resp.TypeName = req.ProviderTypeName + "_" + mediaManagementDataSourceName
 }
 
-func (d *MediaManagementDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
+func (d *MediaManagementDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
 		MarkdownDescription: "<!-- subcategory:Media Management -->[Media Management](../resources/media_management).",
-		Attributes: map[string]tfsdk.Attribute{
-			"id": {
+		Attributes: map[string]schema.Attribute{
+			"id": schema.Int64Attribute{
 				MarkdownDescription: "Delay Profile ID.",
 				Computed:            true,
-				Type:                types.Int64Type,
 			},
-			"auto_rename_folders": {
+			"auto_rename_folders": schema.BoolAttribute{
 				MarkdownDescription: "Auto rename folders.",
 				Computed:            true,
-				Type:                types.BoolType,
 			},
-			"auto_unmonitor_previously_downloaded_movies": {
+			"auto_unmonitor_previously_downloaded_movies": schema.BoolAttribute{
 				MarkdownDescription: "Auto unmonitor previously downloaded movies.",
 				Computed:            true,
-				Type:                types.BoolType,
 			},
-			"copy_using_hardlinks": {
+			"copy_using_hardlinks": schema.BoolAttribute{
 				MarkdownDescription: "Use hardlinks instead of copy.",
 				Computed:            true,
-				Type:                types.BoolType,
 			},
-			"create_empty_movie_folders": {
+			"create_empty_movie_folders": schema.BoolAttribute{
 				MarkdownDescription: "Create empty movies directories.",
 				Computed:            true,
-				Type:                types.BoolType,
 			},
-			"delete_empty_folders": {
+			"delete_empty_folders": schema.BoolAttribute{
 				MarkdownDescription: "Delete empty movies directories.",
 				Computed:            true,
-				Type:                types.BoolType,
 			},
-			"enable_media_info": {
+			"enable_media_info": schema.BoolAttribute{
 				MarkdownDescription: "Scan files details.",
 				Computed:            true,
-				Type:                types.BoolType,
 			},
-			"import_extra_files": {
+			"import_extra_files": schema.BoolAttribute{
 				MarkdownDescription: "Import extra files. If enabled it will leverage 'extra_file_extensions'.",
 				Computed:            true,
-				Type:                types.BoolType,
 			},
-			"paths_default_static": {
+			"paths_default_static": schema.BoolAttribute{
 				MarkdownDescription: "Path default static.",
 				Computed:            true,
-				Type:                types.BoolType,
 			},
-			"set_permissions_linux": {
+			"set_permissions_linux": schema.BoolAttribute{
 				MarkdownDescription: "Set permission for imported files.",
 				Computed:            true,
-				Type:                types.BoolType,
 			},
-			"skip_free_space_check_when_importing": {
+			"skip_free_space_check_when_importing": schema.BoolAttribute{
 				MarkdownDescription: "Skip free space check before importing.",
 				Computed:            true,
-				Type:                types.BoolType,
 			},
-			"minimum_free_space_when_importing": {
+			"minimum_free_space_when_importing": schema.Int64Attribute{
 				MarkdownDescription: "Minimum free space in MB to allow import.",
 				Computed:            true,
-				Type:                types.Int64Type,
 			},
-			"recycle_bin_cleanup_days": {
+			"recycle_bin_cleanup_days": schema.Int64Attribute{
 				MarkdownDescription: "Recyle bin days of retention.",
 				Computed:            true,
-				Type:                types.Int64Type,
 			},
-			"chmod_folder": {
+			"chmod_folder": schema.StringAttribute{
 				MarkdownDescription: "Permission in linux format.",
 				Computed:            true,
-				Type:                types.StringType,
 			},
-			"chown_group": {
+			"chown_group": schema.StringAttribute{
 				MarkdownDescription: "Group used for permission.",
 				Computed:            true,
-				Type:                types.StringType,
 			},
-			"download_propers_and_repacks": {
+			"download_propers_and_repacks": schema.StringAttribute{
 				MarkdownDescription: "Download proper and repack policy. valid inputs are: 'preferAndUpgrade', 'doNotUpgrade', and 'doNotPrefer'.",
 				Computed:            true,
-				Type:                types.StringType,
 			},
-			"extra_file_extensions": {
+			"extra_file_extensions": schema.StringAttribute{
 				MarkdownDescription: "Comma separated list of extra files to import (.nfo will be imported as .nfo-orig).",
 				Computed:            true,
-				Type:                types.StringType,
 			},
-			"file_date": {
+			"file_date": schema.StringAttribute{
 				MarkdownDescription: "Define the file date modification. valid inputs are: 'none', 'localAirDate, and 'utcAirDate'.",
 				Computed:            true,
-				Type:                types.StringType,
 			},
-			"recycle_bin": {
+			"recycle_bin": schema.StringAttribute{
 				MarkdownDescription: "Recycle bin absolute path.",
 				Computed:            true,
-				Type:                types.StringType,
 			},
-			"rescan_after_refresh": {
+			"rescan_after_refresh": schema.StringAttribute{
 				MarkdownDescription: "Rescan after refresh policy. valid inputs are: 'always', 'afterManual' and 'never'.",
 				Computed:            true,
-				Type:                types.StringType,
 			},
 		},
-	}, nil
+	}
 }
 
 func (d *MediaManagementDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
