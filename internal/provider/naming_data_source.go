@@ -6,9 +6,7 @@ import (
 
 	"github.com/devopsarr/terraform-provider-sonarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
-	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"golift.io/starr/radarr"
 )
@@ -31,53 +29,45 @@ func (d *NamingDataSource) Metadata(ctx context.Context, req datasource.Metadata
 	resp.TypeName = req.ProviderTypeName + "_" + namingDataSourceName
 }
 
-func (d *NamingDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
+func (d *NamingDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
 		MarkdownDescription: "<!-- subcategory:Media Management -->[Naming](../resources/naming).",
-		Attributes: map[string]tfsdk.Attribute{
-			"id": {
+		Attributes: map[string]schema.Attribute{
+			"id": schema.Int64Attribute{
 				MarkdownDescription: "Delay Profile ID.",
 				Computed:            true,
-				Type:                types.Int64Type,
 			},
-			"include_quality": {
+			"include_quality": schema.BoolAttribute{
 				MarkdownDescription: "Include quality in file name.",
 				Computed:            true,
-				Type:                types.BoolType,
 			},
-			"rename_movies": {
+			"rename_movies": schema.BoolAttribute{
 				MarkdownDescription: "Radarr will use the existing file name if false.",
 				Computed:            true,
-				Type:                types.BoolType,
 			},
-			"replace_illegal_characters": {
+			"replace_illegal_characters": schema.BoolAttribute{
 				MarkdownDescription: "Replace illegal characters. They will be removed if false.",
 				Computed:            true,
-				Type:                types.BoolType,
 			},
-			"replace_spaces": {
+			"replace_spaces": schema.BoolAttribute{
 				MarkdownDescription: "Replace spaces.",
 				Computed:            true,
-				Type:                types.BoolType,
 			},
-			"colon_replacement_format": {
+			"colon_replacement_format": schema.StringAttribute{
 				MarkdownDescription: "Change how Radarr handles colon replacement. Valid values are: 'delete', 'dash', 'spaceDash', and 'spaceDashSpace'.",
 				Computed:            true,
-				Type:                types.StringType,
 			},
-			"movie_folder_format": {
+			"movie_folder_format": schema.StringAttribute{
 				MarkdownDescription: "Movie folder format.",
 				Computed:            true,
-				Type:                types.StringType,
 			},
-			"standard_movie_format": {
+			"standard_movie_format": schema.StringAttribute{
 				MarkdownDescription: "Standard movie formatss.",
 				Computed:            true,
-				Type:                types.StringType,
 			},
 		},
-	}, nil
+	}
 }
 
 func (d *NamingDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {

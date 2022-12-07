@@ -7,8 +7,7 @@ import (
 
 	"github.com/devopsarr/terraform-provider-sonarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"golift.io/starr/radarr"
@@ -32,35 +31,30 @@ func (d *RestrictionDataSource) Metadata(ctx context.Context, req datasource.Met
 	resp.TypeName = req.ProviderTypeName + "_" + restrictionDataSourceName
 }
 
-func (d *RestrictionDataSource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
+func (d *RestrictionDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
 		MarkdownDescription: "<!-- subcategory:Indexers -->Single [Restriction](../resources/restriction).",
-		Attributes: map[string]tfsdk.Attribute{
-			"required": {
+		Attributes: map[string]schema.Attribute{
+			"required": schema.StringAttribute{
 				MarkdownDescription: "Required.",
 				Computed:            true,
-				Type:                types.StringType,
 			},
-			"ignored": {
+			"ignored": schema.StringAttribute{
 				MarkdownDescription: "Ignored.",
 				Computed:            true,
-				Type:                types.StringType,
 			},
-			"tags": {
+			"tags": schema.SetAttribute{
 				MarkdownDescription: "List of associated tags.",
 				Computed:            true,
-				Type: types.SetType{
-					ElemType: types.Int64Type,
-				},
+				ElementType:         types.Int64Type,
 			},
-			"id": {
+			"id": schema.Int64Attribute{
 				MarkdownDescription: "Restriction ID.",
 				Required:            true,
-				Type:                types.Int64Type,
 			},
 		},
-	}, nil
+	}
 }
 
 func (d *RestrictionDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {

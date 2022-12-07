@@ -6,9 +6,11 @@ import (
 	"strconv"
 
 	"github.com/devopsarr/terraform-provider-sonarr/tools"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -59,83 +61,75 @@ func (r *CustomFormatResource) Metadata(ctx context.Context, req resource.Metada
 	resp.TypeName = req.ProviderTypeName + "_" + customFormatResourceName
 }
 
-func (r *CustomFormatResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
+func (r *CustomFormatResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Profiles -->Custom Format resource.\nFor more information refer to [Custom Format](https://wiki.servarr.com/radarr/settings#custom-formats).",
-		Attributes: map[string]tfsdk.Attribute{
-			"include_custom_format_when_renaming": {
+		Attributes: map[string]schema.Attribute{
+			"include_custom_format_when_renaming": schema.BoolAttribute{
 				MarkdownDescription: "Include custom format when renaming flag.",
 				Optional:            true,
 				Computed:            true,
-				Type:                types.BoolType,
 			},
-			"name": {
+			"name": schema.StringAttribute{
 				MarkdownDescription: "Custom Format name.",
 				Required:            true,
-				Type:                types.StringType,
 			},
-			"id": {
+			"id": schema.Int64Attribute{
 				MarkdownDescription: "Custom Format ID.",
 				Computed:            true,
-				Type:                types.Int64Type,
-				PlanModifiers: tfsdk.AttributePlanModifiers{
-					resource.UseStateForUnknown(),
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.UseStateForUnknown(),
 				},
 			},
-			"specifications": {
+			"specifications": schema.SetNestedAttribute{
 				MarkdownDescription: "Specifications.",
 				Required:            true,
-				Attributes:          tfsdk.SetNestedAttributes(r.getSpecificationSchema().Attributes),
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: r.getSpecificationSchema().Attributes,
+				},
 			},
 		},
-	}, nil
+	}
 }
 
-func (r CustomFormatResource) getSpecificationSchema() tfsdk.Schema {
-	return tfsdk.Schema{
-		Attributes: map[string]tfsdk.Attribute{
-			"negate": {
+func (r CustomFormatResource) getSpecificationSchema() schema.Schema {
+	return schema.Schema{
+		Attributes: map[string]schema.Attribute{
+			"negate": schema.BoolAttribute{
 				MarkdownDescription: "Negate flag.",
 				Optional:            true,
 				Computed:            true,
-				Type:                types.BoolType,
 			},
-			"required": {
+			"required": schema.BoolAttribute{
 				MarkdownDescription: "Required flag.",
 				Optional:            true,
 				Computed:            true,
-				Type:                types.BoolType,
 			},
-			"name": {
+			"name": schema.StringAttribute{
 				MarkdownDescription: "Specification name.",
 				Optional:            true,
 				Computed:            true,
-				Type:                types.StringType,
 			},
-			"implementation": {
+			"implementation": schema.StringAttribute{
 				MarkdownDescription: "Implementation.",
 				Optional:            true,
 				Computed:            true,
-				Type:                types.StringType,
 			},
 			// Field values
-			"value": {
+			"value": schema.StringAttribute{
 				MarkdownDescription: "Value.",
 				Optional:            true,
 				Computed:            true,
-				Type:                types.StringType,
 			},
-			"min": {
+			"min": schema.Int64Attribute{
 				MarkdownDescription: "Min.",
 				Optional:            true,
 				Computed:            true,
-				Type:                types.Int64Type,
 			},
-			"max": {
+			"max": schema.Int64Attribute{
 				MarkdownDescription: "Max.",
 				Optional:            true,
 				Computed:            true,
-				Type:                types.Int64Type,
 			},
 		},
 	}

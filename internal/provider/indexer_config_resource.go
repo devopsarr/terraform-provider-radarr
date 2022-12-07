@@ -6,10 +6,11 @@ import (
 	"strconv"
 
 	"github.com/devopsarr/terraform-provider-sonarr/tools"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"golift.io/starr/radarr"
@@ -47,60 +48,51 @@ func (r *IndexerConfigResource) Metadata(ctx context.Context, req resource.Metad
 	resp.TypeName = req.ProviderTypeName + "_" + indexerConfigResourceName
 }
 
-func (r *IndexerConfigResource) GetSchema(ctx context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
+func (r *IndexerConfigResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Indexers -->Indexer Config resource.\nFor more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#options) documentation.",
-		Attributes: map[string]tfsdk.Attribute{
-			"id": {
+		Attributes: map[string]schema.Attribute{
+			"id": schema.Int64Attribute{
 				MarkdownDescription: "Indexer Config ID.",
 				Computed:            true,
-				Type:                types.Int64Type,
-				PlanModifiers: tfsdk.AttributePlanModifiers{
-					resource.UseStateForUnknown(),
+				PlanModifiers: []planmodifier.Int64{
+					int64planmodifier.UseStateForUnknown(),
 				},
 			},
-			"maximum_size": {
+			"maximum_size": schema.Int64Attribute{
 				MarkdownDescription: "Maximum size.",
 				Required:            true,
-				Type:                types.Int64Type,
 			},
-			"minimum_age": {
+			"minimum_age": schema.Int64Attribute{
 				MarkdownDescription: "Minimum age.",
 				Required:            true,
-				Type:                types.Int64Type,
 			},
-			"retention": {
+			"retention": schema.Int64Attribute{
 				MarkdownDescription: "Retention.",
 				Required:            true,
-				Type:                types.Int64Type,
 			},
-			"rss_sync_interval": {
+			"rss_sync_interval": schema.Int64Attribute{
 				MarkdownDescription: "RSS sync interval.",
 				Required:            true,
-				Type:                types.Int64Type,
 			},
-			"availability_delay": {
+			"availability_delay": schema.Int64Attribute{
 				MarkdownDescription: "Availability delay.",
 				Required:            true,
-				Type:                types.Int64Type,
 			},
-			"whitelisted_hardcoded_subs": {
+			"whitelisted_hardcoded_subs": schema.StringAttribute{
 				MarkdownDescription: "Whitelisted hardconded subs.",
 				Required:            true,
-				Type:                types.StringType,
 			},
-			"prefer_indexer_flags": {
+			"prefer_indexer_flags": schema.BoolAttribute{
 				MarkdownDescription: "Prefer indexer flags.",
 				Required:            true,
-				Type:                types.BoolType,
 			},
-			"allow_hardcoded_subs": {
+			"allow_hardcoded_subs": schema.BoolAttribute{
 				MarkdownDescription: "Allow hardcoded subs.",
 				Required:            true,
-				Type:                types.BoolType,
 			},
 		},
-	}, nil
+	}
 }
 
 func (r *IndexerConfigResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
