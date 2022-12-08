@@ -140,6 +140,7 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewDownloadClientNzbgetResource,
 		NewDownloadClientNzbvortexResource,
 		NewDownloadClientPneumaticResource,
+		NewDownloadClientQbittorrentResource,
 		NewRemotePathMappingResource,
 
 		// Indexers
