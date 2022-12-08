@@ -61,6 +61,7 @@ Read-Only:
 - `seed_ratio` (Number) Seed ratio.
 - `seed_time` (Number) Seed time.
 - `tags` (Set of Number) List of associated tags.
+- `user` (String) Username.
 - `username` (String) Username.
 
 
