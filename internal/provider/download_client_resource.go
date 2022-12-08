@@ -523,7 +523,7 @@ func (d *DownloadClient) writeFields(ctx context.Context, fields []*starr.FieldO
 			continue
 		}
 
-		if slices.Contains(downloadClientStringSliceFields, f.Name) {
+		if slices.Contains(downloadClientStringSliceFields, f.Name) || f.Name == "tags" {
 			tools.WriteStringSliceField(ctx, f, d)
 		}
 	}
