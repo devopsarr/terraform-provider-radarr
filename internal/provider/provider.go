@@ -129,53 +129,77 @@ func (p *RadarrProvider) Configure(ctx context.Context, req provider.ConfigureRe
 
 func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
-		NewCustomFormatResource,
-		NewDelayProfileResource,
+		// Download Clients
 		NewDownloadClientConfigResource,
 		NewDownloadClientResource,
 		NewDownloadClientTransmissionResource,
+		NewRemotePathMappingResource,
+
+		// Indexers
 		NewIndexerConfigResource,
 		NewIndexerResource,
 		NewIndexerNewznabResource,
 		NewIndexerRarbgResource,
+		NewRestrictionResource,
+
+		// Media Management
 		NewMediaManagementResource,
 		NewNamingResource,
+		NewRootFolderResource,
+
+		// Notifications
 		NewNotificationResource,
 		NewNotificationCustomScriptResource,
 		NewNotificationWebhookResource,
+
+		// Profiles
+		NewCustomFormatResource,
+		NewDelayProfileResource,
 		NewQualityProfileResource,
-		NewRemotePathMappingResource,
-		NewRestrictionResource,
-		NewRootFolderResource,
+
+		// Tags
 		NewTagResource,
 	}
 }
 
 func (p *RadarrProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
+		// Download Clients
+		NewDownloadClientConfigDataSource,
+		NewDownloadClientDataSource,
+		NewDownloadClientsDataSource,
+		NewRemotePathMappingDataSource,
+		NewRemotePathMappingsDataSource,
+
+		// Indexers
+		NewIndexerConfigDataSource,
+		NewIndexerDataSource,
+		NewIndexersDataSource,
+		NewRestrictionDataSource,
+		NewRestrictionsDataSource,
+
+		// Media Management
+		NewMediaManagementDataSource,
+		NewNamingDataSource,
+		NewRootFolderDataSource,
+		NewRootFoldersDataSource,
+
+		// Notifications
+		NewNotificationDataSource,
+		NewNotificationsDataSource,
+
+		// Profiles
 		NewCustomFormatDataSource,
 		NewCustomFormatsDataSource,
 		NewDelayProfileDataSource,
 		NewDelayProfilesDataSource,
-		NewDownloadClientConfigDataSource,
-		NewDownloadClientDataSource,
-		NewDownloadClientsDataSource,
-		NewIndexerConfigDataSource,
-		NewIndexerDataSource,
-		NewIndexersDataSource,
-		NewMediaManagementDataSource,
-		NewNamingDataSource,
-		NewNotificationDataSource,
-		NewNotificationsDataSource,
 		NewQualityProfileDataSource,
 		NewQualityProfilesDataSource,
-		NewRemotePathMappingDataSource,
-		NewRemotePathMappingsDataSource,
-		NewRestrictionDataSource,
-		NewRestrictionsDataSource,
-		NewRootFolderDataSource,
-		NewRootFoldersDataSource,
+
+		// System Status
 		NewSystemStatusDataSource,
+
+		// Tags
 		NewTagDataSource,
 		NewTagsDataSource,
 	}

@@ -47,10 +47,10 @@ type DownloadClientTransmission struct {
 	URLBase                  types.String `tfsdk:"url_base"`
 	Username                 types.String `tfsdk:"username"`
 	Password                 types.String `tfsdk:"password"`
-	TvCategory               types.String `tfsdk:"tv_category"`
-	TvDirectory              types.String `tfsdk:"tv_directory"`
-	RecentTvPriority         types.Int64  `tfsdk:"recent_tv_priority"`
-	OlderTvPriority          types.Int64  `tfsdk:"older_tv_priority"`
+	MovieCategory            types.String `tfsdk:"movie_category"`
+	MovieDirectory           types.String `tfsdk:"movie_directory"`
+	RecentMoviePriority      types.Int64  `tfsdk:"recent_movie_priority"`
+	OlderMoviePriority       types.Int64  `tfsdk:"older_movie_priority"`
 	Priority                 types.Int64  `tfsdk:"priority"`
 	Port                     types.Int64  `tfsdk:"port"`
 	ID                       types.Int64  `tfsdk:"id"`
@@ -69,10 +69,10 @@ func (d DownloadClientTransmission) toDownloadClient() *DownloadClient {
 		URLBase:                  d.URLBase,
 		Username:                 d.Username,
 		Password:                 d.Password,
-		TvCategory:               d.TvCategory,
-		TvDirectory:              d.TvDirectory,
-		RecentTvPriority:         d.RecentTvPriority,
-		OlderTvPriority:          d.OlderTvPriority,
+		MovieCategory:            d.MovieCategory,
+		MovieDirectory:           d.MovieDirectory,
+		RecentMoviePriority:      d.RecentMoviePriority,
+		OlderMoviePriority:       d.OlderMoviePriority,
 		Priority:                 d.Priority,
 		Port:                     d.Port,
 		ID:                       d.ID,
@@ -91,10 +91,10 @@ func (d *DownloadClientTransmission) fromDownloadClient(client *DownloadClient) 
 	d.URLBase = client.URLBase
 	d.Username = client.Username
 	d.Password = client.Password
-	d.TvCategory = client.TvCategory
-	d.TvDirectory = client.TvDirectory
-	d.RecentTvPriority = client.RecentTvPriority
-	d.OlderTvPriority = client.OlderTvPriority
+	d.MovieCategory = client.MovieCategory
+	d.MovieDirectory = client.MovieDirectory
+	d.RecentMoviePriority = client.RecentMoviePriority
+	d.OlderMoviePriority = client.OlderMoviePriority
 	d.Priority = client.Priority
 	d.Port = client.Port
 	d.ID = client.ID
@@ -166,7 +166,7 @@ func (r *DownloadClientTransmissionResource) Schema(ctx context.Context, req res
 				Optional:            true,
 				Computed:            true,
 			},
-			"recent_tv_priority": schema.Int64Attribute{
+			"recent_movie_priority": schema.Int64Attribute{
 				MarkdownDescription: "Recent TV priority. `0` Last, `1` First.",
 				Optional:            true,
 				Computed:            true,
@@ -174,7 +174,7 @@ func (r *DownloadClientTransmissionResource) Schema(ctx context.Context, req res
 					int64validator.OneOf(0, 1),
 				},
 			},
-			"older_tv_priority": schema.Int64Attribute{
+			"older_movie_priority": schema.Int64Attribute{
 				MarkdownDescription: "Older TV priority. `0` Last, `1` First.",
 				Optional:            true,
 				Computed:            true,
@@ -202,12 +202,12 @@ func (r *DownloadClientTransmissionResource) Schema(ctx context.Context, req res
 				Optional:            true,
 				Computed:            true,
 			},
-			"tv_category": schema.StringAttribute{
+			"movie_category": schema.StringAttribute{
 				MarkdownDescription: "TV category.",
 				Optional:            true,
 				Computed:            true,
 			},
-			"tv_directory": schema.StringAttribute{
+			"movie_directory": schema.StringAttribute{
 				MarkdownDescription: "TV directory.",
 				Optional:            true,
 				Computed:            true,

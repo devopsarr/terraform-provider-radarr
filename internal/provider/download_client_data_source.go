@@ -119,11 +119,11 @@ func (d *DownloadClientDataSource) Schema(ctx context.Context, req datasource.Sc
 				MarkdownDescription: "Port.",
 				Computed:            true,
 			},
-			"recent_tv_priority": schema.Int64Attribute{
+			"recent_movie_priority": schema.Int64Attribute{
 				MarkdownDescription: "Recent TV priority. `0` Last, `1` First.",
 				Computed:            true,
 			},
-			"older_tv_priority": schema.Int64Attribute{
+			"older_movie_priority": schema.Int64Attribute{
 				MarkdownDescription: "Older TV priority. `0` Last, `1` First.",
 				Computed:            true,
 				Validators: []validator.Int64{
@@ -166,15 +166,15 @@ func (d *DownloadClientDataSource) Schema(ctx context.Context, req datasource.Sc
 				MarkdownDescription: "Password.",
 				Computed:            true,
 			},
-			"tv_category": schema.StringAttribute{
+			"movie_category": schema.StringAttribute{
 				MarkdownDescription: "TV category.",
 				Computed:            true,
 			},
-			"tv_imported_category": schema.StringAttribute{
+			"movie_imported_category": schema.StringAttribute{
 				MarkdownDescription: "TV imported category.",
 				Computed:            true,
 			},
-			"tv_directory": schema.StringAttribute{
+			"movie_directory": schema.StringAttribute{
 				MarkdownDescription: "TV directory.",
 				Computed:            true,
 			},

@@ -37,16 +37,16 @@ resource "radarr_download_client_transmission" "example" {
 - `add_paused` (Boolean) Add paused flag.
 - `enable` (Boolean) Enable flag.
 - `host` (String) host.
-- `older_tv_priority` (Number) Older TV priority. `0` Last, `1` First.
+- `movie_category` (String) TV category.
+- `movie_directory` (String) TV directory.
+- `older_movie_priority` (Number) Older TV priority. `0` Last, `1` First.
 - `password` (String) Password.
 - `port` (Number) Port.
 - `priority` (Number) Priority.
-- `recent_tv_priority` (Number) Recent TV priority. `0` Last, `1` First.
+- `recent_movie_priority` (Number) Recent TV priority. `0` Last, `1` First.
 - `remove_completed_downloads` (Boolean) Remove completed downloads flag.
 - `remove_failed_downloads` (Boolean) Remove failed downloads flag.
 - `tags` (Set of Number) List of associated tags.
-- `tv_category` (String) TV category.
-- `tv_directory` (String) TV directory.
 - `url_base` (String) Base URL.
 - `use_ssl` (Boolean) Use SSL flag.
 - `username` (String) Username.
