@@ -133,6 +133,7 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewDownloadClientConfigResource,
 		NewDownloadClientResource,
 		NewDownloadClientTransmissionResource,
+		NewDownloadClientAria2Resource,
 		NewRemotePathMappingResource,
 
 		// Indexers
