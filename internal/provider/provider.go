@@ -146,6 +146,7 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewDownloadClientTorrentBlackholeResource,
 		NewDownloadClientTorrentDownloadStationResource,
 		NewDownloadClientUsenetBlackholeResource,
+		NewDownloadClientUsenetDownloadStationResource,
 		NewRemotePathMappingResource,
 
 		// Indexers
