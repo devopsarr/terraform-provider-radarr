@@ -126,10 +126,6 @@ func (d *DownloadClientsDataSource) Schema(ctx context.Context, req datasource.S
 							MarkdownDescription: "Read only flag.",
 							Computed:            true,
 						},
-						"watch_folder": schema.BoolAttribute{
-							MarkdownDescription: "Watch folder flag.",
-							Computed:            true,
-						},
 						"port": schema.Int64Attribute{
 							MarkdownDescription: "Port.",
 							Computed:            true,
@@ -210,6 +206,10 @@ func (d *DownloadClientsDataSource) Schema(ctx context.Context, req datasource.S
 							MarkdownDescription: "Torrent folder.",
 							Computed:            true,
 						},
+						"watch_folder": schema.StringAttribute{
+							MarkdownDescription: "Watch folder flag.",
+							Computed:            true,
+						},
 						"magnet_file_extension": schema.StringAttribute{
 							MarkdownDescription: "Magnet file extension.",
 							Computed:            true,
@@ -224,7 +224,7 @@ func (d *DownloadClientsDataSource) Schema(ctx context.Context, req datasource.S
 							Computed:            true,
 							ElementType:         types.StringType,
 						},
-						"post_im_tags": schema.SetAttribute{
+						"post_import_tags": schema.SetAttribute{
 							MarkdownDescription: "Post import tags.",
 							Computed:            true,
 							ElementType:         types.StringType,
