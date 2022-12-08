@@ -162,6 +162,10 @@ func (d *IndexersDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 							MarkdownDescription: "Username.",
 							Computed:            true,
 						},
+						"user": schema.StringAttribute{
+							MarkdownDescription: "Username.",
+							Computed:            true,
+						},
 						"categories": schema.SetAttribute{
 							MarkdownDescription: "Series list.",
 							Computed:            true,

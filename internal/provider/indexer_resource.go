@@ -31,7 +31,7 @@ var (
 	indexerIntSliceFields = []string{"categories", "multiLanguages", "requiredFlags", "codecs", "mediums"}
 	indexerBoolFields     = []string{"allowZeroSize", "removeYear", "rankedOnly"}
 	indexerIntFields      = []string{"delay", "minimumSeeders", "seedTime"}
-	indexerStringFields   = []string{"additionalParameters", "apiKey", "apiPath", "baseUrl", "captchaToken", "cookie", "passkey", "username", "aPIUser", "aPIKey"}
+	indexerStringFields   = []string{"additionalParameters", "apiKey", "apiPath", "baseUrl", "captchaToken", "cookie", "passkey", "username", "user", "aPIUser", "aPIKey"}
 	indexerFloatFields    = []string{"seedRatio"}
 )
 
@@ -58,6 +58,7 @@ type Indexer struct {
 	Implementation          types.String  `tfsdk:"implementation"`
 	Protocol                types.String  `tfsdk:"protocol"`
 	Username                types.String  `tfsdk:"username"`
+	User                    types.String  `tfsdk:"user"`
 	Passkey                 types.String  `tfsdk:"passkey"`
 	BaseURL                 types.String  `tfsdk:"base_url"`
 	CaptchaToken            types.String  `tfsdk:"captcha_token"`
@@ -222,6 +223,11 @@ func (r *IndexerResource) Schema(ctx context.Context, req resource.SchemaRequest
 				Computed:            true,
 			},
 			"username": schema.StringAttribute{
+				MarkdownDescription: "Username.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"user": schema.StringAttribute{
 				MarkdownDescription: "Username.",
 				Optional:            true,
 				Computed:            true,
