@@ -158,14 +158,6 @@ func (d *NotificationsDataSource) Schema(ctx context.Context, req datasource.Sch
 							MarkdownDescription: "Port.",
 							Computed:            true,
 						},
-						"grab_fields": schema.Int64Attribute{
-							MarkdownDescription: "Grab fields. `0` Overview, `1` Rating, `2` Genres, `3` Quality, `4` Group, `5` Size, `6` Links, `7` Release, `8` Poster, `9` Fanart, `10` CustomFormats, `11` CustomFormatScore.",
-							Computed:            true,
-						},
-						"import_fields": schema.Int64Attribute{
-							MarkdownDescription: "Import fields. `0` Overview, `1` Rating, `2` Genres, `3` Quality, `4` Codecs, `5` Group, `6` Size, `7` Languages, `8` Subtitles, `9` Links, `10` Release, `11` Poster, `12` Fanart.",
-							Computed:            true,
-						},
 						"method": schema.Int64Attribute{
 							MarkdownDescription: "Method. `1` POST, `2` PUT.",
 							Computed:            true,
@@ -361,7 +353,7 @@ func (d *NotificationsDataSource) Schema(ctx context.Context, req datasource.Sch
 						"device_ids": schema.SetAttribute{
 							MarkdownDescription: "Device IDs.",
 							Computed:            true,
-							ElementType:         types.Int64Type,
+							ElementType:         types.StringType,
 						},
 						"channel_tags": schema.SetAttribute{
 							MarkdownDescription: "Channel tags.",
@@ -377,6 +369,16 @@ func (d *NotificationsDataSource) Schema(ctx context.Context, req datasource.Sch
 							MarkdownDescription: "Devices.",
 							Computed:            true,
 							ElementType:         types.StringType,
+						},
+						"grab_fields": schema.SetAttribute{
+							MarkdownDescription: "Grab fields. `0` Overview, `1` Rating, `2` Genres, `3` Quality, `4` Group, `5` Size, `6` Links, `7` Release, `8` Poster, `9` Fanart, `10` CustomFormats, `11` CustomFormatScore.",
+							Computed:            true,
+							ElementType:         types.Int64Type,
+						},
+						"import_fields": schema.SetAttribute{
+							MarkdownDescription: "Import fields. `0` Overview, `1` Rating, `2` Genres, `3` Quality, `4` Codecs, `5` Group, `6` Size, `7` Languages, `8` Subtitles, `9` Links, `10` Release, `11` Poster, `12` Fanart.",
+							Computed:            true,
+							ElementType:         types.Int64Type,
 						},
 						"field_tags": schema.SetAttribute{
 							MarkdownDescription: "Devices.",

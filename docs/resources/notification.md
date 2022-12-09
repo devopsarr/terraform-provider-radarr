@@ -89,10 +89,10 @@ resource "radarr_notification" "example" {
 - `expires` (String) Expires.
 - `field_tags` (Set of String) Devices.
 - `from` (String) From.
-- `grab_fields` (Number) Grab fields. `0` Overview, `1` Rating, `2` Genres, `3` Quality, `4` Group, `5` Size, `6` Links, `7` Release, `8` Poster, `9` Fanart, `10` CustomFormats, `11` CustomFormatScore.
+- `grab_fields` (Set of Number) Grab fields. `0` Overview, `1` Rating, `2` Genres, `3` Quality, `4` Group, `5` Size, `6` Links, `7` Release, `8` Poster, `9` Fanart.
 - `host` (String) Host.
 - `icon` (String) Icon.
-- `import_fields` (Number) Import fields. `0` Overview, `1` Rating, `2` Genres, `3` Quality, `4` Codecs, `5` Group, `6` Size, `7` Languages, `8` Subtitles, `9` Links, `10` Release, `11` Poster, `12` Fanart.
+- `import_fields` (Set of Number) Import fields. `0` Overview, `1` Rating, `2` Genres, `3` Quality, `4` Codecs, `5` Group, `6` Size, `7` Languages, `8` Subtitles, `9` Links, `10` Release, `11` Poster, `12` Fanart.
 - `instance_name` (String) Instance name.
 - `key` (String) Key.
 - `map_from` (String) Map From.

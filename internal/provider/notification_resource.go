@@ -30,9 +30,9 @@ var _ resource.ResourceWithImportState = &NotificationResource{}
 var (
 	notificationBoolFields        = []string{"alwaysUpdate", "cleanLibrary", "directMessage", "notify", "requireEncryption", "sendSilently", "useSsl", "updateLibrary", "useEuEndpoint"}
 	notificationStringFields      = []string{"accessToken", "accessTokenSecret", "apiKey", "aPIKey", "appToken", "arguments", "author", "authToken", "authUser", "avatar", "cc", "bcc", "botToken", "channel", "chatId", "consumerKey", "consumerSecret", "deviceNames", "displayTime", "expires", "from", "host", "icon", "instanceName", "mention", "password", "path", "refreshToken", "senderDomain", "senderId", "server", "signIn", "sound", "to", "token", "url", "userKey", "username", "webHookUrl", "serverUrl", "userName", "clickUrl", "mapFrom", "mapTo", "key", "event"}
-	notificationIntFields         = []string{"port", "grabFields", "importFields", "priority", "retry", "expire", "method"}
-	notificationStringSliceFields = []string{"recipients", "topics", "tags", "channelTags", "devices"}
-	notificationIntSliceFields    = []string{"deviceIds"}
+	notificationIntFields         = []string{"port", "priority", "retry", "expire", "method"}
+	notificationStringSliceFields = []string{"recipients", "topics", "deviceIds", "tags", "channelTags", "devices"}
+	notificationIntSliceFields    = []string{"grabFields", "importFields"}
 )
 
 func NewNotificationResource() resource.Resource {
@@ -50,6 +50,8 @@ type Notification struct {
 	FieldTags                   types.Set    `tfsdk:"field_tags"`
 	ChannelTags                 types.Set    `tfsdk:"channel_tags"`
 	Topics                      types.Set    `tfsdk:"topics"`
+	ImportFields                types.Set    `tfsdk:"import_fields"`
+	GrabFields                  types.Set    `tfsdk:"grab_fields"`
 	DeviceIds                   types.Set    `tfsdk:"device_ids"`
 	Devices                     types.Set    `tfsdk:"devices"`
 	Recipients                  types.Set    `tfsdk:"recipients"`
@@ -106,8 +108,6 @@ type Notification struct {
 	Retry                       types.Int64  `tfsdk:"retry"`
 	Expire                      types.Int64  `tfsdk:"expire"`
 	ID                          types.Int64  `tfsdk:"id"`
-	ImportFields                types.Int64  `tfsdk:"import_fields"`
-	GrabFields                  types.Int64  `tfsdk:"grab_fields"`
 	CleanLibrary                types.Bool   `tfsdk:"clean_library"`
 	OnGrab                      types.Bool   `tfsdk:"on_grab"`
 	OnMovieAdded                types.Bool   `tfsdk:"on_movie_added"`
@@ -257,22 +257,6 @@ func (r *NotificationResource) Schema(ctx context.Context, req resource.SchemaRe
 				MarkdownDescription: "Port.",
 				Optional:            true,
 				Computed:            true,
-			},
-			"grab_fields": schema.Int64Attribute{
-				MarkdownDescription: "Grab fields. `0` Overview, `1` Rating, `2` Genres, `3` Quality, `4` Group, `5` Size, `6` Links, `7` Release, `8` Poster, `9` Fanart, `10` CustomFormats, `11` CustomFormatScore.",
-				Optional:            true,
-				Computed:            true,
-				Validators: []validator.Int64{
-					int64validator.OneOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
-				},
-			},
-			"import_fields": schema.Int64Attribute{
-				MarkdownDescription: "Import fields. `0` Overview, `1` Rating, `2` Genres, `3` Quality, `4` Codecs, `5` Group, `6` Size, `7` Languages, `8` Subtitles, `9` Links, `10` Release, `11` Poster, `12` Fanart.",
-				Optional:            true,
-				Computed:            true,
-				Validators: []validator.Int64{
-					int64validator.OneOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12),
-				},
 			},
 			"method": schema.Int64Attribute{
 				MarkdownDescription: "Method. `1` POST, `2` PUT.",
@@ -524,7 +508,7 @@ func (r *NotificationResource) Schema(ctx context.Context, req resource.SchemaRe
 				MarkdownDescription: "Device IDs.",
 				Optional:            true,
 				Computed:            true,
-				ElementType:         types.Int64Type,
+				ElementType:         types.StringType,
 			},
 			"channel_tags": schema.SetAttribute{
 				MarkdownDescription: "Channel tags.",
@@ -543,6 +527,18 @@ func (r *NotificationResource) Schema(ctx context.Context, req resource.SchemaRe
 				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
+			},
+			"grab_fields": schema.SetAttribute{
+				MarkdownDescription: "Grab fields. `0` Overview, `1` Rating, `2` Genres, `3` Quality, `4` Group, `5` Size, `6` Links, `7` Release, `8` Poster, `9` Fanart.",
+				Optional:            true,
+				Computed:            true,
+				ElementType:         types.Int64Type,
+			},
+			"import_fields": schema.SetAttribute{
+				MarkdownDescription: "Import fields. `0` Overview, `1` Rating, `2` Genres, `3` Quality, `4` Codecs, `5` Group, `6` Size, `7` Languages, `8` Subtitles, `9` Links, `10` Release, `11` Poster, `12` Fanart.",
+				Optional:            true,
+				Computed:            true,
+				ElementType:         types.Int64Type,
 			},
 			"field_tags": schema.SetAttribute{
 				MarkdownDescription: "Devices.",
@@ -717,9 +713,11 @@ func (n *Notification) write(ctx context.Context, notification *radarr.Notificat
 	n.Name = types.StringValue(notification.Name)
 	n.Implementation = types.StringValue(notification.Implementation)
 	n.ConfigContract = types.StringValue(notification.ConfigContract)
+	n.GrabFields = types.SetValueMust(types.Int64Type, nil)
+	n.ImportFields = types.SetValueMust(types.Int64Type, nil)
 	n.Tags = types.SetValueMust(types.Int64Type, nil)
 	n.ChannelTags = types.SetValueMust(types.StringType, nil)
-	n.DeviceIds = types.SetValueMust(types.Int64Type, nil)
+	n.DeviceIds = types.SetValueMust(types.StringType, nil)
 	n.Topics = types.SetValueMust(types.StringType, nil)
 	n.Devices = types.SetValueMust(types.StringType, nil)
 	n.Recipients = types.SetValueMust(types.StringType, nil)
