@@ -183,6 +183,7 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewNotificationJoinResource,
 		NewNotificationKodiResource,
 		NewNotificationMailgunResource,
+		NewNotificationPlexResource,
 		NewNotificationWebhookResource,
 
 		// Profiles
