@@ -190,6 +190,7 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewNotificationPushbulletResource,
 		NewNotificationPushoverResource,
 		NewNotificationSendgridResource,
+		NewNotificationSimplepushResource,
 		NewNotificationSlackResource,
 		NewNotificationSynologyResource,
 		NewNotificationTelegramResource,
