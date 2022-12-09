@@ -40,9 +40,9 @@ Read-Only:
 - `auth_user` (String) Auth user.
 - `author` (String) Author.
 - `avatar` (String) Avatar.
-- `bcc` (String) Bcc.
+- `bcc` (Set of String) Bcc.
 - `bot_token` (String) Bot token.
-- `cc` (String) Cc.
+- `cc` (Set of String) Cc.
 - `channel` (String) Channel.
 - `channel_tags` (Set of String) Channel tags.
 - `chat_id` (String) Chat ID.
@@ -51,7 +51,7 @@ Read-Only:
 - `config_contract` (String) Notification configuration template.
 - `consumer_key` (String) Consumer key.
 - `consumer_secret` (String) Consumer secret.
-- `device_ids` (Set of Number) Device IDs.
+- `device_ids` (Set of String) Device IDs.
 - `device_names` (String) Device names.
 - `devices` (Set of String) Devices.
 - `direct_message` (Boolean) Direct message flag.
@@ -102,7 +102,7 @@ Read-Only:
 - `sign_in` (String) Sign in.
 - `sound` (String) Sound.
 - `tags` (Set of Number) List of associated tags.
-- `to` (String) To.
+- `to` (Set of String) To.
 - `token` (String) Token.
 - `topics` (Set of String) Devices.
 - `update_library` (Boolean) Update library flag.

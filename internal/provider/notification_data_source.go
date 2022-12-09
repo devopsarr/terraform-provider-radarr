@@ -197,16 +197,8 @@ func (d *NotificationDataSource) Schema(ctx context.Context, req datasource.Sche
 				MarkdownDescription: "Instance name.",
 				Computed:            true,
 			},
-			"bcc": schema.StringAttribute{
-				MarkdownDescription: "Bcc.",
-				Computed:            true,
-			},
 			"bot_token": schema.StringAttribute{
 				MarkdownDescription: "Bot token.",
-				Computed:            true,
-			},
-			"cc": schema.StringAttribute{
-				MarkdownDescription: "Cc.",
 				Computed:            true,
 			},
 			"channel": schema.StringAttribute{
@@ -283,10 +275,6 @@ func (d *NotificationDataSource) Schema(ctx context.Context, req datasource.Sche
 			},
 			"sound": schema.StringAttribute{
 				MarkdownDescription: "Sound.",
-				Computed:            true,
-			},
-			"to": schema.StringAttribute{
-				MarkdownDescription: "To.",
 				Computed:            true,
 			},
 			"token": schema.StringAttribute{
@@ -370,6 +358,21 @@ func (d *NotificationDataSource) Schema(ctx context.Context, req datasource.Sche
 			},
 			"recipients": schema.SetAttribute{
 				MarkdownDescription: "Recipients.",
+				Computed:            true,
+				ElementType:         types.StringType,
+			},
+			"to": schema.SetAttribute{
+				MarkdownDescription: "To.",
+				Computed:            true,
+				ElementType:         types.StringType,
+			},
+			"cc": schema.SetAttribute{
+				MarkdownDescription: "Cc.",
+				Computed:            true,
+				ElementType:         types.StringType,
+			},
+			"bcc": schema.SetAttribute{
+				MarkdownDescription: "Bcc.",
 				Computed:            true,
 				ElementType:         types.StringType,
 			},

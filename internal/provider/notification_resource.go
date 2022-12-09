@@ -29,9 +29,9 @@ var _ resource.ResourceWithImportState = &NotificationResource{}
 
 var (
 	notificationBoolFields        = []string{"alwaysUpdate", "cleanLibrary", "directMessage", "notify", "requireEncryption", "sendSilently", "useSsl", "updateLibrary", "useEuEndpoint"}
-	notificationStringFields      = []string{"accessToken", "accessTokenSecret", "apiKey", "aPIKey", "appToken", "arguments", "author", "authToken", "authUser", "avatar", "cc", "bcc", "botToken", "channel", "chatId", "consumerKey", "consumerSecret", "deviceNames", "displayTime", "expires", "from", "host", "icon", "instanceName", "mention", "password", "path", "refreshToken", "senderDomain", "senderId", "server", "signIn", "sound", "to", "token", "url", "userKey", "username", "webHookUrl", "serverUrl", "userName", "clickUrl", "mapFrom", "mapTo", "key", "event"}
+	notificationStringFields      = []string{"accessToken", "accessTokenSecret", "apiKey", "aPIKey", "appToken", "arguments", "author", "authToken", "authUser", "avatar", "botToken", "channel", "chatId", "consumerKey", "consumerSecret", "deviceNames", "displayTime", "expires", "from", "host", "icon", "instanceName", "mention", "password", "path", "refreshToken", "senderDomain", "senderId", "server", "signIn", "sound", "token", "url", "userKey", "username", "webHookUrl", "serverUrl", "userName", "clickUrl", "mapFrom", "mapTo", "key", "event"}
 	notificationIntFields         = []string{"port", "priority", "retry", "expire", "method"}
-	notificationStringSliceFields = []string{"recipients", "topics", "deviceIds", "tags", "channelTags", "devices"}
+	notificationStringSliceFields = []string{"recipients", "to", "cC", "bcc", "topics", "deviceIds", "tags", "channelTags", "devices"}
 	notificationIntSliceFields    = []string{"grabFields", "importFields"}
 )
 
@@ -54,6 +54,9 @@ type Notification struct {
 	GrabFields                  types.Set    `tfsdk:"grab_fields"`
 	DeviceIds                   types.Set    `tfsdk:"device_ids"`
 	Devices                     types.Set    `tfsdk:"devices"`
+	To                          types.Set    `tfsdk:"to"`
+	Cc                          types.Set    `tfsdk:"cc"`
+	Bcc                         types.Set    `tfsdk:"bcc"`
 	Recipients                  types.Set    `tfsdk:"recipients"`
 	DeviceNames                 types.String `tfsdk:"device_names"`
 	AccessToken                 types.String `tfsdk:"access_token"`
@@ -69,7 +72,6 @@ type Notification struct {
 	ConsumerKey                 types.String `tfsdk:"consumer_key"`
 	ChatID                      types.String `tfsdk:"chat_id"`
 	From                        types.String `tfsdk:"from"`
-	Cc                          types.String `tfsdk:"cc"`
 	Icon                        types.String `tfsdk:"icon"`
 	Password                    types.String `tfsdk:"password"`
 	Event                       types.String `tfsdk:"event"`
@@ -83,9 +85,7 @@ type Notification struct {
 	Avatar                      types.String `tfsdk:"avatar"`
 	URL                         types.String `tfsdk:"url"`
 	Token                       types.String `tfsdk:"token"`
-	To                          types.String `tfsdk:"to"`
 	Sound                       types.String `tfsdk:"sound"`
-	Bcc                         types.String `tfsdk:"bcc"`
 	SignIn                      types.String `tfsdk:"sign_in"`
 	Server                      types.String `tfsdk:"server"`
 	SenderID                    types.String `tfsdk:"sender_id"`
@@ -334,18 +334,8 @@ func (r *NotificationResource) Schema(ctx context.Context, req resource.SchemaRe
 				Optional:            true,
 				Computed:            true,
 			},
-			"bcc": schema.StringAttribute{
-				MarkdownDescription: "Bcc.",
-				Optional:            true,
-				Computed:            true,
-			},
 			"bot_token": schema.StringAttribute{
 				MarkdownDescription: "Bot token.",
-				Optional:            true,
-				Computed:            true,
-			},
-			"cc": schema.StringAttribute{
-				MarkdownDescription: "Cc.",
 				Optional:            true,
 				Computed:            true,
 			},
@@ -441,11 +431,6 @@ func (r *NotificationResource) Schema(ctx context.Context, req resource.SchemaRe
 			},
 			"sound": schema.StringAttribute{
 				MarkdownDescription: "Sound.",
-				Optional:            true,
-				Computed:            true,
-			},
-			"to": schema.StringAttribute{
-				MarkdownDescription: "To.",
 				Optional:            true,
 				Computed:            true,
 			},
@@ -548,6 +533,24 @@ func (r *NotificationResource) Schema(ctx context.Context, req resource.SchemaRe
 			},
 			"recipients": schema.SetAttribute{
 				MarkdownDescription: "Recipients.",
+				Optional:            true,
+				Computed:            true,
+				ElementType:         types.StringType,
+			},
+			"to": schema.SetAttribute{
+				MarkdownDescription: "To.",
+				Optional:            true,
+				Computed:            true,
+				ElementType:         types.StringType,
+			},
+			"cc": schema.SetAttribute{
+				MarkdownDescription: "Cc.",
+				Optional:            true,
+				Computed:            true,
+				ElementType:         types.StringType,
+			},
+			"bcc": schema.SetAttribute{
+				MarkdownDescription: "Bcc.",
 				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
@@ -722,6 +725,9 @@ func (n *Notification) write(ctx context.Context, notification *radarr.Notificat
 	n.Devices = types.SetValueMust(types.StringType, nil)
 	n.Recipients = types.SetValueMust(types.StringType, nil)
 	n.FieldTags = types.SetValueMust(types.StringType, nil)
+	n.To = types.SetValueMust(types.StringType, nil)
+	n.Cc = types.SetValueMust(types.StringType, nil)
+	n.Bcc = types.SetValueMust(types.StringType, nil)
 	tfsdk.ValueFrom(ctx, notification.Tags, n.Tags.Type(ctx), &n.Tags)
 	n.writeFields(ctx, notification.Fields)
 }
