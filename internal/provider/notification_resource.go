@@ -31,7 +31,7 @@ var (
 	notificationBoolFields        = []string{"alwaysUpdate", "cleanLibrary", "directMessage", "notify", "requireEncryption", "sendSilently", "useSsl", "updateLibrary", "useEuEndpoint"}
 	notificationStringFields      = []string{"accessToken", "accessTokenSecret", "apiKey", "aPIKey", "appToken", "arguments", "author", "authToken", "authUser", "avatar", "botToken", "channel", "chatId", "consumerKey", "consumerSecret", "deviceNames", "expires", "from", "host", "icon", "instanceName", "mention", "password", "path", "refreshToken", "senderDomain", "senderId", "server", "signIn", "sound", "token", "url", "userKey", "username", "webHookUrl", "serverUrl", "userName", "clickUrl", "mapFrom", "mapTo", "key", "event"}
 	notificationIntFields         = []string{"displayTime", "port", "priority", "retry", "expire", "method"}
-	notificationStringSliceFields = []string{"recipients", "to", "cC", "bcc", "topics", "deviceIds", "tags", "channelTags", "devices"}
+	notificationStringSliceFields = []string{"recipients", "to", "cC", "bcc", "topics", "deviceIds", "fieldTags", "channelTags", "devices"}
 	notificationIntSliceFields    = []string{"grabFields", "importFields"}
 )
 
@@ -508,7 +508,7 @@ func (r *NotificationResource) Schema(ctx context.Context, req resource.SchemaRe
 				ElementType:         types.StringType,
 			},
 			"topics": schema.SetAttribute{
-				MarkdownDescription: "Devices.",
+				MarkdownDescription: "Topics.",
 				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
@@ -526,7 +526,7 @@ func (r *NotificationResource) Schema(ctx context.Context, req resource.SchemaRe
 				ElementType:         types.Int64Type,
 			},
 			"field_tags": schema.SetAttribute{
-				MarkdownDescription: "Devices.",
+				MarkdownDescription: "Specific tags.",
 				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
@@ -756,7 +756,7 @@ func (n *Notification) writeFields(ctx context.Context, fields []*starr.FieldOut
 			continue
 		}
 
-		if slices.Contains(notificationStringSliceFields, f.Name) {
+		if slices.Contains(notificationStringSliceFields, f.Name) || f.Name == "tags" {
 			tools.WriteStringSliceField(ctx, f, n)
 		}
 

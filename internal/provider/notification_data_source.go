@@ -338,7 +338,7 @@ func (d *NotificationDataSource) Schema(ctx context.Context, req datasource.Sche
 				ElementType:         types.StringType,
 			},
 			"topics": schema.SetAttribute{
-				MarkdownDescription: "Devices.",
+				MarkdownDescription: "Topics.",
 				Computed:            true,
 				ElementType:         types.StringType,
 			},
@@ -353,7 +353,7 @@ func (d *NotificationDataSource) Schema(ctx context.Context, req datasource.Sche
 				ElementType:         types.Int64Type,
 			},
 			"field_tags": schema.SetAttribute{
-				MarkdownDescription: "Devices.",
+				MarkdownDescription: "Specific tags.",
 				Computed:            true,
 				ElementType:         types.StringType,
 			},

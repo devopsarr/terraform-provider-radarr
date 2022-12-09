@@ -59,7 +59,7 @@ Read-Only:
 - `event` (String) Event.
 - `expire` (Number) Expire.
 - `expires` (String) Expires.
-- `field_tags` (Set of String) Devices.
+- `field_tags` (Set of String) Specific tags.
 - `from` (String) From.
 - `grab_fields` (Set of Number) Grab fields. `0` Overview, `1` Rating, `2` Genres, `3` Quality, `4` Group, `5` Size, `6` Links, `7` Release, `8` Poster, `9` Fanart, `10` CustomFormats, `11` CustomFormatScore.
 - `host` (String) Host.
@@ -104,7 +104,7 @@ Read-Only:
 - `tags` (Set of Number) List of associated tags.
 - `to` (Set of String) To.
 - `token` (String) Token.
-- `topics` (Set of String) Devices.
+- `topics` (Set of String) Topics.
 - `update_library` (Boolean) Update library flag.
 - `url` (String) URL.
 - `use_eu_endpoint` (Boolean) Use EU endpoint flag.
