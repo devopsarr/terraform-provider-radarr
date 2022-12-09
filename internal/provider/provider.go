@@ -174,7 +174,28 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 
 		// Notifications
 		NewNotificationResource,
+		NewNotificationBoxcarResource,
 		NewNotificationCustomScriptResource,
+		NewNotificationDiscordResource,
+		NewNotificationEmailResource,
+		NewNotificationEmbyResource,
+		NewNotificationGotifyResource,
+		NewNotificationJoinResource,
+		NewNotificationKodiResource,
+		NewNotificationMailgunResource,
+		NewNotificationNotifiarrResource,
+		NewNotificationNtfyResource,
+		NewNotificationPlexResource,
+		NewNotificationProwlResource,
+		NewNotificationPushbulletResource,
+		NewNotificationPushoverResource,
+		NewNotificationSendgridResource,
+		NewNotificationSimplepushResource,
+		NewNotificationSlackResource,
+		NewNotificationSynologyResource,
+		NewNotificationTelegramResource,
+		NewNotificationTraktResource,
+		NewNotificationTwitterResource,
 		NewNotificationWebhookResource,
 
 		// Profiles
