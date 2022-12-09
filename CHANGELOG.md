@@ -1,5 +1,63 @@
 # Changelog
 
+## [1.6.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v1.5.0...v1.6.0) (2022-12-09)
+
+
+### Features
+
+* add download client aria2 resource ([7cb733c](https://github.com/devopsarr/terraform-provider-radarr/commit/7cb733c10a53d9f586a5407607b683d8069eeaff))
+* add download client blackhole resource ([bb19984](https://github.com/devopsarr/terraform-provider-radarr/commit/bb199842784f4419999eb7ffb05d2153a8450a6e))
+* add download client deluge resource ([200d7ab](https://github.com/devopsarr/terraform-provider-radarr/commit/200d7abe024e62562a26eacab73e4654790111f8))
+* add download client flood resource ([593bad5](https://github.com/devopsarr/terraform-provider-radarr/commit/593bad555f48cc4c2a07c25a990bafdb15275cda))
+* add download client hadouken resource ([5a45185](https://github.com/devopsarr/terraform-provider-radarr/commit/5a451858788d4aafabb4466ba41817a3b26f6c9f))
+* add download client nzbget resource ([5175c1a](https://github.com/devopsarr/terraform-provider-radarr/commit/5175c1a4beb0a07c26fa85ee6b612d9e6a96f646))
+* add download client nzbvortex resource ([0cb8e03](https://github.com/devopsarr/terraform-provider-radarr/commit/0cb8e031d128b1bf932cf217d6546b3dff6dbdad))
+* add download client pneumatic resource ([0cdca61](https://github.com/devopsarr/terraform-provider-radarr/commit/0cdca617200e556d2b92e5a1e97b0b21f900e9ea))
+* add download client qbittorrent resource ([926f368](https://github.com/devopsarr/terraform-provider-radarr/commit/926f368ecef5feb907b74f6b1a6f2ff2c3205696))
+* add download client rtorrent resource ([750a46f](https://github.com/devopsarr/terraform-provider-radarr/commit/750a46f43f04a9f8d18e1a75b51d1e5d122790a8))
+* add download client sabnzbd resource ([e18d1b0](https://github.com/devopsarr/terraform-provider-radarr/commit/e18d1b0ecd04fc56de2544715691aef9105b6560))
+* add download client torrent download station resource ([05d8a00](https://github.com/devopsarr/terraform-provider-radarr/commit/05d8a00352aa163ddbad09d2cb35f545003874f6))
+* add download client usenet blackhole resource ([0692347](https://github.com/devopsarr/terraform-provider-radarr/commit/0692347cfd6a48274e9420b361ac01a4f92edd57))
+* add download client usenet download station resource ([73176e3](https://github.com/devopsarr/terraform-provider-radarr/commit/73176e3d461b14c38063e3271038fac9eae66cab))
+* add download client utorrent resource ([be1a82c](https://github.com/devopsarr/terraform-provider-radarr/commit/be1a82c9d05658df337b42ea41255c0dd6d5756e))
+* add download client vuze resource ([84ca9dd](https://github.com/devopsarr/terraform-provider-radarr/commit/84ca9ddc7c5f5f3c09ce36c380f1c78fcd36f1c5))
+* add indexer filelist resource ([0dccd77](https://github.com/devopsarr/terraform-provider-radarr/commit/0dccd7793b90e4139d3542cab2b607b45aab41e7))
+* add indexer hdbits resource ([8337ec2](https://github.com/devopsarr/terraform-provider-radarr/commit/8337ec23cdc97065d9b262fadfd820c4c4a51465))
+* add indexer iptorrents resource ([05cc40a](https://github.com/devopsarr/terraform-provider-radarr/commit/05cc40a7942e26e8452d449e182c1b80aaa7a870))
+* add indexer nyaa resource ([4c83f9b](https://github.com/devopsarr/terraform-provider-radarr/commit/4c83f9b3f25fe87af8e984ec715f14ad4df96359))
+* add indexer omgwtfnzbs resource ([fc7dff4](https://github.com/devopsarr/terraform-provider-radarr/commit/fc7dff4d0820742c88c5a3789eec623ccd868389))
+* add indexer pass the popcorn resource ([89d2d0c](https://github.com/devopsarr/terraform-provider-radarr/commit/89d2d0ca4178a6aa3fad0763597f115ff37c76ee))
+* add indexer torrent potato resource ([07dafb8](https://github.com/devopsarr/terraform-provider-radarr/commit/07dafb810bae427a1bbcdbe3947f4544d8616571))
+* add indexer torrent rss resource ([a948496](https://github.com/devopsarr/terraform-provider-radarr/commit/a948496c624fa67d27a123cb80df64b4a021d770))
+* add indexer torznab resource ([cf886c6](https://github.com/devopsarr/terraform-provider-radarr/commit/cf886c6039f26c38ffb1722e8314e91b24517a01))
+* add notification boxcar resource ([0cd4b10](https://github.com/devopsarr/terraform-provider-radarr/commit/0cd4b10efc0f965229cb890430411809db1bf741))
+* add notification discord resource ([767afa5](https://github.com/devopsarr/terraform-provider-radarr/commit/767afa5afcb14d79674b7d9fe670f5ae28773927))
+* add notification email resource ([174877c](https://github.com/devopsarr/terraform-provider-radarr/commit/174877caad7506a1d18d0e2dd479096b21a468f5))
+* add notification emby resource ([cec8aae](https://github.com/devopsarr/terraform-provider-radarr/commit/cec8aaeea483528120b0f338d740322c6406b432))
+* add notification gotify resource ([30cd267](https://github.com/devopsarr/terraform-provider-radarr/commit/30cd267ee0ea23872ec14f1d1fef8d6b1331cb3d))
+* add notification join resource ([56062d3](https://github.com/devopsarr/terraform-provider-radarr/commit/56062d3a198d09126c9983c345c76edcaaad105b))
+* add notification kodi resource ([c7fcef3](https://github.com/devopsarr/terraform-provider-radarr/commit/c7fcef3b8b171eef2a956169ec1e8c6124c7483d))
+* add notification mailgun resource ([62090f7](https://github.com/devopsarr/terraform-provider-radarr/commit/62090f7a3b7c916ca11c7b65f9da16c6ca872625))
+* add notification notifiarr resource ([ed4365a](https://github.com/devopsarr/terraform-provider-radarr/commit/ed4365add560657d025c95f81fcbfef4a3184d78))
+* add notification ntfy resource ([7cf6f31](https://github.com/devopsarr/terraform-provider-radarr/commit/7cf6f3100116c84d6e2f10f0b02fd485cf84b46d))
+* add notification plex resource ([ded48a7](https://github.com/devopsarr/terraform-provider-radarr/commit/ded48a7fd44c58c386ef3e4016407578f226973e))
+* add notification prowl resource ([769393c](https://github.com/devopsarr/terraform-provider-radarr/commit/769393c7883502dd3412190a06b26e44a4658274))
+* add notification pushbullet resource ([13cbe21](https://github.com/devopsarr/terraform-provider-radarr/commit/13cbe213e498074427e3a0c84580b62a73f1b41d))
+* add notification pushover resource ([384922b](https://github.com/devopsarr/terraform-provider-radarr/commit/384922b2b11ec23efc7b7fc30f91e81881a7f0d6))
+* add notification sendgrid resource ([2d9885d](https://github.com/devopsarr/terraform-provider-radarr/commit/2d9885d0db0bcdfc714dd445e12d967b17b2107d))
+* add notification simplepush resource ([fc2ca35](https://github.com/devopsarr/terraform-provider-radarr/commit/fc2ca35d5844bd2c7daa2c467011403df93f7cd4))
+* add notification slack resource ([fc95196](https://github.com/devopsarr/terraform-provider-radarr/commit/fc95196d3c03271501a1ca2c71f83b3860cb9aa0))
+* add notification synology resource ([c811240](https://github.com/devopsarr/terraform-provider-radarr/commit/c8112407e0c994873a347a488e12e70a81ad846f))
+* add notification telegram resource ([617caef](https://github.com/devopsarr/terraform-provider-radarr/commit/617caef193c86c81ae4c0514bfeb8c5bbf121e7d))
+* add notification trakt resource ([40a7417](https://github.com/devopsarr/terraform-provider-radarr/commit/40a7417c0fbbde388de3e31ec94d7a72286651b3))
+* add notification twitter resource ([fc972ac](https://github.com/devopsarr/terraform-provider-radarr/commit/fc972ac05c8c82ec894542c7064f33def6cdaec4))
+
+
+### Bug Fixes
+
+* download client fields were sonarr related ([d12be45](https://github.com/devopsarr/terraform-provider-radarr/commit/d12be45b1f555d8db73f3d770bf044ac7d1a3821))
+* post_im_tags and watch_floder fields ([b56db33](https://github.com/devopsarr/terraform-provider-radarr/commit/b56db335a6b26c40bae3e5a7cc08a1bb68eb7140))
+
 ## [1.5.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v1.4.0...v1.5.0) (2022-11-23)
 
 
