@@ -137,6 +137,11 @@ func (d *NotificationDataSource) Schema(ctx context.Context, req datasource.Sche
 				MarkdownDescription: "Use SSL flag.",
 				Computed:            true,
 			},
+
+			"display_time": schema.Int64Attribute{
+				MarkdownDescription: "Display time.",
+				Computed:            true,
+			},
 			"port": schema.Int64Attribute{
 				MarkdownDescription: "Port.",
 				Computed:            true,
@@ -219,10 +224,6 @@ func (d *NotificationDataSource) Schema(ctx context.Context, req datasource.Sche
 			},
 			"device_names": schema.StringAttribute{
 				MarkdownDescription: "Device names.",
-				Computed:            true,
-			},
-			"display_time": schema.StringAttribute{
-				MarkdownDescription: "Display time.",
 				Computed:            true,
 			},
 			"expires": schema.StringAttribute{

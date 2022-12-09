@@ -29,8 +29,8 @@ var _ resource.ResourceWithImportState = &NotificationResource{}
 
 var (
 	notificationBoolFields        = []string{"alwaysUpdate", "cleanLibrary", "directMessage", "notify", "requireEncryption", "sendSilently", "useSsl", "updateLibrary", "useEuEndpoint"}
-	notificationStringFields      = []string{"accessToken", "accessTokenSecret", "apiKey", "aPIKey", "appToken", "arguments", "author", "authToken", "authUser", "avatar", "botToken", "channel", "chatId", "consumerKey", "consumerSecret", "deviceNames", "displayTime", "expires", "from", "host", "icon", "instanceName", "mention", "password", "path", "refreshToken", "senderDomain", "senderId", "server", "signIn", "sound", "token", "url", "userKey", "username", "webHookUrl", "serverUrl", "userName", "clickUrl", "mapFrom", "mapTo", "key", "event"}
-	notificationIntFields         = []string{"port", "priority", "retry", "expire", "method"}
+	notificationStringFields      = []string{"accessToken", "accessTokenSecret", "apiKey", "aPIKey", "appToken", "arguments", "author", "authToken", "authUser", "avatar", "botToken", "channel", "chatId", "consumerKey", "consumerSecret", "deviceNames", "expires", "from", "host", "icon", "instanceName", "mention", "password", "path", "refreshToken", "senderDomain", "senderId", "server", "signIn", "sound", "token", "url", "userKey", "username", "webHookUrl", "serverUrl", "userName", "clickUrl", "mapFrom", "mapTo", "key", "event"}
+	notificationIntFields         = []string{"displayTime", "port", "priority", "retry", "expire", "method"}
 	notificationStringSliceFields = []string{"recipients", "to", "cC", "bcc", "topics", "deviceIds", "tags", "channelTags", "devices"}
 	notificationIntSliceFields    = []string{"grabFields", "importFields"}
 )
@@ -76,7 +76,6 @@ type Notification struct {
 	Password                    types.String `tfsdk:"password"`
 	Event                       types.String `tfsdk:"event"`
 	Key                         types.String `tfsdk:"key"`
-	DisplayTime                 types.String `tfsdk:"display_time"`
 	RefreshToken                types.String `tfsdk:"refresh_token"`
 	WebHookURL                  types.String `tfsdk:"web_hook_url"`
 	Username                    types.String `tfsdk:"username"`
@@ -102,6 +101,7 @@ type Notification struct {
 	Author                      types.String `tfsdk:"author"`
 	AuthToken                   types.String `tfsdk:"auth_token"`
 	AuthUser                    types.String `tfsdk:"auth_user"`
+	DisplayTime                 types.Int64  `tfsdk:"display_time"`
 	Priority                    types.Int64  `tfsdk:"priority"`
 	Port                        types.Int64  `tfsdk:"port"`
 	Method                      types.Int64  `tfsdk:"method"`
@@ -253,6 +253,11 @@ func (r *NotificationResource) Schema(ctx context.Context, req resource.SchemaRe
 				Optional:            true,
 				Computed:            true,
 			},
+			"display_time": schema.Int64Attribute{
+				MarkdownDescription: "Display time.",
+				Optional:            true,
+				Computed:            true,
+			},
 			"port": schema.Int64Attribute{
 				MarkdownDescription: "Port.",
 				Optional:            true,
@@ -361,11 +366,6 @@ func (r *NotificationResource) Schema(ctx context.Context, req resource.SchemaRe
 			},
 			"device_names": schema.StringAttribute{
 				MarkdownDescription: "Device names.",
-				Optional:            true,
-				Computed:            true,
-			},
-			"display_time": schema.StringAttribute{
-				MarkdownDescription: "Display time.",
 				Optional:            true,
 				Computed:            true,
 			},

@@ -52,7 +52,7 @@ data "radarr_notification" "example" {
 - `device_names` (String) Device names.
 - `devices` (Set of String) Devices.
 - `direct_message` (Boolean) Direct message flag.
-- `display_time` (String) Display time.
+- `display_time` (Number) Display time.
 - `event` (String) Event.
 - `expire` (Number) Expire.
 - `expires` (String) Expires.
