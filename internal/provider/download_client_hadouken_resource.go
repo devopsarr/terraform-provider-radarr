@@ -19,14 +19,16 @@ import (
 
 const (
 	downloadClientHadoukenResourceName   = "download_client_hadouken"
-	DownloadClientHadoukenImplementation = "Hadouken"
-	DownloadClientHadoukenConfigContrat  = "HadoukenSettings"
-	DownloadClientHadoukenProtocol       = "torrent"
+	downloadClientHadoukenImplementation = "Hadouken"
+	downloadClientHadoukenConfigContract = "HadoukenSettings"
+	downloadClientHadoukenProtocol       = "torrent"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &DownloadClientHadoukenResource{}
-var _ resource.ResourceWithImportState = &DownloadClientHadoukenResource{}
+var (
+	_ resource.Resource                = &DownloadClientHadoukenResource{}
+	_ resource.ResourceWithImportState = &DownloadClientHadoukenResource{}
+)
 
 func NewDownloadClientHadoukenResource() resource.Resource {
 	return &DownloadClientHadoukenResource{}
@@ -332,10 +334,10 @@ func (d *DownloadClientHadouken) read(ctx context.Context) *radarr.DownloadClien
 		RemoveFailedDownloads:    d.RemoveFailedDownloads.ValueBool(),
 		Priority:                 int(d.Priority.ValueInt64()),
 		ID:                       d.ID.ValueInt64(),
-		ConfigContract:           DownloadClientHadoukenConfigContrat,
-		Implementation:           DownloadClientHadoukenImplementation,
+		ConfigContract:           downloadClientHadoukenConfigContract,
+		Implementation:           downloadClientHadoukenImplementation,
 		Name:                     d.Name.ValueString(),
-		Protocol:                 DownloadClientHadoukenProtocol,
+		Protocol:                 downloadClientHadoukenProtocol,
 		Tags:                     tags,
 		Fields:                   d.toDownloadClient().readFields(ctx),
 	}

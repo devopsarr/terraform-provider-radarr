@@ -21,16 +21,18 @@ import (
 
 const (
 	downloadClientQbittorrentResourceName   = "download_client_qbittorrent"
-	DownloadClientQbittorrentImplementation = "QBittorrent"
-	DownloadClientQbittorrentConfigContrat  = "QBittorrentSettings"
-	DownloadClientQbittorrentProtocol       = "torrent"
+	downloadClientQbittorrentImplementation = "QBittorrent"
+	downloadClientQbittorrentConfigContract = "QBittorrentSettings"
+	downloadClientQbittorrentProtocol       = "torrent"
 )
 
 var downloadClientQbittorrentInitialStates = []int64{0, 1, 2}
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &DownloadClientQbittorrentResource{}
-var _ resource.ResourceWithImportState = &DownloadClientQbittorrentResource{}
+var (
+	_ resource.Resource                = &DownloadClientQbittorrentResource{}
+	_ resource.ResourceWithImportState = &DownloadClientQbittorrentResource{}
+)
 
 func NewDownloadClientQbittorrentResource() resource.Resource {
 	return &DownloadClientQbittorrentResource{}
@@ -403,10 +405,10 @@ func (d *DownloadClientQbittorrent) read(ctx context.Context) *radarr.DownloadCl
 		RemoveFailedDownloads:    d.RemoveFailedDownloads.ValueBool(),
 		Priority:                 int(d.Priority.ValueInt64()),
 		ID:                       d.ID.ValueInt64(),
-		ConfigContract:           DownloadClientQbittorrentConfigContrat,
-		Implementation:           DownloadClientQbittorrentImplementation,
+		ConfigContract:           downloadClientQbittorrentConfigContract,
+		Implementation:           downloadClientQbittorrentImplementation,
 		Name:                     d.Name.ValueString(),
-		Protocol:                 DownloadClientQbittorrentProtocol,
+		Protocol:                 downloadClientQbittorrentProtocol,
 		Tags:                     tags,
 		Fields:                   d.toDownloadClient().readFields(ctx),
 	}

@@ -19,14 +19,16 @@ import (
 
 const (
 	downloadClientPneumaticResourceName   = "download_client_pneumatic"
-	DownloadClientPneumaticImplementation = "Pneumatic"
-	DownloadClientPneumaticConfigContrat  = "PneumaticSettings"
-	DownloadClientPneumaticProtocol       = "usenet"
+	downloadClientPneumaticImplementation = "Pneumatic"
+	downloadClientPneumaticConfigContract = "PneumaticSettings"
+	downloadClientPneumaticProtocol       = "usenet"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &DownloadClientPneumaticResource{}
-var _ resource.ResourceWithImportState = &DownloadClientPneumaticResource{}
+var (
+	_ resource.Resource                = &DownloadClientPneumaticResource{}
+	_ resource.ResourceWithImportState = &DownloadClientPneumaticResource{}
+)
 
 func NewDownloadClientPneumaticResource() resource.Resource {
 	return &DownloadClientPneumaticResource{}
@@ -291,10 +293,10 @@ func (d *DownloadClientPneumatic) read(ctx context.Context) *radarr.DownloadClie
 		RemoveFailedDownloads:    d.RemoveFailedDownloads.ValueBool(),
 		Priority:                 int(d.Priority.ValueInt64()),
 		ID:                       d.ID.ValueInt64(),
-		ConfigContract:           DownloadClientPneumaticConfigContrat,
-		Implementation:           DownloadClientPneumaticImplementation,
+		ConfigContract:           downloadClientPneumaticConfigContract,
+		Implementation:           downloadClientPneumaticImplementation,
 		Name:                     d.Name.ValueString(),
-		Protocol:                 DownloadClientPneumaticProtocol,
+		Protocol:                 downloadClientPneumaticProtocol,
 		Tags:                     tags,
 		Fields:                   d.toDownloadClient().readFields(ctx),
 	}

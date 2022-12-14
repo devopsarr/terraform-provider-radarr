@@ -19,14 +19,16 @@ import (
 
 const (
 	indexerHdbitsResourceName   = "indexer_hdbits"
-	IndexerHdbitsImplementation = "HDBits"
-	IndexerHdbitsConfigContrat  = "HDBitsSettings"
-	IndexerHdbitsProtocol       = "torrent"
+	indexerHdbitsImplementation = "HDBits"
+	indexerHdbitsConfigContract = "HDBitsSettings"
+	indexerHdbitsProtocol       = "torrent"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &IndexerHdbitsResource{}
-var _ resource.ResourceWithImportState = &IndexerHdbitsResource{}
+var (
+	_ resource.Resource                = &IndexerHdbitsResource{}
+	_ resource.ResourceWithImportState = &IndexerHdbitsResource{}
+)
 
 func NewIndexerHdbitsResource() resource.Resource {
 	return &IndexerHdbitsResource{}
@@ -379,10 +381,10 @@ func (i *IndexerHdbits) read(ctx context.Context) *radarr.IndexerInput {
 		Priority:                i.Priority.ValueInt64(),
 		DownloadClientID:        i.DownloadClientID.ValueInt64(),
 		ID:                      i.ID.ValueInt64(),
-		ConfigContract:          IndexerHdbitsConfigContrat,
-		Implementation:          IndexerHdbitsImplementation,
+		ConfigContract:          indexerHdbitsConfigContract,
+		Implementation:          indexerHdbitsImplementation,
 		Name:                    i.Name.ValueString(),
-		Protocol:                IndexerHdbitsProtocol,
+		Protocol:                indexerHdbitsProtocol,
 		Tags:                    tags,
 		Fields:                  i.toIndexer().readFields(ctx),
 	}

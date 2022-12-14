@@ -21,13 +21,15 @@ import (
 
 const (
 	notificationWebhookResourceName   = "notification_webhook"
-	NotificationWebhookImplementation = "Webhook"
-	NotificationWebhookConfigContrat  = "WebhookSettings"
+	notificationWebhookImplementation = "Webhook"
+	notificationWebhookConfigContract = "WebhookSettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationWebhookResource{}
-var _ resource.ResourceWithImportState = &NotificationWebhookResource{}
+var (
+	_ resource.Resource                = &NotificationWebhookResource{}
+	_ resource.ResourceWithImportState = &NotificationWebhookResource{}
+)
 
 func NewNotificationWebhookResource() resource.Resource {
 	return &NotificationWebhookResource{}
@@ -370,8 +372,8 @@ func (n *NotificationWebhook) read(ctx context.Context) *radarr.NotificationInpu
 		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
 		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationWebhookConfigContrat,
-		Implementation:              NotificationWebhookImplementation,
+		ConfigContract:              notificationWebhookConfigContract,
+		Implementation:              notificationWebhookImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,

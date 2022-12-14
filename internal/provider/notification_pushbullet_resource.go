@@ -19,13 +19,15 @@ import (
 
 const (
 	notificationPushbulletResourceName   = "notification_pushbullet"
-	NotificationPushbulletImplementation = "PushBullet"
-	NotificationPushbulletConfigContrat  = "PushBulletSettings"
+	notificationPushbulletImplementation = "PushBullet"
+	notificationPushbulletConfigContract = "PushBulletSettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationPushbulletResource{}
-var _ resource.ResourceWithImportState = &NotificationPushbulletResource{}
+var (
+	_ resource.Resource                = &NotificationPushbulletResource{}
+	_ resource.ResourceWithImportState = &NotificationPushbulletResource{}
+)
 
 func NewNotificationPushbulletResource() resource.Resource {
 	return &NotificationPushbulletResource{}
@@ -359,8 +361,8 @@ func (n *NotificationPushbullet) read(ctx context.Context) *radarr.NotificationI
 		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
 		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationPushbulletConfigContrat,
-		Implementation:              NotificationPushbulletImplementation,
+		ConfigContract:              notificationPushbulletConfigContract,
+		Implementation:              notificationPushbulletImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,

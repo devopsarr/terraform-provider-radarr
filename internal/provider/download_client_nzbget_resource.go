@@ -21,14 +21,16 @@ import (
 
 const (
 	downloadClientNzbgetResourceName   = "download_client_nzbget"
-	DownloadClientNzbgetImplementation = "Nzbget"
-	DownloadClientNzbgetConfigContrat  = "NzbgetSettings"
-	DownloadClientNzbgetProtocol       = "usenet"
+	downloadClientNzbgetImplementation = "Nzbget"
+	downloadClientNzbgetConfigContract = "NzbgetSettings"
+	downloadClientNzbgetProtocol       = "usenet"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &DownloadClientNzbgetResource{}
-var _ resource.ResourceWithImportState = &DownloadClientNzbgetResource{}
+var (
+	_ resource.Resource                = &DownloadClientNzbgetResource{}
+	_ resource.ResourceWithImportState = &DownloadClientNzbgetResource{}
+)
 
 func NewDownloadClientNzbgetResource() resource.Resource {
 	return &DownloadClientNzbgetResource{}
@@ -366,10 +368,10 @@ func (d *DownloadClientNzbget) read(ctx context.Context) *radarr.DownloadClientI
 		RemoveFailedDownloads:    d.RemoveFailedDownloads.ValueBool(),
 		Priority:                 int(d.Priority.ValueInt64()),
 		ID:                       d.ID.ValueInt64(),
-		ConfigContract:           DownloadClientNzbgetConfigContrat,
-		Implementation:           DownloadClientNzbgetImplementation,
+		ConfigContract:           downloadClientNzbgetConfigContract,
+		Implementation:           downloadClientNzbgetImplementation,
 		Name:                     d.Name.ValueString(),
-		Protocol:                 DownloadClientNzbgetProtocol,
+		Protocol:                 downloadClientNzbgetProtocol,
 		Tags:                     tags,
 		Fields:                   d.toDownloadClient().readFields(ctx),
 	}

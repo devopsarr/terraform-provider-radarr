@@ -19,14 +19,16 @@ import (
 
 const (
 	indexerPassThePopcornResourceName   = "indexer_pass_the_popcorn"
-	IndexerPassThePopcornImplementation = "PassThePopcorn"
-	IndexerPassThePopcornConfigContrat  = "PassThePopcornSettings"
-	IndexerPassThePopcornProtocol       = "torrent"
+	indexerPassThePopcornImplementation = "PassThePopcorn"
+	indexerPassThePopcornConfigContract = "PassThePopcornSettings"
+	indexerPassThePopcornProtocol       = "torrent"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &IndexerPassThePopcornResource{}
-var _ resource.ResourceWithImportState = &IndexerPassThePopcornResource{}
+var (
+	_ resource.Resource                = &IndexerPassThePopcornResource{}
+	_ resource.ResourceWithImportState = &IndexerPassThePopcornResource{}
+)
 
 func NewIndexerPassThePopcornResource() resource.Resource {
 	return &IndexerPassThePopcornResource{}
@@ -353,10 +355,10 @@ func (i *IndexerPassThePopcorn) read(ctx context.Context) *radarr.IndexerInput {
 		Priority:                i.Priority.ValueInt64(),
 		DownloadClientID:        i.DownloadClientID.ValueInt64(),
 		ID:                      i.ID.ValueInt64(),
-		ConfigContract:          IndexerPassThePopcornConfigContrat,
-		Implementation:          IndexerPassThePopcornImplementation,
+		ConfigContract:          indexerPassThePopcornConfigContract,
+		Implementation:          indexerPassThePopcornImplementation,
 		Name:                    i.Name.ValueString(),
-		Protocol:                IndexerPassThePopcornProtocol,
+		Protocol:                indexerPassThePopcornProtocol,
 		Tags:                    tags,
 		Fields:                  i.toIndexer().readFields(ctx),
 	}

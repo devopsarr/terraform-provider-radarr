@@ -25,8 +25,10 @@ import (
 const downloadClientResourceName = "download_client"
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &DownloadClientResource{}
-var _ resource.ResourceWithImportState = &DownloadClientResource{}
+var (
+	_ resource.Resource                = &DownloadClientResource{}
+	_ resource.ResourceWithImportState = &DownloadClientResource{}
+)
 
 var (
 	downloadClientBoolFields        = []string{"addPaused", "useSsl", "startOnAdd", "sequentialOrder", "firstAndLast", "addStopped", "saveMagnetFiles", "readOnly"}
@@ -98,7 +100,7 @@ func (r *DownloadClientResource) Metadata(ctx context.Context, req resource.Meta
 
 func (r *DownloadClientResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Download Clients -->Download Client resource.\nFor more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients).",
+		MarkdownDescription: "<!-- subcategory:Download Clients -->Generic Download Client resource. When possible use a specific resource instead.\nFor more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients).",
 		Attributes: map[string]schema.Attribute{
 			"enable": schema.BoolAttribute{
 				MarkdownDescription: "Enable flag.",

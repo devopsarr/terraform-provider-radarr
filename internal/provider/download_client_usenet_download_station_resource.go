@@ -19,14 +19,16 @@ import (
 
 const (
 	downloadClientUsenetDownloadStationResourceName   = "download_client_usenet_download_station"
-	DownloadClientUsenetDownloadStationImplementation = "UsenetDownloadStation"
-	DownloadClientUsenetDownloadStationConfigContrat  = "DownloadStationSettings"
-	DownloadClientUsenetDownloadStationProtocol       = "usenet"
+	downloadClientUsenetDownloadStationImplementation = "UsenetDownloadStation"
+	downloadClientUsenetDownloadStationConfigContract = "DownloadStationSettings"
+	downloadClientUsenetDownloadStationProtocol       = "usenet"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &DownloadClientUsenetDownloadStationResource{}
-var _ resource.ResourceWithImportState = &DownloadClientUsenetDownloadStationResource{}
+var (
+	_ resource.Resource                = &DownloadClientUsenetDownloadStationResource{}
+	_ resource.ResourceWithImportState = &DownloadClientUsenetDownloadStationResource{}
+)
 
 func NewDownloadClientUsenetDownloadStationResource() resource.Resource {
 	return &DownloadClientUsenetDownloadStationResource{}
@@ -334,10 +336,10 @@ func (d *DownloadClientUsenetDownloadStation) read(ctx context.Context) *radarr.
 		RemoveFailedDownloads:    d.RemoveFailedDownloads.ValueBool(),
 		Priority:                 int(d.Priority.ValueInt64()),
 		ID:                       d.ID.ValueInt64(),
-		ConfigContract:           DownloadClientUsenetDownloadStationConfigContrat,
-		Implementation:           DownloadClientUsenetDownloadStationImplementation,
+		ConfigContract:           downloadClientUsenetDownloadStationConfigContract,
+		Implementation:           downloadClientUsenetDownloadStationImplementation,
 		Name:                     d.Name.ValueString(),
-		Protocol:                 DownloadClientUsenetDownloadStationProtocol,
+		Protocol:                 downloadClientUsenetDownloadStationProtocol,
 		Tags:                     tags,
 		Fields:                   d.toDownloadClient().readFields(ctx),
 	}

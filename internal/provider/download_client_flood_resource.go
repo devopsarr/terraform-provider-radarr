@@ -21,14 +21,16 @@ import (
 
 const (
 	downloadClientFloodResourceName   = "download_client_flood"
-	DownloadClientFloodImplementation = "Flood"
-	DownloadClientFloodConfigContrat  = "FloodSettings"
-	DownloadClientFloodProtocol       = "torrent"
+	downloadClientFloodImplementation = "Flood"
+	downloadClientFloodConfigContract = "FloodSettings"
+	downloadClientFloodProtocol       = "torrent"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &DownloadClientFloodResource{}
-var _ resource.ResourceWithImportState = &DownloadClientFloodResource{}
+var (
+	_ resource.Resource                = &DownloadClientFloodResource{}
+	_ resource.ResourceWithImportState = &DownloadClientFloodResource{}
+)
 
 func NewDownloadClientFloodResource() resource.Resource {
 	return &DownloadClientFloodResource{}
@@ -413,10 +415,10 @@ func (d *DownloadClientFlood) read(ctx context.Context) *radarr.DownloadClientIn
 		RemoveFailedDownloads:    d.RemoveFailedDownloads.ValueBool(),
 		Priority:                 int(d.Priority.ValueInt64()),
 		ID:                       d.ID.ValueInt64(),
-		ConfigContract:           DownloadClientFloodConfigContrat,
-		Implementation:           DownloadClientFloodImplementation,
+		ConfigContract:           downloadClientFloodConfigContract,
+		Implementation:           downloadClientFloodImplementation,
 		Name:                     d.Name.ValueString(),
-		Protocol:                 DownloadClientFloodProtocol,
+		Protocol:                 downloadClientFloodProtocol,
 		Tags:                     tags,
 		Fields:                   d.toDownloadClient().readFields(ctx),
 	}

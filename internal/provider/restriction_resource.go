@@ -20,8 +20,10 @@ import (
 const restrictionName = "restriction"
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &RestrictionResource{}
-var _ resource.ResourceWithImportState = &RestrictionResource{}
+var (
+	_ resource.Resource                = &RestrictionResource{}
+	_ resource.ResourceWithImportState = &RestrictionResource{}
+)
 
 func NewRestrictionResource() resource.Resource {
 	return &RestrictionResource{}

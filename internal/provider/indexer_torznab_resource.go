@@ -19,14 +19,16 @@ import (
 
 const (
 	indexerTorznabResourceName   = "indexer_torznab"
-	IndexerTorznabImplementation = "Torznab"
-	IndexerTorznabConfigContrat  = "TorznabSettings"
-	IndexerTorznabProtocol       = "torrent"
+	indexerTorznabImplementation = "Torznab"
+	indexerTorznabConfigContract = "TorznabSettings"
+	indexerTorznabProtocol       = "torrent"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &IndexerTorznabResource{}
-var _ resource.ResourceWithImportState = &IndexerTorznabResource{}
+var (
+	_ resource.Resource                = &IndexerTorznabResource{}
+	_ resource.ResourceWithImportState = &IndexerTorznabResource{}
+)
 
 func NewIndexerTorznabResource() resource.Resource {
 	return &IndexerTorznabResource{}
@@ -378,10 +380,10 @@ func (i *IndexerTorznab) read(ctx context.Context) *radarr.IndexerInput {
 		Priority:                i.Priority.ValueInt64(),
 		DownloadClientID:        i.DownloadClientID.ValueInt64(),
 		ID:                      i.ID.ValueInt64(),
-		ConfigContract:          IndexerTorznabConfigContrat,
-		Implementation:          IndexerTorznabImplementation,
+		ConfigContract:          indexerTorznabConfigContract,
+		Implementation:          indexerTorznabImplementation,
 		Name:                    i.Name.ValueString(),
-		Protocol:                IndexerTorznabProtocol,
+		Protocol:                indexerTorznabProtocol,
 		Tags:                    tags,
 		Fields:                  i.toIndexer().readFields(ctx),
 	}

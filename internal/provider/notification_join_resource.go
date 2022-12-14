@@ -21,13 +21,15 @@ import (
 
 const (
 	notificationJoinResourceName   = "notification_join"
-	NotificationJoinImplementation = "Join"
-	NotificationJoinConfigContrat  = "JoinSettings"
+	notificationJoinImplementation = "Join"
+	notificationJoinConfigContract = "JoinSettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationJoinResource{}
-var _ resource.ResourceWithImportState = &NotificationJoinResource{}
+var (
+	_ resource.Resource                = &NotificationJoinResource{}
+	_ resource.ResourceWithImportState = &NotificationJoinResource{}
+)
 
 func NewNotificationJoinResource() resource.Resource {
 	return &NotificationJoinResource{}
@@ -353,8 +355,8 @@ func (n *NotificationJoin) read(ctx context.Context) *radarr.NotificationInput {
 		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
 		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationJoinConfigContrat,
-		Implementation:              NotificationJoinImplementation,
+		ConfigContract:              notificationJoinConfigContract,
+		Implementation:              notificationJoinImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,

@@ -21,14 +21,16 @@ import (
 
 const (
 	downloadClientNzbvortexResourceName   = "download_client_nzbvortex"
-	DownloadClientNzbvortexImplementation = "Nzbvortex"
-	DownloadClientNzbvortexConfigContrat  = "NzbvortexSettings"
-	DownloadClientNzbvortexProtocol       = "usenet"
+	downloadClientNzbvortexImplementation = "Nzbvortex"
+	downloadClientNzbvortexConfigContract = "NzbvortexSettings"
+	downloadClientNzbvortexProtocol       = "usenet"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &DownloadClientNzbvortexResource{}
-var _ resource.ResourceWithImportState = &DownloadClientNzbvortexResource{}
+var (
+	_ resource.Resource                = &DownloadClientNzbvortexResource{}
+	_ resource.ResourceWithImportState = &DownloadClientNzbvortexResource{}
+)
 
 func NewDownloadClientNzbvortexResource() resource.Resource {
 	return &DownloadClientNzbvortexResource{}
@@ -348,10 +350,10 @@ func (d *DownloadClientNzbvortex) read(ctx context.Context) *radarr.DownloadClie
 		RemoveFailedDownloads:    d.RemoveFailedDownloads.ValueBool(),
 		Priority:                 int(d.Priority.ValueInt64()),
 		ID:                       d.ID.ValueInt64(),
-		ConfigContract:           DownloadClientNzbvortexConfigContrat,
-		Implementation:           DownloadClientNzbvortexImplementation,
+		ConfigContract:           downloadClientNzbvortexConfigContract,
+		Implementation:           downloadClientNzbvortexImplementation,
 		Name:                     d.Name.ValueString(),
-		Protocol:                 DownloadClientNzbvortexProtocol,
+		Protocol:                 downloadClientNzbvortexProtocol,
 		Tags:                     tags,
 		Fields:                   d.toDownloadClient().readFields(ctx),
 	}

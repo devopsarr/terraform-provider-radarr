@@ -19,13 +19,15 @@ import (
 
 const (
 	notificationEmailResourceName   = "notification_email"
-	NotificationEmailImplementation = "Email"
-	NotificationEmailConfigContrat  = "EmailSettings"
+	notificationEmailImplementation = "Email"
+	notificationEmailConfigContract = "EmailSettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationEmailResource{}
-var _ resource.ResourceWithImportState = &NotificationEmailResource{}
+var (
+	_ resource.Resource                = &NotificationEmailResource{}
+	_ resource.ResourceWithImportState = &NotificationEmailResource{}
+)
 
 func NewNotificationEmailResource() resource.Resource {
 	return &NotificationEmailResource{}
@@ -398,8 +400,8 @@ func (n *NotificationEmail) read(ctx context.Context) *radarr.NotificationInput 
 		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
 		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationEmailConfigContrat,
-		Implementation:              NotificationEmailImplementation,
+		ConfigContract:              notificationEmailConfigContract,
+		Implementation:              notificationEmailImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,

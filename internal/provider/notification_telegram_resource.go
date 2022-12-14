@@ -19,13 +19,15 @@ import (
 
 const (
 	notificationTelegramResourceName   = "notification_telegram"
-	NotificationTelegramImplementation = "Telegram"
-	NotificationTelegramConfigContrat  = "TelegramSettings"
+	notificationTelegramImplementation = "Telegram"
+	notificationTelegramConfigContract = "TelegramSettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationTelegramResource{}
-var _ resource.ResourceWithImportState = &NotificationTelegramResource{}
+var (
+	_ resource.Resource                = &NotificationTelegramResource{}
+	_ resource.ResourceWithImportState = &NotificationTelegramResource{}
+)
 
 func NewNotificationTelegramResource() resource.Resource {
 	return &NotificationTelegramResource{}
@@ -348,8 +350,8 @@ func (n *NotificationTelegram) read(ctx context.Context) *radarr.NotificationInp
 		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
 		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationTelegramConfigContrat,
-		Implementation:              NotificationTelegramImplementation,
+		ConfigContract:              notificationTelegramConfigContract,
+		Implementation:              notificationTelegramImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,

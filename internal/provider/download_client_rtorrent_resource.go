@@ -21,14 +21,16 @@ import (
 
 const (
 	downloadClientRtorrentResourceName   = "download_client_rtorrent"
-	DownloadClientRtorrentImplementation = "RTorrent"
-	DownloadClientRtorrentConfigContrat  = "RTorrentSettings"
-	DownloadClientRtorrentProtocol       = "torrent"
+	downloadClientRtorrentImplementation = "RTorrent"
+	downloadClientRtorrentConfigContract = "RTorrentSettings"
+	downloadClientRtorrentProtocol       = "torrent"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &DownloadClientRtorrentResource{}
-var _ resource.ResourceWithImportState = &DownloadClientRtorrentResource{}
+var (
+	_ resource.Resource                = &DownloadClientRtorrentResource{}
+	_ resource.ResourceWithImportState = &DownloadClientRtorrentResource{}
+)
 
 func NewDownloadClientRtorrentResource() resource.Resource {
 	return &DownloadClientRtorrentResource{}
@@ -382,10 +384,10 @@ func (d *DownloadClientRtorrent) read(ctx context.Context) *radarr.DownloadClien
 		RemoveFailedDownloads:    d.RemoveFailedDownloads.ValueBool(),
 		Priority:                 int(d.Priority.ValueInt64()),
 		ID:                       d.ID.ValueInt64(),
-		ConfigContract:           DownloadClientRtorrentConfigContrat,
-		Implementation:           DownloadClientRtorrentImplementation,
+		ConfigContract:           downloadClientRtorrentConfigContract,
+		Implementation:           downloadClientRtorrentImplementation,
 		Name:                     d.Name.ValueString(),
-		Protocol:                 DownloadClientRtorrentProtocol,
+		Protocol:                 downloadClientRtorrentProtocol,
 		Tags:                     tags,
 		Fields:                   d.toDownloadClient().readFields(ctx),
 	}

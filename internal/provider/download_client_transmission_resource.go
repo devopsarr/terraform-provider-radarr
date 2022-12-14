@@ -21,14 +21,16 @@ import (
 
 const (
 	downloadClientTransmissionResourceName   = "download_client_transmission"
-	DownloadClientTransmissionImplementation = "Transmission"
-	DownloadClientTransmissionConfigContrat  = "TransmissionSettings"
-	DownloadClientTransmissionProtocol       = "torrent"
+	downloadClientTransmissionImplementation = "Transmission"
+	downloadClientTransmissionConfigContract = "TransmissionSettings"
+	downloadClientTransmissionProtocol       = "torrent"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &DownloadClientTransmissionResource{}
-var _ resource.ResourceWithImportState = &DownloadClientTransmissionResource{}
+var (
+	_ resource.Resource                = &DownloadClientTransmissionResource{}
+	_ resource.ResourceWithImportState = &DownloadClientTransmissionResource{}
+)
 
 func NewDownloadClientTransmissionResource() resource.Resource {
 	return &DownloadClientTransmissionResource{}
@@ -374,10 +376,10 @@ func (d *DownloadClientTransmission) read(ctx context.Context) *radarr.DownloadC
 		RemoveFailedDownloads:    d.RemoveFailedDownloads.ValueBool(),
 		Priority:                 int(d.Priority.ValueInt64()),
 		ID:                       d.ID.ValueInt64(),
-		ConfigContract:           DownloadClientTransmissionConfigContrat,
-		Implementation:           DownloadClientTransmissionImplementation,
+		ConfigContract:           downloadClientTransmissionConfigContract,
+		Implementation:           downloadClientTransmissionImplementation,
 		Name:                     d.Name.ValueString(),
-		Protocol:                 DownloadClientTransmissionProtocol,
+		Protocol:                 downloadClientTransmissionProtocol,
 		Tags:                     tags,
 		Fields:                   d.toDownloadClient().readFields(ctx),
 	}

@@ -19,13 +19,15 @@ import (
 
 const (
 	notificationSendgridResourceName   = "notification_sendgrid"
-	NotificationSendgridImplementation = "Sendgrid"
-	NotificationSendgridConfigContrat  = "SendgridSettings"
+	notificationSendgridImplementation = "Sendgrid"
+	notificationSendgridConfigContract = "SendgridSettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationSendgridResource{}
-var _ resource.ResourceWithImportState = &NotificationSendgridResource{}
+var (
+	_ resource.Resource                = &NotificationSendgridResource{}
+	_ resource.ResourceWithImportState = &NotificationSendgridResource{}
+)
 
 func NewNotificationSendgridResource() resource.Resource {
 	return &NotificationSendgridResource{}
@@ -349,8 +351,8 @@ func (n *NotificationSendgrid) read(ctx context.Context) *radarr.NotificationInp
 		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
 		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationSendgridConfigContrat,
-		Implementation:              NotificationSendgridImplementation,
+		ConfigContract:              notificationSendgridConfigContract,
+		Implementation:              notificationSendgridImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,

@@ -19,14 +19,16 @@ import (
 
 const (
 	indexerFilelistResourceName   = "indexer_filelist"
-	IndexerFilelistImplementation = "FileList"
-	IndexerFilelistConfigContrat  = "FileListSettings"
-	IndexerFilelistProtocol       = "torrent"
+	indexerFilelistImplementation = "FileList"
+	indexerFilelistConfigContract = "FileListSettings"
+	indexerFilelistProtocol       = "torrent"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &IndexerFilelistResource{}
-var _ resource.ResourceWithImportState = &IndexerFilelistResource{}
+var (
+	_ resource.Resource                = &IndexerFilelistResource{}
+	_ resource.ResourceWithImportState = &IndexerFilelistResource{}
+)
 
 func NewIndexerFilelistResource() resource.Resource {
 	return &IndexerFilelistResource{}
@@ -361,10 +363,10 @@ func (i *IndexerFilelist) read(ctx context.Context) *radarr.IndexerInput {
 		Priority:                i.Priority.ValueInt64(),
 		DownloadClientID:        i.DownloadClientID.ValueInt64(),
 		ID:                      i.ID.ValueInt64(),
-		ConfigContract:          IndexerFilelistConfigContrat,
-		Implementation:          IndexerFilelistImplementation,
+		ConfigContract:          indexerFilelistConfigContract,
+		Implementation:          indexerFilelistImplementation,
 		Name:                    i.Name.ValueString(),
-		Protocol:                IndexerFilelistProtocol,
+		Protocol:                indexerFilelistProtocol,
 		Tags:                    tags,
 		Fields:                  i.toIndexer().readFields(ctx),
 	}

@@ -19,13 +19,15 @@ import (
 
 const (
 	notificationSlackResourceName   = "notification_slack"
-	NotificationSlackImplementation = "Slack"
-	NotificationSlackConfigContrat  = "SlackSettings"
+	notificationSlackImplementation = "Slack"
+	notificationSlackConfigContract = "SlackSettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationSlackResource{}
-var _ resource.ResourceWithImportState = &NotificationSlackResource{}
+var (
+	_ resource.Resource                = &NotificationSlackResource{}
+	_ resource.ResourceWithImportState = &NotificationSlackResource{}
+)
 
 func NewNotificationSlackResource() resource.Resource {
 	return &NotificationSlackResource{}
@@ -364,8 +366,8 @@ func (n *NotificationSlack) read(ctx context.Context) *radarr.NotificationInput 
 		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
 		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationSlackConfigContrat,
-		Implementation:              NotificationSlackImplementation,
+		ConfigContract:              notificationSlackConfigContract,
+		Implementation:              notificationSlackImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,

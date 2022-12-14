@@ -21,14 +21,16 @@ import (
 
 const (
 	downloadClientSabnzbdResourceName   = "download_client_sabnzbd"
-	DownloadClientSabnzbdImplementation = "Sabnzbd"
-	DownloadClientSabnzbdConfigContrat  = "SabnzbdSettings"
-	DownloadClientSabnzbdProtocol       = "usenet"
+	downloadClientSabnzbdImplementation = "Sabnzbd"
+	downloadClientSabnzbdConfigContract = "SabnzbdSettings"
+	downloadClientSabnzbdProtocol       = "usenet"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &DownloadClientSabnzbdResource{}
-var _ resource.ResourceWithImportState = &DownloadClientSabnzbdResource{}
+var (
+	_ resource.Resource                = &DownloadClientSabnzbdResource{}
+	_ resource.ResourceWithImportState = &DownloadClientSabnzbdResource{}
+)
 
 func NewDownloadClientSabnzbdResource() resource.Resource {
 	return &DownloadClientSabnzbdResource{}
@@ -367,10 +369,10 @@ func (d *DownloadClientSabnzbd) read(ctx context.Context) *radarr.DownloadClient
 		RemoveFailedDownloads:    d.RemoveFailedDownloads.ValueBool(),
 		Priority:                 int(d.Priority.ValueInt64()),
 		ID:                       d.ID.ValueInt64(),
-		ConfigContract:           DownloadClientSabnzbdConfigContrat,
-		Implementation:           DownloadClientSabnzbdImplementation,
+		ConfigContract:           downloadClientSabnzbdConfigContract,
+		Implementation:           downloadClientSabnzbdImplementation,
 		Name:                     d.Name.ValueString(),
-		Protocol:                 DownloadClientSabnzbdProtocol,
+		Protocol:                 downloadClientSabnzbdProtocol,
 		Tags:                     tags,
 		Fields:                   d.toDownloadClient().readFields(ctx),
 	}

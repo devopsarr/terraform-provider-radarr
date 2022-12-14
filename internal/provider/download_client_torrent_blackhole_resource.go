@@ -19,14 +19,16 @@ import (
 
 const (
 	downloadClientTorrentBlackholeResourceName   = "download_client_torrent_blackhole"
-	DownloadClientTorrentBlackholeImplementation = "TorrentBlackhole"
-	DownloadClientTorrentBlackholeConfigContrat  = "TorrentBlackholeSettings"
-	DownloadClientTorrentBlackholeProtocol       = "torrent"
+	downloadClientTorrentBlackholeImplementation = "TorrentBlackhole"
+	downloadClientTorrentBlackholeConfigContract = "TorrentBlackholeSettings"
+	downloadClientTorrentBlackholeProtocol       = "torrent"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &DownloadClientTorrentBlackholeResource{}
-var _ resource.ResourceWithImportState = &DownloadClientTorrentBlackholeResource{}
+var (
+	_ resource.Resource                = &DownloadClientTorrentBlackholeResource{}
+	_ resource.ResourceWithImportState = &DownloadClientTorrentBlackholeResource{}
+)
 
 func NewDownloadClientTorrentBlackholeResource() resource.Resource {
 	return &DownloadClientTorrentBlackholeResource{}
@@ -315,10 +317,10 @@ func (d *DownloadClientTorrentBlackhole) read(ctx context.Context) *radarr.Downl
 		RemoveFailedDownloads:    d.RemoveFailedDownloads.ValueBool(),
 		Priority:                 int(d.Priority.ValueInt64()),
 		ID:                       d.ID.ValueInt64(),
-		ConfigContract:           DownloadClientTorrentBlackholeConfigContrat,
-		Implementation:           DownloadClientTorrentBlackholeImplementation,
+		ConfigContract:           downloadClientTorrentBlackholeConfigContract,
+		Implementation:           downloadClientTorrentBlackholeImplementation,
 		Name:                     d.Name.ValueString(),
-		Protocol:                 DownloadClientTorrentBlackholeProtocol,
+		Protocol:                 downloadClientTorrentBlackholeProtocol,
 		Tags:                     tags,
 		Fields:                   d.toDownloadClient().readFields(ctx),
 	}

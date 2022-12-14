@@ -19,13 +19,15 @@ import (
 
 const (
 	notificationEmbyResourceName   = "notification_emby"
-	NotificationEmbyImplementation = "MediaBrowser"
-	NotificationEmbyConfigContrat  = "MediaBrowserSettings"
+	notificationEmbyImplementation = "MediaBrowser"
+	notificationEmbyConfigContract = "MediaBrowserSettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationEmbyResource{}
-var _ resource.ResourceWithImportState = &NotificationEmbyResource{}
+var (
+	_ resource.Resource                = &NotificationEmbyResource{}
+	_ resource.ResourceWithImportState = &NotificationEmbyResource{}
+)
 
 func NewNotificationEmbyResource() resource.Resource {
 	return &NotificationEmbyResource{}
@@ -381,8 +383,8 @@ func (n *NotificationEmby) read(ctx context.Context) *radarr.NotificationInput {
 		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
 		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationEmbyConfigContrat,
-		Implementation:              NotificationEmbyImplementation,
+		ConfigContract:              notificationEmbyConfigContract,
+		Implementation:              notificationEmbyImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,

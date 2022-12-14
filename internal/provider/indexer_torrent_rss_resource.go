@@ -19,14 +19,16 @@ import (
 
 const (
 	indexerTorrentRssResourceName   = "indexer_torrent_rss"
-	IndexerTorrentRssImplementation = "TorrentRssIndexer"
-	IndexerTorrentRssConfigContrat  = "TorrentRssIndexerSettings"
-	IndexerTorrentRssProtocol       = "torrent"
+	indexerTorrentRssImplementation = "TorrentRssIndexer"
+	indexerTorrentRssConfigContract = "TorrentRssIndexerSettings"
+	indexerTorrentRssProtocol       = "torrent"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &IndexerTorrentRssResource{}
-var _ resource.ResourceWithImportState = &IndexerTorrentRssResource{}
+var (
+	_ resource.Resource                = &IndexerTorrentRssResource{}
+	_ resource.ResourceWithImportState = &IndexerTorrentRssResource{}
+)
 
 func NewIndexerTorrentRssResource() resource.Resource {
 	return &IndexerTorrentRssResource{}
@@ -332,10 +334,10 @@ func (i *IndexerTorrentRss) read(ctx context.Context) *radarr.IndexerInput {
 		Priority:         i.Priority.ValueInt64(),
 		DownloadClientID: i.DownloadClientID.ValueInt64(),
 		ID:               i.ID.ValueInt64(),
-		ConfigContract:   IndexerTorrentRssConfigContrat,
-		Implementation:   IndexerTorrentRssImplementation,
+		ConfigContract:   indexerTorrentRssConfigContract,
+		Implementation:   indexerTorrentRssImplementation,
 		Name:             i.Name.ValueString(),
-		Protocol:         IndexerTorrentRssProtocol,
+		Protocol:         indexerTorrentRssProtocol,
 		Tags:             tags,
 		Fields:           i.toIndexer().readFields(ctx),
 	}

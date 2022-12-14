@@ -19,13 +19,15 @@ import (
 
 const (
 	notificationBoxcarResourceName   = "notification_boxcar"
-	NotificationBoxcarImplementation = "Boxcar"
-	NotificationBoxcarConfigContrat  = "BoxcarSettings"
+	notificationBoxcarImplementation = "Boxcar"
+	notificationBoxcarConfigContract = "BoxcarSettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationBoxcarResource{}
-var _ resource.ResourceWithImportState = &NotificationBoxcarResource{}
+var (
+	_ resource.Resource                = &NotificationBoxcarResource{}
+	_ resource.ResourceWithImportState = &NotificationBoxcarResource{}
+)
 
 func NewNotificationBoxcarResource() resource.Resource {
 	return &NotificationBoxcarResource{}
@@ -333,8 +335,8 @@ func (n *NotificationBoxcar) read(ctx context.Context) *radarr.NotificationInput
 		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
 		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationBoxcarConfigContrat,
-		Implementation:              NotificationBoxcarImplementation,
+		ConfigContract:              notificationBoxcarConfigContract,
+		Implementation:              notificationBoxcarImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,

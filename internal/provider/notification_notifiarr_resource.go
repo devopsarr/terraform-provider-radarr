@@ -19,13 +19,15 @@ import (
 
 const (
 	notificationNotifiarrResourceName   = "notification_notifiarr"
-	NotificationNotifiarrImplementation = "Notifiarr"
-	NotificationNotifiarrConfigContrat  = "NotifiarrSettings"
+	notificationNotifiarrImplementation = "Notifiarr"
+	notificationNotifiarrConfigContract = "NotifiarrSettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationNotifiarrResource{}
-var _ resource.ResourceWithImportState = &NotificationNotifiarrResource{}
+var (
+	_ resource.Resource                = &NotificationNotifiarrResource{}
+	_ resource.ResourceWithImportState = &NotificationNotifiarrResource{}
+)
 
 func NewNotificationNotifiarrResource() resource.Resource {
 	return &NotificationNotifiarrResource{}
@@ -341,8 +343,8 @@ func (n *NotificationNotifiarr) read(ctx context.Context) *radarr.NotificationIn
 		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
 		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationNotifiarrConfigContrat,
-		Implementation:              NotificationNotifiarrImplementation,
+		ConfigContract:              notificationNotifiarrConfigContract,
+		Implementation:              notificationNotifiarrImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,

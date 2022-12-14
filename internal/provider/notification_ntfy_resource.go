@@ -21,13 +21,15 @@ import (
 
 const (
 	notificationNtfyResourceName   = "notification_ntfy"
-	NotificationNtfyImplementation = "Ntfy"
-	NotificationNtfyConfigContrat  = "NtfySettings"
+	notificationNtfyImplementation = "Ntfy"
+	notificationNtfyConfigContract = "NtfySettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationNtfyResource{}
-var _ resource.ResourceWithImportState = &NotificationNtfyResource{}
+var (
+	_ resource.Resource                = &NotificationNtfyResource{}
+	_ resource.ResourceWithImportState = &NotificationNtfyResource{}
+)
 
 func NewNotificationNtfyResource() resource.Resource {
 	return &NotificationNtfyResource{}
@@ -388,8 +390,8 @@ func (n *NotificationNtfy) read(ctx context.Context) *radarr.NotificationInput {
 		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
 		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationNtfyConfigContrat,
-		Implementation:              NotificationNtfyImplementation,
+		ConfigContract:              notificationNtfyConfigContract,
+		Implementation:              notificationNtfyImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,
