@@ -21,13 +21,15 @@ import (
 
 const (
 	notificationPushoverResourceName   = "notification_pushover"
-	NotificationPushoverImplementation = "Pushover"
-	NotificationPushoverConfigContrat  = "PushoverSettings"
+	notificationPushoverImplementation = "Pushover"
+	notificationPushoverConfigContract = "PushoverSettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationPushoverResource{}
-var _ resource.ResourceWithImportState = &NotificationPushoverResource{}
+var (
+	_ resource.Resource                = &NotificationPushoverResource{}
+	_ resource.ResourceWithImportState = &NotificationPushoverResource{}
+)
 
 func NewNotificationPushoverResource() resource.Resource {
 	return &NotificationPushoverResource{}
@@ -387,8 +389,8 @@ func (n *NotificationPushover) read(ctx context.Context) *radarr.NotificationInp
 		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
 		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationPushoverConfigContrat,
-		Implementation:              NotificationPushoverImplementation,
+		ConfigContract:              notificationPushoverConfigContract,
+		Implementation:              notificationPushoverImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,

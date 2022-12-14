@@ -19,14 +19,16 @@ import (
 
 const (
 	indexerIptorrentsResourceName   = "indexer_iptorrents"
-	IndexerIptorrentsImplementation = "IPTorrents"
-	IndexerIptorrentsConfigContrat  = "IPTorrentsSettings"
-	IndexerIptorrentsProtocol       = "torrent"
+	indexerIptorrentsImplementation = "IPTorrents"
+	indexerIptorrentsConfigContract = "IPTorrentsSettings"
+	indexerIptorrentsProtocol       = "torrent"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &IndexerIptorrentsResource{}
-var _ resource.ResourceWithImportState = &IndexerIptorrentsResource{}
+var (
+	_ resource.Resource                = &IndexerIptorrentsResource{}
+	_ resource.ResourceWithImportState = &IndexerIptorrentsResource{}
+)
 
 func NewIndexerIptorrentsResource() resource.Resource {
 	return &IndexerIptorrentsResource{}
@@ -318,10 +320,10 @@ func (i *IndexerIptorrents) read(ctx context.Context) *radarr.IndexerInput {
 		Priority:         i.Priority.ValueInt64(),
 		DownloadClientID: i.DownloadClientID.ValueInt64(),
 		ID:               i.ID.ValueInt64(),
-		ConfigContract:   IndexerIptorrentsConfigContrat,
-		Implementation:   IndexerIptorrentsImplementation,
+		ConfigContract:   indexerIptorrentsConfigContract,
+		Implementation:   indexerIptorrentsImplementation,
 		Name:             i.Name.ValueString(),
-		Protocol:         IndexerIptorrentsProtocol,
+		Protocol:         indexerIptorrentsProtocol,
 		Tags:             tags,
 		Fields:           i.toIndexer().readFields(ctx),
 	}

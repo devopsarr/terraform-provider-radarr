@@ -19,14 +19,16 @@ import (
 
 const (
 	downloadClientTorrentDownloadStationResourceName   = "download_client_torrent_download_station"
-	DownloadClientTorrentDownloadStationImplementation = "TorrentDownloadStation"
-	DownloadClientTorrentDownloadStationConfigContrat  = "DownloadStationSettings"
-	DownloadClientTorrentDownloadStationProtocol       = "torrent"
+	downloadClientTorrentDownloadStationImplementation = "TorrentDownloadStation"
+	downloadClientTorrentDownloadStationConfigContract = "DownloadStationSettings"
+	downloadClientTorrentDownloadStationProtocol       = "torrent"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &DownloadClientTorrentDownloadStationResource{}
-var _ resource.ResourceWithImportState = &DownloadClientTorrentDownloadStationResource{}
+var (
+	_ resource.Resource                = &DownloadClientTorrentDownloadStationResource{}
+	_ resource.ResourceWithImportState = &DownloadClientTorrentDownloadStationResource{}
+)
 
 func NewDownloadClientTorrentDownloadStationResource() resource.Resource {
 	return &DownloadClientTorrentDownloadStationResource{}
@@ -334,10 +336,10 @@ func (d *DownloadClientTorrentDownloadStation) read(ctx context.Context) *radarr
 		RemoveFailedDownloads:    d.RemoveFailedDownloads.ValueBool(),
 		Priority:                 int(d.Priority.ValueInt64()),
 		ID:                       d.ID.ValueInt64(),
-		ConfigContract:           DownloadClientTorrentDownloadStationConfigContrat,
-		Implementation:           DownloadClientTorrentDownloadStationImplementation,
+		ConfigContract:           downloadClientTorrentDownloadStationConfigContract,
+		Implementation:           downloadClientTorrentDownloadStationImplementation,
 		Name:                     d.Name.ValueString(),
-		Protocol:                 DownloadClientTorrentDownloadStationProtocol,
+		Protocol:                 downloadClientTorrentDownloadStationProtocol,
 		Tags:                     tags,
 		Fields:                   d.toDownloadClient().readFields(ctx),
 	}

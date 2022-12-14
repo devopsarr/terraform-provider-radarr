@@ -19,13 +19,15 @@ import (
 
 const (
 	notificationSimplepushResourceName   = "notification_simplepush"
-	NotificationSimplepushImplementation = "Simplepush"
-	NotificationSimplepushConfigContrat  = "SimplepushSettings"
+	notificationSimplepushImplementation = "Simplepush"
+	notificationSimplepushConfigContract = "SimplepushSettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationSimplepushResource{}
-var _ resource.ResourceWithImportState = &NotificationSimplepushResource{}
+var (
+	_ resource.Resource                = &NotificationSimplepushResource{}
+	_ resource.ResourceWithImportState = &NotificationSimplepushResource{}
+)
 
 func NewNotificationSimplepushResource() resource.Resource {
 	return &NotificationSimplepushResource{}
@@ -341,8 +343,8 @@ func (n *NotificationSimplepush) read(ctx context.Context) *radarr.NotificationI
 		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
 		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationSimplepushConfigContrat,
-		Implementation:              NotificationSimplepushImplementation,
+		ConfigContract:              notificationSimplepushConfigContract,
+		Implementation:              notificationSimplepushImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,

@@ -21,14 +21,16 @@ import (
 
 const (
 	downloadClientDelugeResourceName   = "download_client_deluge"
-	DownloadClientDelugeImplementation = "Deluge"
-	DownloadClientDelugeConfigContrat  = "DelugeSettings"
-	DownloadClientDelugeProtocol       = "torrent"
+	downloadClientDelugeImplementation = "Deluge"
+	downloadClientDelugeConfigContract = "DelugeSettings"
+	downloadClientDelugeProtocol       = "torrent"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &DownloadClientDelugeResource{}
-var _ resource.ResourceWithImportState = &DownloadClientDelugeResource{}
+var (
+	_ resource.Resource                = &DownloadClientDelugeResource{}
+	_ resource.ResourceWithImportState = &DownloadClientDelugeResource{}
+)
 
 func NewDownloadClientDelugeResource() resource.Resource {
 	return &DownloadClientDelugeResource{}
@@ -382,10 +384,10 @@ func (d *DownloadClientDeluge) read(ctx context.Context) *radarr.DownloadClientI
 		RemoveFailedDownloads:    d.RemoveFailedDownloads.ValueBool(),
 		Priority:                 int(d.Priority.ValueInt64()),
 		ID:                       d.ID.ValueInt64(),
-		ConfigContract:           DownloadClientDelugeConfigContrat,
-		Implementation:           DownloadClientDelugeImplementation,
+		ConfigContract:           downloadClientDelugeConfigContract,
+		Implementation:           downloadClientDelugeImplementation,
 		Name:                     d.Name.ValueString(),
-		Protocol:                 DownloadClientDelugeProtocol,
+		Protocol:                 downloadClientDelugeProtocol,
 		Tags:                     tags,
 		Fields:                   d.toDownloadClient().readFields(ctx),
 	}

@@ -19,14 +19,16 @@ import (
 
 const (
 	indexerNyaaResourceName   = "indexer_nyaa"
-	IndexerNyaaImplementation = "Nyaa"
-	IndexerNyaaConfigContrat  = "NyaaSettings"
-	IndexerNyaaProtocol       = "torrent"
+	indexerNyaaImplementation = "Nyaa"
+	indexerNyaaConfigContract = "NyaaSettings"
+	indexerNyaaProtocol       = "torrent"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &IndexerNyaaResource{}
-var _ resource.ResourceWithImportState = &IndexerNyaaResource{}
+var (
+	_ resource.Resource                = &IndexerNyaaResource{}
+	_ resource.ResourceWithImportState = &IndexerNyaaResource{}
+)
 
 func NewIndexerNyaaResource() resource.Resource {
 	return &IndexerNyaaResource{}
@@ -344,10 +346,10 @@ func (i *IndexerNyaa) read(ctx context.Context) *radarr.IndexerInput {
 		Priority:                i.Priority.ValueInt64(),
 		DownloadClientID:        i.DownloadClientID.ValueInt64(),
 		ID:                      i.ID.ValueInt64(),
-		ConfigContract:          IndexerNyaaConfigContrat,
-		Implementation:          IndexerNyaaImplementation,
+		ConfigContract:          indexerNyaaConfigContract,
+		Implementation:          indexerNyaaImplementation,
 		Name:                    i.Name.ValueString(),
-		Protocol:                IndexerNyaaProtocol,
+		Protocol:                indexerNyaaProtocol,
 		Tags:                    tags,
 		Fields:                  i.toIndexer().readFields(ctx),
 	}

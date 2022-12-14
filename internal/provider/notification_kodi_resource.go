@@ -19,13 +19,15 @@ import (
 
 const (
 	notificationKodiResourceName   = "notification_kodi"
-	NotificationKodiImplementation = "Xbmc"
-	NotificationKodiConfigContrat  = "XbmcSettings"
+	notificationKodiImplementation = "Xbmc"
+	notificationKodiConfigContract = "XbmcSettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationKodiResource{}
-var _ resource.ResourceWithImportState = &NotificationKodiResource{}
+var (
+	_ resource.Resource                = &NotificationKodiResource{}
+	_ resource.ResourceWithImportState = &NotificationKodiResource{}
+)
 
 func NewNotificationKodiResource() resource.Resource {
 	return &NotificationKodiResource{}
@@ -413,8 +415,8 @@ func (n *NotificationKodi) read(ctx context.Context) *radarr.NotificationInput {
 		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
 		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationKodiConfigContrat,
-		Implementation:              NotificationKodiImplementation,
+		ConfigContract:              notificationKodiConfigContract,
+		Implementation:              notificationKodiImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,

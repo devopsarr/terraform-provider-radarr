@@ -19,14 +19,16 @@ import (
 
 const (
 	indexerTorrentPotatoResourceName   = "indexer_torrent_potato"
-	IndexerTorrentPotatoImplementation = "TorrentPotato"
-	IndexerTorrentPotatoConfigContrat  = "TorrentPotatoSettings"
-	IndexerTorrentPotatoProtocol       = "torrent"
+	indexerTorrentPotatoImplementation = "TorrentPotato"
+	indexerTorrentPotatoConfigContract = "TorrentPotatoSettings"
+	indexerTorrentPotatoProtocol       = "torrent"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &IndexerTorrentPotatoResource{}
-var _ resource.ResourceWithImportState = &IndexerTorrentPotatoResource{}
+var (
+	_ resource.Resource                = &IndexerTorrentPotatoResource{}
+	_ resource.ResourceWithImportState = &IndexerTorrentPotatoResource{}
+)
 
 func NewIndexerTorrentPotatoResource() resource.Resource {
 	return &IndexerTorrentPotatoResource{}
@@ -353,10 +355,10 @@ func (i *IndexerTorrentPotato) read(ctx context.Context) *radarr.IndexerInput {
 		Priority:                i.Priority.ValueInt64(),
 		DownloadClientID:        i.DownloadClientID.ValueInt64(),
 		ID:                      i.ID.ValueInt64(),
-		ConfigContract:          IndexerTorrentPotatoConfigContrat,
-		Implementation:          IndexerTorrentPotatoImplementation,
+		ConfigContract:          indexerTorrentPotatoConfigContract,
+		Implementation:          indexerTorrentPotatoImplementation,
 		Name:                    i.Name.ValueString(),
-		Protocol:                IndexerTorrentPotatoProtocol,
+		Protocol:                indexerTorrentPotatoProtocol,
 		Tags:                    tags,
 		Fields:                  i.toIndexer().readFields(ctx),
 	}

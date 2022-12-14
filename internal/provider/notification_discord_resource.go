@@ -19,13 +19,15 @@ import (
 
 const (
 	notificationDiscordResourceName   = "notification_discord"
-	NotificationDiscordImplementation = "Discord"
-	NotificationDiscordConfigContrat  = "DiscordSettings"
+	notificationDiscordImplementation = "Discord"
+	notificationDiscordConfigContract = "DiscordSettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationDiscordResource{}
-var _ resource.ResourceWithImportState = &NotificationDiscordResource{}
+var (
+	_ resource.Resource                = &NotificationDiscordResource{}
+	_ resource.ResourceWithImportState = &NotificationDiscordResource{}
+)
 
 func NewNotificationDiscordResource() resource.Resource {
 	return &NotificationDiscordResource{}
@@ -374,8 +376,8 @@ func (n *NotificationDiscord) read(ctx context.Context) *radarr.NotificationInpu
 		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
 		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationDiscordConfigContrat,
-		Implementation:              NotificationDiscordImplementation,
+		ConfigContract:              notificationDiscordConfigContract,
+		Implementation:              notificationDiscordImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,

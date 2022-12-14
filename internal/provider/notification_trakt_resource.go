@@ -19,13 +19,15 @@ import (
 
 const (
 	notificationTraktResourceName   = "notification_trakt"
-	NotificationTraktImplementation = "Trakt"
-	NotificationTraktConfigContrat  = "TraktSettings"
+	notificationTraktImplementation = "Trakt"
+	notificationTraktConfigContract = "TraktSettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationTraktResource{}
-var _ resource.ResourceWithImportState = &NotificationTraktResource{}
+var (
+	_ resource.Resource                = &NotificationTraktResource{}
+	_ resource.ResourceWithImportState = &NotificationTraktResource{}
+)
 
 func NewNotificationTraktResource() resource.Resource {
 	return &NotificationTraktResource{}
@@ -332,8 +334,8 @@ func (n *NotificationTrakt) read(ctx context.Context) *radarr.NotificationInput 
 		OnMovieFileDelete:           n.OnMovieFileDelete.ValueBool(),
 		OnMovieFileDeleteForUpgrade: n.OnMovieFileDeleteForUpgrade.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationTraktConfigContrat,
-		Implementation:              NotificationTraktImplementation,
+		ConfigContract:              notificationTraktConfigContract,
+		Implementation:              notificationTraktImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,

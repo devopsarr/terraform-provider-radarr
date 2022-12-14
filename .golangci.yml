@@ -16,7 +16,7 @@ issues:
 linters:
   disable-all: true
   enable:
-    - deadcode
+    - unused
     - errcheck
     - gofumpt
     - gomnd
@@ -30,7 +30,6 @@ linters:
     - staticcheck
     - unconvert
     - unparam
-    - varcheck
     - vet
     - godot
     - revive

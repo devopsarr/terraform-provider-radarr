@@ -19,14 +19,16 @@ import (
 
 const (
 	downloadClientUsenetBlackholeResourceName   = "download_client_usenet_blackhole"
-	DownloadClientUsenetBlackholeImplementation = "UsenetBlackhole"
-	DownloadClientUsenetBlackholeConfigContrat  = "UsenetBlackholeSettings"
-	DownloadClientUsenetBlackholeProtocol       = "usenet"
+	downloadClientUsenetBlackholeImplementation = "UsenetBlackhole"
+	downloadClientUsenetBlackholeConfigContract = "UsenetBlackholeSettings"
+	downloadClientUsenetBlackholeProtocol       = "usenet"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &DownloadClientUsenetBlackholeResource{}
-var _ resource.ResourceWithImportState = &DownloadClientUsenetBlackholeResource{}
+var (
+	_ resource.Resource                = &DownloadClientUsenetBlackholeResource{}
+	_ resource.ResourceWithImportState = &DownloadClientUsenetBlackholeResource{}
+)
 
 func NewDownloadClientUsenetBlackholeResource() resource.Resource {
 	return &DownloadClientUsenetBlackholeResource{}
@@ -291,10 +293,10 @@ func (d *DownloadClientUsenetBlackhole) read(ctx context.Context) *radarr.Downlo
 		RemoveFailedDownloads:    d.RemoveFailedDownloads.ValueBool(),
 		Priority:                 int(d.Priority.ValueInt64()),
 		ID:                       d.ID.ValueInt64(),
-		ConfigContract:           DownloadClientUsenetBlackholeConfigContrat,
-		Implementation:           DownloadClientUsenetBlackholeImplementation,
+		ConfigContract:           downloadClientUsenetBlackholeConfigContract,
+		Implementation:           downloadClientUsenetBlackholeImplementation,
 		Name:                     d.Name.ValueString(),
-		Protocol:                 DownloadClientUsenetBlackholeProtocol,
+		Protocol:                 downloadClientUsenetBlackholeProtocol,
 		Tags:                     tags,
 		Fields:                   d.toDownloadClient().readFields(ctx),
 	}

@@ -21,13 +21,15 @@ import (
 
 const (
 	notificationProwlResourceName   = "notification_prowl"
-	NotificationProwlImplementation = "Prowl"
-	NotificationProwlConfigContrat  = "ProwlSettings"
+	notificationProwlImplementation = "Prowl"
+	notificationProwlConfigContract = "ProwlSettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationProwlResource{}
-var _ resource.ResourceWithImportState = &NotificationProwlResource{}
+var (
+	_ resource.Resource                = &NotificationProwlResource{}
+	_ resource.ResourceWithImportState = &NotificationProwlResource{}
+)
 
 func NewNotificationProwlResource() resource.Resource {
 	return &NotificationProwlResource{}
@@ -346,8 +348,8 @@ func (n *NotificationProwl) read(ctx context.Context) *radarr.NotificationInput 
 		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
 		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationProwlConfigContrat,
-		Implementation:              NotificationProwlImplementation,
+		ConfigContract:              notificationProwlConfigContract,
+		Implementation:              notificationProwlImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,

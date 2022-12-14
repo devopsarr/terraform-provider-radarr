@@ -21,14 +21,16 @@ import (
 
 const (
 	downloadClientVuzeResourceName   = "download_client_vuze"
-	DownloadClientVuzeImplementation = "Vuze"
-	DownloadClientVuzeConfigContrat  = "TransmissionSettings"
-	DownloadClientVuzeProtocol       = "torrent"
+	downloadClientVuzeImplementation = "Vuze"
+	downloadClientVuzeConfigContract = "TransmissionSettings"
+	downloadClientVuzeProtocol       = "torrent"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &DownloadClientVuzeResource{}
-var _ resource.ResourceWithImportState = &DownloadClientVuzeResource{}
+var (
+	_ resource.Resource                = &DownloadClientVuzeResource{}
+	_ resource.ResourceWithImportState = &DownloadClientVuzeResource{}
+)
 
 func NewDownloadClientVuzeResource() resource.Resource {
 	return &DownloadClientVuzeResource{}
@@ -374,10 +376,10 @@ func (d *DownloadClientVuze) read(ctx context.Context) *radarr.DownloadClientInp
 		RemoveFailedDownloads:    d.RemoveFailedDownloads.ValueBool(),
 		Priority:                 int(d.Priority.ValueInt64()),
 		ID:                       d.ID.ValueInt64(),
-		ConfigContract:           DownloadClientVuzeConfigContrat,
-		Implementation:           DownloadClientVuzeImplementation,
+		ConfigContract:           downloadClientVuzeConfigContract,
+		Implementation:           downloadClientVuzeImplementation,
 		Name:                     d.Name.ValueString(),
-		Protocol:                 DownloadClientVuzeProtocol,
+		Protocol:                 downloadClientVuzeProtocol,
 		Tags:                     tags,
 		Fields:                   d.toDownloadClient().readFields(ctx),
 	}

@@ -19,13 +19,15 @@ import (
 
 const (
 	notificationSynologyResourceName   = "notification_synology_indexer"
-	NotificationSynologyImplementation = "SynologyIndexer"
-	NotificationSynologyConfigContrat  = "SynologyIndexerSettings"
+	notificationSynologyImplementation = "SynologyIndexer"
+	notificationSynologyConfigContract = "SynologyIndexerSettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationSynologyResource{}
-var _ resource.ResourceWithImportState = &NotificationSynologyResource{}
+var (
+	_ resource.Resource                = &NotificationSynologyResource{}
+	_ resource.ResourceWithImportState = &NotificationSynologyResource{}
+)
 
 func NewNotificationSynologyResource() resource.Resource {
 	return &NotificationSynologyResource{}
@@ -318,8 +320,8 @@ func (n *NotificationSynology) read(ctx context.Context) *radarr.NotificationInp
 		OnMovieFileDelete:           n.OnMovieFileDelete.ValueBool(),
 		OnMovieFileDeleteForUpgrade: n.OnMovieFileDeleteForUpgrade.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationSynologyConfigContrat,
-		Implementation:              NotificationSynologyImplementation,
+		ConfigContract:              notificationSynologyConfigContract,
+		Implementation:              notificationSynologyImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,

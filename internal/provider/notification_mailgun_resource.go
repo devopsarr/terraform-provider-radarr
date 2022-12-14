@@ -19,13 +19,15 @@ import (
 
 const (
 	notificationMailgunResourceName   = "notification_mailgun"
-	NotificationMailgunImplementation = "Mailgun"
-	NotificationMailgunConfigContrat  = "MailgunSettings"
+	notificationMailgunImplementation = "Mailgun"
+	notificationMailgunConfigContract = "MailgunSettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationMailgunResource{}
-var _ resource.ResourceWithImportState = &NotificationMailgunResource{}
+var (
+	_ resource.Resource                = &NotificationMailgunResource{}
+	_ resource.ResourceWithImportState = &NotificationMailgunResource{}
+)
 
 func NewNotificationMailgunResource() resource.Resource {
 	return &NotificationMailgunResource{}
@@ -365,8 +367,8 @@ func (n *NotificationMailgun) read(ctx context.Context) *radarr.NotificationInpu
 		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
 		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationMailgunConfigContrat,
-		Implementation:              NotificationMailgunImplementation,
+		ConfigContract:              notificationMailgunConfigContract,
+		Implementation:              notificationMailgunImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,

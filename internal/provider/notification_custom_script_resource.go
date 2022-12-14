@@ -19,13 +19,15 @@ import (
 
 const (
 	notificationCustomScriptResourceName   = "notification_custom_script"
-	NotificationCustomScriptImplementation = "CustomScript"
-	NotificationCustomScriptConfigContrat  = "CustomScriptSettings"
+	notificationCustomScriptImplementation = "CustomScript"
+	notificationCustomScriptConfigContract = "CustomScriptSettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationCustomScriptResource{}
-var _ resource.ResourceWithImportState = &NotificationCustomScriptResource{}
+var (
+	_ resource.Resource                = &NotificationCustomScriptResource{}
+	_ resource.ResourceWithImportState = &NotificationCustomScriptResource{}
+)
 
 func NewNotificationCustomScriptResource() resource.Resource {
 	return &NotificationCustomScriptResource{}
@@ -350,8 +352,8 @@ func (n *NotificationCustomScript) read(ctx context.Context) *radarr.Notificatio
 		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
 		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationCustomScriptConfigContrat,
-		Implementation:              NotificationCustomScriptImplementation,
+		ConfigContract:              notificationCustomScriptConfigContract,
+		Implementation:              notificationCustomScriptImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,

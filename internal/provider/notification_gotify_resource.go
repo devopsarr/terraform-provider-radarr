@@ -21,13 +21,15 @@ import (
 
 const (
 	notificationGotifyResourceName   = "notification_gotify"
-	NotificationGotifyImplementation = "Gotify"
-	NotificationGotifyConfigContrat  = "GotifySettings"
+	notificationGotifyImplementation = "Gotify"
+	notificationGotifyConfigContract = "GotifySettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationGotifyResource{}
-var _ resource.ResourceWithImportState = &NotificationGotifyResource{}
+var (
+	_ resource.Resource                = &NotificationGotifyResource{}
+	_ resource.ResourceWithImportState = &NotificationGotifyResource{}
+)
 
 func NewNotificationGotifyResource() resource.Resource {
 	return &NotificationGotifyResource{}
@@ -353,8 +355,8 @@ func (n *NotificationGotify) read(ctx context.Context) *radarr.NotificationInput
 		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
 		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationGotifyConfigContrat,
-		Implementation:              NotificationGotifyImplementation,
+		ConfigContract:              notificationGotifyConfigContract,
+		Implementation:              notificationGotifyImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,

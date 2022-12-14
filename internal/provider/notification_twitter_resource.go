@@ -19,13 +19,15 @@ import (
 
 const (
 	notificationTwitterResourceName   = "notification_twitter"
-	NotificationTwitterImplementation = "Twitter"
-	NotificationTwitterConfigContrat  = "TwitterSettings"
+	notificationTwitterImplementation = "Twitter"
+	notificationTwitterConfigContract = "TwitterSettings"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &NotificationTwitterResource{}
-var _ resource.ResourceWithImportState = &NotificationTwitterResource{}
+var (
+	_ resource.Resource                = &NotificationTwitterResource{}
+	_ resource.ResourceWithImportState = &NotificationTwitterResource{}
+)
 
 func NewNotificationTwitterResource() resource.Resource {
 	return &NotificationTwitterResource{}
@@ -372,8 +374,8 @@ func (n *NotificationTwitter) read(ctx context.Context) *radarr.NotificationInpu
 		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
 		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
 		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              NotificationTwitterConfigContrat,
-		Implementation:              NotificationTwitterImplementation,
+		ConfigContract:              notificationTwitterConfigContract,
+		Implementation:              notificationTwitterImplementation,
 		ID:                          n.ID.ValueInt64(),
 		Name:                        n.Name.ValueString(),
 		Tags:                        tags,

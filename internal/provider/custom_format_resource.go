@@ -22,8 +22,10 @@ import (
 const customFormatResourceName = "custom_format"
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &CustomFormatResource{}
-var _ resource.ResourceWithImportState = &CustomFormatResource{}
+var (
+	_ resource.Resource                = &CustomFormatResource{}
+	_ resource.ResourceWithImportState = &CustomFormatResource{}
+)
 
 var (
 	customFormatStringFields = []string{"value"}

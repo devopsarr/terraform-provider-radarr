@@ -19,14 +19,16 @@ import (
 
 const (
 	indexerOmgwtfnzbsResourceName   = "indexer_omgwtfnzbs"
-	IndexerOmgwtfnzbsImplementation = "Omgwtfnzbs"
-	IndexerOmgwtfnzbsConfigContrat  = "OmgwtfnzbsSettings"
-	IndexerOmgwtfnzbsProtocol       = "usenet"
+	indexerOmgwtfnzbsImplementation = "Omgwtfnzbs"
+	indexerOmgwtfnzbsConfigContract = "OmgwtfnzbsSettings"
+	indexerOmgwtfnzbsProtocol       = "usenet"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ resource.Resource = &IndexerOmgwtfnzbsResource{}
-var _ resource.ResourceWithImportState = &IndexerOmgwtfnzbsResource{}
+var (
+	_ resource.Resource                = &IndexerOmgwtfnzbsResource{}
+	_ resource.ResourceWithImportState = &IndexerOmgwtfnzbsResource{}
+)
 
 func NewIndexerOmgwtfnzbsResource() resource.Resource {
 	return &IndexerOmgwtfnzbsResource{}
@@ -319,10 +321,10 @@ func (i *IndexerOmgwtfnzbs) read(ctx context.Context) *radarr.IndexerInput {
 		Priority:                i.Priority.ValueInt64(),
 		DownloadClientID:        i.DownloadClientID.ValueInt64(),
 		ID:                      i.ID.ValueInt64(),
-		ConfigContract:          IndexerOmgwtfnzbsConfigContrat,
-		Implementation:          IndexerOmgwtfnzbsImplementation,
+		ConfigContract:          indexerOmgwtfnzbsConfigContract,
+		Implementation:          indexerOmgwtfnzbsImplementation,
 		Name:                    i.Name.ValueString(),
-		Protocol:                IndexerOmgwtfnzbsProtocol,
+		Protocol:                indexerOmgwtfnzbsProtocol,
 		Tags:                    tags,
 		Fields:                  i.toIndexer().readFields(ctx),
 	}
