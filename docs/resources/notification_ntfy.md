@@ -43,23 +43,23 @@ resource "radarr_notification_ntfy" "example" {
 
 ### Required
 
-- `include_health_warnings` (Boolean) Include health warnings.
 - `name` (String) NotificationNtfy name.
-- `on_application_update` (Boolean) On application update flag.
-- `on_download` (Boolean) On download flag.
-- `on_grab` (Boolean) On grab flag.
-- `on_health_issue` (Boolean) On health issue flag.
-- `on_movie_added` (Boolean) On movie added flag.
 - `on_movie_delete` (Boolean) On movie delete flag.
-- `on_movie_file_delete` (Boolean) On movie file delete flag.
-- `on_movie_file_delete_for_upgrade` (Boolean) On movie file delete for upgrade flag.
-- `on_upgrade` (Boolean) On upgrade flag.
 - `topics` (Set of String) Topics.
 
 ### Optional
 
 - `click_url` (String) Click URL.
 - `field_tags` (Set of String) Tags and emojis.
+- `include_health_warnings` (Boolean) Include health warnings.
+- `on_application_update` (Boolean) On application update flag.
+- `on_download` (Boolean) On download flag.
+- `on_grab` (Boolean) On grab flag.
+- `on_health_issue` (Boolean) On health issue flag.
+- `on_movie_added` (Boolean) On movie added flag.
+- `on_movie_file_delete` (Boolean) On movie file delete flag.
+- `on_movie_file_delete_for_upgrade` (Boolean) On movie file delete for upgrade flag.
+- `on_upgrade` (Boolean) On upgrade flag.
 - `password` (String, Sensitive) Password.
 - `priority` (Number) Priority. `1` Min, `2` Low, `3` Default, `4` High, `5` Max.
 - `server_url` (String) Server URL.

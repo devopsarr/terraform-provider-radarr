@@ -41,21 +41,21 @@ resource "radarr_notification_gotify" "example" {
 ### Required
 
 - `app_token` (String, Sensitive) App token.
-- `include_health_warnings` (Boolean) Include health warnings.
 - `name` (String) NotificationGotify name.
+- `on_movie_delete` (Boolean) On movie delete flag.
+- `server` (String) Server.
+
+### Optional
+
+- `include_health_warnings` (Boolean) Include health warnings.
 - `on_application_update` (Boolean) On application update flag.
 - `on_download` (Boolean) On download flag.
 - `on_grab` (Boolean) On grab flag.
 - `on_health_issue` (Boolean) On health issue flag.
 - `on_movie_added` (Boolean) On movie added flag.
-- `on_movie_delete` (Boolean) On movie delete flag.
 - `on_movie_file_delete` (Boolean) On movie file delete flag.
 - `on_movie_file_delete_for_upgrade` (Boolean) On movie file delete for upgrade flag.
 - `on_upgrade` (Boolean) On upgrade flag.
-- `server` (String) Server.
-
-### Optional
-
 - `priority` (Number) Priority. `0` Min, `2` Low, `5` Normal, `8` High.
 - `tags` (Set of Number) List of associated tags.
 

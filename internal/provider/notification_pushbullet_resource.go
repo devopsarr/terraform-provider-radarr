@@ -111,19 +111,23 @@ func (r *NotificationPushbulletResource) Schema(ctx context.Context, req resourc
 		Attributes: map[string]schema.Attribute{
 			"on_grab": schema.BoolAttribute{
 				MarkdownDescription: "On grab flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"on_download": schema.BoolAttribute{
 				MarkdownDescription: "On download flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"on_upgrade": schema.BoolAttribute{
 				MarkdownDescription: "On upgrade flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"on_movie_added": schema.BoolAttribute{
 				MarkdownDescription: "On movie added flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"on_movie_delete": schema.BoolAttribute{
 				MarkdownDescription: "On movie delete flag.",
@@ -131,23 +135,28 @@ func (r *NotificationPushbulletResource) Schema(ctx context.Context, req resourc
 			},
 			"on_movie_file_delete": schema.BoolAttribute{
 				MarkdownDescription: "On movie file delete flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"on_movie_file_delete_for_upgrade": schema.BoolAttribute{
 				MarkdownDescription: "On movie file delete for upgrade flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"on_health_issue": schema.BoolAttribute{
 				MarkdownDescription: "On health issue flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"on_application_update": schema.BoolAttribute{
 				MarkdownDescription: "On application update flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"include_health_warnings": schema.BoolAttribute{
 				MarkdownDescription: "Include health warnings.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"name": schema.StringAttribute{
 				MarkdownDescription: "NotificationPushbullet name.",

@@ -41,18 +41,8 @@ resource "radarr_notification_slack" "example" {
 
 ### Required
 
-- `include_health_warnings` (Boolean) Include health warnings.
 - `name` (String) NotificationSlack name.
-- `on_application_update` (Boolean) On application update flag.
-- `on_download` (Boolean) On download flag.
-- `on_grab` (Boolean) On grab flag.
-- `on_health_issue` (Boolean) On health issue flag.
-- `on_movie_added` (Boolean) On movie added flag.
 - `on_movie_delete` (Boolean) On movie delete flag.
-- `on_movie_file_delete` (Boolean) On movie file delete flag.
-- `on_movie_file_delete_for_upgrade` (Boolean) On movie file delete for upgrade flag.
-- `on_rename` (Boolean) On rename flag.
-- `on_upgrade` (Boolean) On upgrade flag.
 - `username` (String) Username.
 - `web_hook_url` (String) URL.
 
@@ -60,6 +50,16 @@ resource "radarr_notification_slack" "example" {
 
 - `channel` (String) Channel.
 - `icon` (String) Icon.
+- `include_health_warnings` (Boolean) Include health warnings.
+- `on_application_update` (Boolean) On application update flag.
+- `on_download` (Boolean) On download flag.
+- `on_grab` (Boolean) On grab flag.
+- `on_health_issue` (Boolean) On health issue flag.
+- `on_movie_added` (Boolean) On movie added flag.
+- `on_movie_file_delete` (Boolean) On movie file delete flag.
+- `on_movie_file_delete_for_upgrade` (Boolean) On movie file delete for upgrade flag.
+- `on_rename` (Boolean) On rename flag.
+- `on_upgrade` (Boolean) On upgrade flag.
 - `tags` (Set of Number) List of associated tags.
 
 ### Read-Only

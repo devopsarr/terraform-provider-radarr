@@ -102,15 +102,18 @@ func (r *NotificationTraktResource) Schema(ctx context.Context, req resource.Sch
 		Attributes: map[string]schema.Attribute{
 			"on_download": schema.BoolAttribute{
 				MarkdownDescription: "On download flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"on_upgrade": schema.BoolAttribute{
 				MarkdownDescription: "On upgrade flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"on_movie_added": schema.BoolAttribute{
 				MarkdownDescription: "On movie added flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"on_movie_delete": schema.BoolAttribute{
 				MarkdownDescription: "On movie delete flag.",
@@ -118,15 +121,18 @@ func (r *NotificationTraktResource) Schema(ctx context.Context, req resource.Sch
 			},
 			"on_movie_file_delete": schema.BoolAttribute{
 				MarkdownDescription: "On movie file delete flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"on_movie_file_delete_for_upgrade": schema.BoolAttribute{
 				MarkdownDescription: "On movie file delete for upgrade flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"include_health_warnings": schema.BoolAttribute{
 				MarkdownDescription: "Include health warnings.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"name": schema.StringAttribute{
 				MarkdownDescription: "NotificationTrakt name.",

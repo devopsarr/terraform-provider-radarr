@@ -40,22 +40,22 @@ resource "radarr_notification_join" "example" {
 
 ### Required
 
-- `include_health_warnings` (Boolean) Include health warnings.
 - `name` (String) NotificationJoin name.
-- `on_application_update` (Boolean) On application update flag.
-- `on_download` (Boolean) On download flag.
-- `on_grab` (Boolean) On grab flag.
-- `on_health_issue` (Boolean) On health issue flag.
-- `on_movie_added` (Boolean) On movie added flag.
 - `on_movie_delete` (Boolean) On movie delete flag.
-- `on_movie_file_delete` (Boolean) On movie file delete flag.
-- `on_movie_file_delete_for_upgrade` (Boolean) On movie file delete for upgrade flag.
-- `on_upgrade` (Boolean) On upgrade flag.
 
 ### Optional
 
 - `api_key` (String, Sensitive) API key.
 - `device_names` (String) Device names. Comma separated list.
+- `include_health_warnings` (Boolean) Include health warnings.
+- `on_application_update` (Boolean) On application update flag.
+- `on_download` (Boolean) On download flag.
+- `on_grab` (Boolean) On grab flag.
+- `on_health_issue` (Boolean) On health issue flag.
+- `on_movie_added` (Boolean) On movie added flag.
+- `on_movie_file_delete` (Boolean) On movie file delete flag.
+- `on_movie_file_delete_for_upgrade` (Boolean) On movie file delete for upgrade flag.
+- `on_upgrade` (Boolean) On upgrade flag.
 - `priority` (Number) Priority. `-2` Silent, `-1` Quiet, `0` Normal, `1` High, `2` Emergency.
 - `tags` (Set of Number) List of associated tags.
 

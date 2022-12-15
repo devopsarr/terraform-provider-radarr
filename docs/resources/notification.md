@@ -44,18 +44,8 @@ resource "radarr_notification" "example" {
 
 - `config_contract` (String) Notification configuration template.
 - `implementation` (String) Notification implementation name.
-- `include_health_warnings` (Boolean) Include health warnings.
 - `name` (String) Notification name.
-- `on_application_update` (Boolean) On application update flag.
-- `on_download` (Boolean) On download flag.
-- `on_grab` (Boolean) On grab flag.
-- `on_health_issue` (Boolean) On health issue flag.
-- `on_movie_added` (Boolean) On movie added flag.
 - `on_movie_delete` (Boolean) On movie delete flag.
-- `on_movie_file_delete` (Boolean) On movie file delete flag.
-- `on_movie_file_delete_for_upgrade` (Boolean) On movie file delete for upgrade flag.
-- `on_rename` (Boolean) On rename flag.
-- `on_upgrade` (Boolean) On upgrade flag.
 
 ### Optional
 
@@ -93,6 +83,7 @@ resource "radarr_notification" "example" {
 - `host` (String) Host.
 - `icon` (String) Icon.
 - `import_fields` (Set of Number) Import fields. `0` Overview, `1` Rating, `2` Genres, `3` Quality, `4` Codecs, `5` Group, `6` Size, `7` Languages, `8` Subtitles, `9` Links, `10` Release, `11` Poster, `12` Fanart.
+- `include_health_warnings` (Boolean) Include health warnings.
 - `instance_name` (String) Instance name.
 - `key` (String) Key.
 - `map_from` (String) Map From.
@@ -100,6 +91,15 @@ resource "radarr_notification" "example" {
 - `mention` (String) Mention.
 - `method` (Number) Method. `1` POST, `2` PUT.
 - `notify` (Boolean) Notify flag.
+- `on_application_update` (Boolean) On application update flag.
+- `on_download` (Boolean) On download flag.
+- `on_grab` (Boolean) On grab flag.
+- `on_health_issue` (Boolean) On health issue flag.
+- `on_movie_added` (Boolean) On movie added flag.
+- `on_movie_file_delete` (Boolean) On movie file delete flag.
+- `on_movie_file_delete_for_upgrade` (Boolean) On movie file delete for upgrade flag.
+- `on_rename` (Boolean) On rename flag.
+- `on_upgrade` (Boolean) On upgrade flag.
 - `password` (String) password.
 - `path` (String) Path.
 - `port` (Number) Port.

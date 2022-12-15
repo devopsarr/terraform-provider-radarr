@@ -3,13 +3,13 @@
 page_title: "radarr_indexer Resource - terraform-provider-radarr"
 subcategory: "Indexers"
 description: |-
-  Indexer resource.
+  Generic Indexer resource. When possible use a specific resource instead.
   For more information refer to Indexer https://wiki.servarr.com/radarr/settings#indexers documentation.
 ---
 
 # radarr_indexer (Resource)
 
-<!-- subcategory:Indexers -->Indexer resource.
+<!-- subcategory:Indexers -->Generic Indexer resource. When possible use a specific resource instead.
 For more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) documentation.
 
 ## Example Usage
