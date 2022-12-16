@@ -42,17 +42,8 @@ resource "radarr_notification_email" "example" {
 ### Required
 
 - `from` (String) From.
-- `include_health_warnings` (Boolean) Include health warnings.
 - `name` (String) NotificationEmail name.
-- `on_application_update` (Boolean) On application update flag.
-- `on_download` (Boolean) On download flag.
-- `on_grab` (Boolean) On grab flag.
-- `on_health_issue` (Boolean) On health issue flag.
-- `on_movie_added` (Boolean) On movie added flag.
 - `on_movie_delete` (Boolean) On movie delete flag.
-- `on_movie_file_delete` (Boolean) On movie file delete flag.
-- `on_movie_file_delete_for_upgrade` (Boolean) On movie file delete for upgrade flag.
-- `on_upgrade` (Boolean) On upgrade flag.
 - `server` (String) Server.
 - `to` (Set of String) To.
 
@@ -60,6 +51,15 @@ resource "radarr_notification_email" "example" {
 
 - `bcc` (Set of String) Bcc.
 - `cc` (Set of String) Cc.
+- `include_health_warnings` (Boolean) Include health warnings.
+- `on_application_update` (Boolean) On application update flag.
+- `on_download` (Boolean) On download flag.
+- `on_grab` (Boolean) On grab flag.
+- `on_health_issue` (Boolean) On health issue flag.
+- `on_movie_added` (Boolean) On movie added flag.
+- `on_movie_file_delete` (Boolean) On movie file delete flag.
+- `on_movie_file_delete_for_upgrade` (Boolean) On movie file delete for upgrade flag.
+- `on_upgrade` (Boolean) On upgrade flag.
 - `password` (String, Sensitive) Password.
 - `port` (Number) Port.
 - `require_encryption` (Boolean) Require encryption flag.

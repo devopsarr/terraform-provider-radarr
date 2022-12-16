@@ -43,22 +43,22 @@ resource "radarr_notification_emby" "example" {
 
 - `api_key` (String, Sensitive) API key.
 - `host` (String) Host.
-- `include_health_warnings` (Boolean) Include health warnings.
 - `name` (String) NotificationEmby name.
+- `on_movie_delete` (Boolean) On movie delete flag.
+
+### Optional
+
+- `include_health_warnings` (Boolean) Include health warnings.
+- `notify` (Boolean) Notify flag.
 - `on_application_update` (Boolean) On application update flag.
 - `on_download` (Boolean) On download flag.
 - `on_grab` (Boolean) On grab flag.
 - `on_health_issue` (Boolean) On health issue flag.
 - `on_movie_added` (Boolean) On movie added flag.
-- `on_movie_delete` (Boolean) On movie delete flag.
 - `on_movie_file_delete` (Boolean) On movie file delete flag.
 - `on_movie_file_delete_for_upgrade` (Boolean) On movie file delete for upgrade flag.
 - `on_rename` (Boolean) On rename flag.
 - `on_upgrade` (Boolean) On upgrade flag.
-
-### Optional
-
-- `notify` (Boolean) Notify flag.
 - `port` (Number) Port.
 - `tags` (Set of Number) List of associated tags.
 - `update_library` (Boolean) Update library flag.

@@ -42,23 +42,23 @@ resource "radarr_notification_webhook" "example" {
 
 ### Required
 
-- `include_health_warnings` (Boolean) Include health warnings.
 - `method` (Number) Method. `1` POST, `2` PUT.
 - `name` (String) NotificationWebhook name.
+- `on_movie_delete` (Boolean) On movie delete flag.
+- `url` (String) URL.
+
+### Optional
+
+- `include_health_warnings` (Boolean) Include health warnings.
 - `on_application_update` (Boolean) On application update flag.
 - `on_download` (Boolean) On download flag.
 - `on_grab` (Boolean) On grab flag.
 - `on_health_issue` (Boolean) On health issue flag.
 - `on_movie_added` (Boolean) On movie added flag.
-- `on_movie_delete` (Boolean) On movie delete flag.
 - `on_movie_file_delete` (Boolean) On movie file delete flag.
 - `on_movie_file_delete_for_upgrade` (Boolean) On movie file delete for upgrade flag.
 - `on_rename` (Boolean) On rename flag.
 - `on_upgrade` (Boolean) On upgrade flag.
-- `url` (String) URL.
-
-### Optional
-
 - `password` (String) password.
 - `tags` (Set of Number) List of associated tags.
 - `username` (String) Username.

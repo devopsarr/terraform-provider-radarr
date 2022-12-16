@@ -142,23 +142,28 @@ func (r *NotificationResource) Schema(ctx context.Context, req resource.SchemaRe
 		Attributes: map[string]schema.Attribute{
 			"on_grab": schema.BoolAttribute{
 				MarkdownDescription: "On grab flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"on_download": schema.BoolAttribute{
 				MarkdownDescription: "On download flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"on_upgrade": schema.BoolAttribute{
 				MarkdownDescription: "On upgrade flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"on_rename": schema.BoolAttribute{
 				MarkdownDescription: "On rename flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"on_movie_added": schema.BoolAttribute{
 				MarkdownDescription: "On movie added flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"on_movie_delete": schema.BoolAttribute{
 				MarkdownDescription: "On movie delete flag.",
@@ -166,23 +171,28 @@ func (r *NotificationResource) Schema(ctx context.Context, req resource.SchemaRe
 			},
 			"on_movie_file_delete": schema.BoolAttribute{
 				MarkdownDescription: "On movie file delete flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"on_movie_file_delete_for_upgrade": schema.BoolAttribute{
 				MarkdownDescription: "On movie file delete for upgrade flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"on_health_issue": schema.BoolAttribute{
 				MarkdownDescription: "On health issue flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"on_application_update": schema.BoolAttribute{
 				MarkdownDescription: "On application update flag.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"include_health_warnings": schema.BoolAttribute{
 				MarkdownDescription: "Include health warnings.",
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 			},
 			"config_contract": schema.StringAttribute{
 				MarkdownDescription: "Notification configuration template.",
@@ -760,6 +770,8 @@ func (n *Notification) writeFields(ctx context.Context, fields []*starr.FieldOut
 
 		if slices.Contains(notificationStringSliceFields, f.Name) || f.Name == "tags" {
 			tools.WriteStringSliceField(ctx, f, n)
+
+			continue
 		}
 
 		if slices.Contains(notificationIntSliceFields, f.Name) {

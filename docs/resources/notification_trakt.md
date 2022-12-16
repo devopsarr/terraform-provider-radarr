@@ -38,17 +38,17 @@ resource "radarr_notification_trakt" "example" {
 
 - `access_token` (String, Sensitive) Access Token.
 - `auth_user` (String) Auth user.
-- `include_health_warnings` (Boolean) Include health warnings.
 - `name` (String) NotificationTrakt name.
-- `on_download` (Boolean) On download flag.
-- `on_movie_added` (Boolean) On movie added flag.
 - `on_movie_delete` (Boolean) On movie delete flag.
-- `on_movie_file_delete` (Boolean) On movie file delete flag.
-- `on_movie_file_delete_for_upgrade` (Boolean) On movie file delete for upgrade flag.
-- `on_upgrade` (Boolean) On upgrade flag.
 
 ### Optional
 
+- `include_health_warnings` (Boolean) Include health warnings.
+- `on_download` (Boolean) On download flag.
+- `on_movie_added` (Boolean) On movie added flag.
+- `on_movie_file_delete` (Boolean) On movie file delete flag.
+- `on_movie_file_delete_for_upgrade` (Boolean) On movie file delete for upgrade flag.
+- `on_upgrade` (Boolean) On upgrade flag.
 - `refresh_token` (String, Sensitive) Access Token.
 - `tags` (Set of Number) List of associated tags.
 
