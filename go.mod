@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/devopsarr/terraform-provider-sonarr v1.2.3-0.20221206112717-a5ad3d8e2b48
 	github.com/hashicorp/terraform-plugin-docs v0.13.0
-	github.com/hashicorp/terraform-plugin-framework v1.0.0
+	github.com/hashicorp/terraform-plugin-framework v1.0.1
 	github.com/hashicorp/terraform-plugin-framework-validators v0.8.0
 	github.com/hashicorp/terraform-plugin-go v0.14.2
 	github.com/hashicorp/terraform-plugin-log v0.7.0
