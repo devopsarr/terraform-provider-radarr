@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/devopsarr/terraform-provider-sonarr/tools"
+	"github.com/devopsarr/radarr-go/radarr"
+	"github.com/devopsarr/terraform-provider-radarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -15,7 +16,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"golift.io/starr/radarr"
 )
 
 const namingResourceName = "naming"
@@ -32,7 +32,7 @@ func NewNamingResource() resource.Resource {
 
 // NamingResource defines the naming implementation.
 type NamingResource struct {
-	client *radarr.Radarr
+	client *radarr.APIClient
 }
 
 // Naming describes the naming data model.
@@ -103,11 +103,11 @@ func (r *NamingResource) Configure(ctx context.Context, req resource.ConfigureRe
 		return
 	}
 
-	client, ok := req.ProviderData.(*radarr.Radarr)
+	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
 			tools.UnexpectedResourceConfigureType,
-			fmt.Sprintf("Expected *radarr.Radarr, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -127,25 +127,25 @@ func (r *NamingResource) Create(ctx context.Context, req resource.CreateRequest,
 	}
 
 	// Init call if we remove this it the very first update on a brand new instance will fail
-	if _, err := r.client.GetNamingContext(ctx); err != nil {
+	if _, _, err := r.client.NamingConfigApi.GetConfigNaming(ctx).Execute(); err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to init %s, got error: %s", namingResourceName, err))
 
 		return
 	}
 
 	// Build Create resource
-	data := naming.read()
-	data.ID = 1
+	request := naming.read()
+	request.SetId(1)
 
 	// Create new Naming
-	response, err := r.client.UpdateNamingContext(ctx, data)
+	response, _, err := r.client.NamingConfigApi.UpdateConfigNaming(ctx, strconv.Itoa(int(request.GetId()))).NamingConfigResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create %s, got error: %s", namingResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "created "+namingResourceName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "created "+namingResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	naming.write(response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &naming)...)
@@ -162,14 +162,14 @@ func (r *NamingResource) Read(ctx context.Context, req resource.ReadRequest, res
 	}
 
 	// Get naming current value
-	response, err := r.client.GetNamingContext(ctx)
+	response, _, err := r.client.NamingConfigApi.GetConfigNaming(ctx).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", namingResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read "+namingResourceName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "read "+namingResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Map response body to resource schema attribute
 	naming.write(response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &naming)...)
@@ -186,17 +186,17 @@ func (r *NamingResource) Update(ctx context.Context, req resource.UpdateRequest,
 	}
 
 	// Build Update resource
-	data := naming.read()
+	request := naming.read()
 
 	// Update Naming
-	response, err := r.client.UpdateNamingContext(ctx, data)
+	response, _, err := r.client.NamingConfigApi.UpdateConfigNaming(ctx, strconv.Itoa(int(request.GetId()))).NamingConfigResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update %s, got error: %s", namingResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "updated "+namingResourceName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "updated "+namingResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	naming.write(response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &naming)...)
@@ -214,26 +214,27 @@ func (r *NamingResource) ImportState(ctx context.Context, req resource.ImportSta
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), 1)...)
 }
 
-func (n *Naming) write(naming *radarr.Naming) {
-	n.IncludeQuality = types.BoolValue(naming.IncludeQuality)
-	n.RenameMovies = types.BoolValue(naming.RenameMovies)
-	n.ReplaceIllegalCharacters = types.BoolValue(naming.ReplaceIllegalCharacters)
-	n.ReplaceSpaces = types.BoolValue(naming.ReplaceSpaces)
-	n.ID = types.Int64Value(naming.ID)
-	n.ColonReplacementFormat = types.StringValue(naming.ColonReplacementFormat)
-	n.StandardMovieFormat = types.StringValue(naming.StandardMovieFormat)
-	n.MovieFolderFormat = types.StringValue(naming.MovieFolderFormat)
+func (n *Naming) write(naming *radarr.NamingConfigResource) {
+	n.IncludeQuality = types.BoolValue(naming.GetIncludeQuality())
+	n.RenameMovies = types.BoolValue(naming.GetRenameMovies())
+	n.ReplaceIllegalCharacters = types.BoolValue(naming.GetReplaceIllegalCharacters())
+	n.ReplaceSpaces = types.BoolValue(naming.GetReplaceSpaces())
+	n.ID = types.Int64Value(int64(naming.GetId()))
+	n.ColonReplacementFormat = types.StringValue(string(naming.GetColonReplacementFormat()))
+	n.StandardMovieFormat = types.StringValue(naming.GetStandardMovieFormat())
+	n.MovieFolderFormat = types.StringValue(naming.GetMovieFolderFormat())
 }
 
-func (n *Naming) read() *radarr.Naming {
-	return &radarr.Naming{
-		IncludeQuality:           n.IncludeQuality.ValueBool(),
-		RenameMovies:             n.RenameMovies.ValueBool(),
-		ReplaceIllegalCharacters: n.ReplaceIllegalCharacters.ValueBool(),
-		ReplaceSpaces:            n.ReplaceSpaces.ValueBool(),
-		ID:                       n.ID.ValueInt64(),
-		ColonReplacementFormat:   n.ColonReplacementFormat.ValueString(),
-		StandardMovieFormat:      n.StandardMovieFormat.ValueString(),
-		MovieFolderFormat:        n.MovieFolderFormat.ValueString(),
-	}
+func (n *Naming) read() *radarr.NamingConfigResource {
+	naming := radarr.NewNamingConfigResource()
+	naming.SetColonReplacementFormat(radarr.ColonReplacementFormat(n.ColonReplacementFormat.ValueString()))
+	naming.SetId(int32(n.ID.ValueInt64()))
+	naming.SetIncludeQuality(n.IncludeQuality.ValueBool())
+	naming.SetMovieFolderFormat(n.MovieFolderFormat.ValueString())
+	naming.SetRenameMovies(n.RenameMovies.ValueBool())
+	naming.SetReplaceIllegalCharacters(n.ReplaceIllegalCharacters.ValueBool())
+	naming.SetReplaceSpaces(n.ReplaceSpaces.ValueBool())
+	naming.SetStandardMovieFormat(n.StandardMovieFormat.ValueString())
+
+	return naming
 }

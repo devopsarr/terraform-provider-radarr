@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 )
@@ -26,4 +27,12 @@ func testAccPreCheck(t *testing.T) {
 	if v := os.Getenv("RADARR_API_KEY"); v == "" {
 		t.Skip("RADARR_API_KEY must be set for acceptance tests")
 	}
+}
+
+func testAccAPIClient() *radarr.APIClient {
+	config := radarr.NewConfiguration()
+	config.AddDefaultHeader("X-Api-Key", os.Getenv("RADARR_API_KEY"))
+	config.Servers[0].URL = os.Getenv("RADARR_URL")
+
+	return radarr.NewAPIClient(config)
 }

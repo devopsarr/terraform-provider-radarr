@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/devopsarr/terraform-provider-sonarr/tools"
+	"github.com/devopsarr/radarr-go/radarr"
+	"github.com/devopsarr/terraform-provider-radarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -14,7 +15,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"golift.io/starr/radarr"
 )
 
 const (
@@ -35,7 +35,7 @@ func NewNotificationKodiResource() resource.Resource {
 
 // NotificationKodiResource defines the notification implementation.
 type NotificationKodiResource struct {
-	client *radarr.Radarr
+	client *radarr.APIClient
 }
 
 // NotificationKodi describes the notification data model.
@@ -261,11 +261,11 @@ func (r *NotificationKodiResource) Configure(ctx context.Context, req resource.C
 		return
 	}
 
-	client, ok := req.ProviderData.(*radarr.Radarr)
+	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
 			tools.UnexpectedResourceConfigureType,
-			fmt.Sprintf("Expected *radarr.Radarr, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -287,14 +287,14 @@ func (r *NotificationKodiResource) Create(ctx context.Context, req resource.Crea
 	// Create new NotificationKodi
 	request := notification.read(ctx)
 
-	response, err := r.client.AddNotificationContext(ctx, request)
+	response, _, err := r.client.NotificationApi.CreateNotification(ctx).NotificationResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create %s, got error: %s", notificationKodiResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "created "+notificationKodiResourceName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "created "+notificationKodiResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	notification.write(ctx, response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &notification)...)
@@ -311,14 +311,14 @@ func (r *NotificationKodiResource) Read(ctx context.Context, req resource.ReadRe
 	}
 
 	// Get NotificationKodi current value
-	response, err := r.client.GetNotificationContext(ctx, int(notification.ID.ValueInt64()))
+	response, _, err := r.client.NotificationApi.GetNotificationById(ctx, int32(notification.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", notificationKodiResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read "+notificationKodiResourceName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "read "+notificationKodiResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Map response body to resource schema attribute
 	notification.write(ctx, response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &notification)...)
@@ -337,14 +337,14 @@ func (r *NotificationKodiResource) Update(ctx context.Context, req resource.Upda
 	// Update NotificationKodi
 	request := notification.read(ctx)
 
-	response, err := r.client.UpdateNotificationContext(ctx, request)
+	response, _, err := r.client.NotificationApi.UpdateNotification(ctx, strconv.Itoa(int(request.GetId()))).NotificationResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update %s, got error: %s", notificationKodiResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "updated "+notificationKodiResourceName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "updated "+notificationKodiResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	notification.write(ctx, response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &notification)...)
@@ -360,7 +360,7 @@ func (r *NotificationKodiResource) Delete(ctx context.Context, req resource.Dele
 	}
 
 	// Delete NotificationKodi current value
-	err := r.client.DeleteNotificationContext(ctx, notification.ID.ValueInt64())
+	_, err := r.client.NotificationApi.DeleteNotification(ctx, int32(notification.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", notificationKodiResourceName, err))
 
@@ -387,49 +387,50 @@ func (r *NotificationKodiResource) ImportState(ctx context.Context, req resource
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), id)...)
 }
 
-func (n *NotificationKodi) write(ctx context.Context, notification *radarr.NotificationOutput) {
+func (n *NotificationKodi) write(ctx context.Context, notification *radarr.NotificationResource) {
 	genericNotification := Notification{
-		OnGrab:                      types.BoolValue(notification.OnGrab),
-		OnDownload:                  types.BoolValue(notification.OnDownload),
-		OnUpgrade:                   types.BoolValue(notification.OnUpgrade),
-		OnRename:                    types.BoolValue(notification.OnRename),
-		OnMovieAdded:                types.BoolValue(notification.OnMovieAdded),
-		OnMovieDelete:               types.BoolValue(notification.OnMovieDelete),
-		OnMovieFileDelete:           types.BoolValue(notification.OnMovieFileDelete),
-		OnMovieFileDeleteForUpgrade: types.BoolValue(notification.OnMovieFileDeleteForUpgrade),
-		OnHealthIssue:               types.BoolValue(notification.OnHealthIssue),
-		OnApplicationUpdate:         types.BoolValue(notification.OnApplicationUpdate),
-		IncludeHealthWarnings:       types.BoolValue(notification.IncludeHealthWarnings),
-		ID:                          types.Int64Value(notification.ID),
-		Name:                        types.StringValue(notification.Name),
+		OnGrab:                      types.BoolValue(notification.GetOnGrab()),
+		OnDownload:                  types.BoolValue(notification.GetOnDownload()),
+		OnUpgrade:                   types.BoolValue(notification.GetOnUpgrade()),
+		OnRename:                    types.BoolValue(notification.GetOnRename()),
+		OnMovieAdded:                types.BoolValue(notification.GetOnMovieAdded()),
+		OnMovieDelete:               types.BoolValue(notification.GetOnMovieDelete()),
+		OnMovieFileDelete:           types.BoolValue(notification.GetOnMovieFileDelete()),
+		OnMovieFileDeleteForUpgrade: types.BoolValue(notification.GetOnMovieFileDeleteForUpgrade()),
+		OnHealthIssue:               types.BoolValue(notification.GetOnHealthIssue()),
+		OnApplicationUpdate:         types.BoolValue(notification.GetOnApplicationUpdate()),
+		IncludeHealthWarnings:       types.BoolValue(notification.GetIncludeHealthWarnings()),
+		ID:                          types.Int64Value(int64(notification.GetId())),
+		Name:                        types.StringValue(notification.GetName()),
 	}
 	genericNotification.Tags, _ = types.SetValueFrom(ctx, types.Int64Type, notification.Tags)
 	genericNotification.writeFields(ctx, notification.Fields)
 	n.fromNotification(&genericNotification)
 }
 
-func (n *NotificationKodi) read(ctx context.Context) *radarr.NotificationInput {
-	var tags []int
+func (n *NotificationKodi) read(ctx context.Context) *radarr.NotificationResource {
+	var tags []*int32
 
 	tfsdk.ValueAs(ctx, n.Tags, &tags)
 
-	return &radarr.NotificationInput{
-		OnGrab:                      n.OnGrab.ValueBool(),
-		OnDownload:                  n.OnDownload.ValueBool(),
-		OnUpgrade:                   n.OnUpgrade.ValueBool(),
-		OnRename:                    n.OnRename.ValueBool(),
-		OnMovieAdded:                n.OnMovieAdded.ValueBool(),
-		OnMovieDelete:               n.OnMovieDelete.ValueBool(),
-		OnMovieFileDelete:           n.OnMovieFileDelete.ValueBool(),
-		OnMovieFileDeleteForUpgrade: n.OnMovieFileDeleteForUpgrade.ValueBool(),
-		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
-		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
-		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ConfigContract:              notificationKodiConfigContract,
-		Implementation:              notificationKodiImplementation,
-		ID:                          n.ID.ValueInt64(),
-		Name:                        n.Name.ValueString(),
-		Tags:                        tags,
-		Fields:                      n.toNotification().readFields(ctx),
-	}
+	notification := radarr.NewNotificationResource()
+	notification.SetOnGrab(n.OnGrab.ValueBool())
+	notification.SetOnDownload(n.OnDownload.ValueBool())
+	notification.SetOnUpgrade(n.OnUpgrade.ValueBool())
+	notification.SetOnRename(n.OnRename.ValueBool())
+	notification.SetOnMovieAdded(n.OnMovieAdded.ValueBool())
+	notification.SetOnMovieDelete(n.OnMovieDelete.ValueBool())
+	notification.SetOnMovieFileDelete(n.OnMovieFileDelete.ValueBool())
+	notification.SetOnMovieFileDeleteForUpgrade(n.OnMovieFileDeleteForUpgrade.ValueBool())
+	notification.SetOnHealthIssue(n.OnHealthIssue.ValueBool())
+	notification.SetOnApplicationUpdate(n.OnApplicationUpdate.ValueBool())
+	notification.SetIncludeHealthWarnings(n.IncludeHealthWarnings.ValueBool())
+	notification.SetConfigContract(notificationKodiConfigContract)
+	notification.SetImplementation(notificationKodiImplementation)
+	notification.SetId(int32(n.ID.ValueInt64()))
+	notification.SetName(n.Name.ValueString())
+	notification.SetTags(tags)
+	notification.SetFields(n.toNotification().readFields(ctx))
+
+	return notification
 }

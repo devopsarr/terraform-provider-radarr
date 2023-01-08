@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/devopsarr/terraform-provider-sonarr/tools"
+	"github.com/devopsarr/radarr-go/radarr"
+	"github.com/devopsarr/terraform-provider-radarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -14,8 +15,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"golift.io/starr"
-	"golift.io/starr/radarr"
 )
 
 const qualityProfileResourceName = "quality_profile"
@@ -32,7 +31,7 @@ func NewQualityProfileResource() resource.Resource {
 
 // QualityProfileResource defines the quality profile implementation.
 type QualityProfileResource struct {
-	client *radarr.Radarr
+	client *radarr.APIClient
 }
 
 // QualityProfile describes the quality profile data model.
@@ -234,11 +233,11 @@ func (r *QualityProfileResource) Configure(ctx context.Context, req resource.Con
 		return
 	}
 
-	client, ok := req.ProviderData.(*radarr.Radarr)
+	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
 			tools.UnexpectedResourceConfigureType,
-			fmt.Sprintf("Expected *radarr.Radarr, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -258,17 +257,17 @@ func (r *QualityProfileResource) Create(ctx context.Context, req resource.Create
 	}
 
 	// Build Create resource
-	data := profile.read(ctx)
+	request := profile.read(ctx)
 
 	// Create new QualityProfile
-	response, err := r.client.AddQualityProfileContext(ctx, data)
+	response, _, err := r.client.QualityProfileApi.CreateQualityprofile(ctx).QualityProfileResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create %s, got error: %s", qualityProfileResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "created "+qualityProfileResourceName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "created "+qualityProfileResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	profile.write(ctx, response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &profile)...)
@@ -285,14 +284,14 @@ func (r *QualityProfileResource) Read(ctx context.Context, req resource.ReadRequ
 	}
 
 	// Get qualityprofile current value
-	response, err := r.client.GetQualityProfileContext(ctx, profile.ID.ValueInt64())
+	response, _, err := r.client.QualityProfileApi.GetQualityprofileById(ctx, int32(profile.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", qualityProfileResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read "+qualityProfileResourceName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "read "+qualityProfileResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Map response body to resource schema attribute
 	profile.write(ctx, response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &profile)...)
@@ -309,17 +308,17 @@ func (r *QualityProfileResource) Update(ctx context.Context, req resource.Update
 	}
 
 	// Build Update resource
-	data := profile.read(ctx)
+	request := profile.read(ctx)
 
 	// Update QualityProfile
-	response, err := r.client.UpdateQualityProfileContext(ctx, data)
+	response, _, err := r.client.QualityProfileApi.UpdateQualityprofile(ctx, strconv.Itoa(int(request.GetId()))).QualityProfileResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update %s, got error: %s", qualityProfileResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "updated "+qualityProfileResourceName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "updated "+qualityProfileResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	profile.write(ctx, response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &profile)...)
@@ -335,7 +334,7 @@ func (r *QualityProfileResource) Delete(ctx context.Context, req resource.Delete
 	}
 
 	// Delete qualityprofile current value
-	err := r.client.DeleteQualityProfileContext(ctx, profile.ID.ValueInt64())
+	_, err := r.client.QualityProfileApi.DeleteQualityprofile(ctx, int32(profile.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", qualityProfileResourceName, err))
 
@@ -362,18 +361,18 @@ func (r *QualityProfileResource) ImportState(ctx context.Context, req resource.I
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), id)...)
 }
 
-func (p *QualityProfile) write(ctx context.Context, profile *radarr.QualityProfile) {
-	p.UpgradeAllowed = types.BoolValue(profile.UpgradeAllowed)
-	p.ID = types.Int64Value(profile.ID)
-	p.Name = types.StringValue(profile.Name)
-	p.Cutoff = types.Int64Value(profile.Cutoff)
-	p.CutoffFormatScore = types.Int64Value(profile.CutoffFormatScore)
-	p.MinFormatScore = types.Int64Value(profile.MinFormatScore)
+func (p *QualityProfile) write(ctx context.Context, profile *radarr.QualityProfileResource) {
+	p.UpgradeAllowed = types.BoolValue(profile.GetUpgradeAllowed())
+	p.ID = types.Int64Value(int64(profile.GetId()))
+	p.Name = types.StringValue(profile.GetName())
+	p.Cutoff = types.Int64Value(int64(profile.GetCutoff()))
+	p.CutoffFormatScore = types.Int64Value(int64(profile.GetCutoffFormatScore()))
+	p.MinFormatScore = types.Int64Value(int64(profile.GetMinFormatScore()))
 	p.QualityGroups = types.SetValueMust(QualityProfileResource{}.getQualityGroupSchema().Type(), nil)
 	p.FormatItems = types.SetValueMust(QualityProfileResource{}.getFormatItemsSchema().Type(), nil)
 
-	qualityGroups := make([]QualityGroup, len(profile.Qualities))
-	for n, g := range profile.Qualities {
+	qualityGroups := make([]QualityGroup, len(profile.Items))
+	for n, g := range profile.GetItems() {
 		qualityGroups[n].write(ctx, g)
 	}
 
@@ -389,7 +388,7 @@ func (p *QualityProfile) write(ctx context.Context, profile *radarr.QualityProfi
 	tfsdk.ValueFrom(ctx, qualityGroups, p.QualityGroups.Type(ctx), &p.QualityGroups)
 }
 
-func (q *QualityGroup) write(ctx context.Context, group *starr.Quality) {
+func (q *QualityGroup) write(ctx context.Context, group *radarr.QualityProfileQualityItemResource) {
 	var (
 		name      string
 		id        int64
@@ -397,19 +396,19 @@ func (q *QualityGroup) write(ctx context.Context, group *starr.Quality) {
 	)
 
 	if len(group.Items) == 0 {
-		name = group.Quality.Name
-		id = group.Quality.ID
+		name = group.Quality.GetName()
+		id = int64(group.Quality.GetId())
 		qualities = []Quality{{
-			ID:         types.Int64Value(group.Quality.ID),
-			Name:       types.StringValue(group.Quality.Name),
-			Source:     types.StringValue(group.Quality.Source),
-			Resolution: types.Int64Value(int64(group.Quality.Resolution)),
+			ID:         types.Int64Value(int64(group.Quality.GetId())),
+			Name:       types.StringValue(group.Quality.GetName()),
+			Source:     types.StringValue(string(group.Quality.GetSource())),
+			Resolution: types.Int64Value(int64(group.Quality.GetResolution())),
 		}}
 	} else {
-		name = group.Name
-		id = int64(group.ID)
-		qualities = make([]Quality, len(group.Items))
-		for m, q := range group.Items {
+		name = group.GetName()
+		id = int64(group.GetId())
+		qualities = make([]Quality, len(group.GetItems()))
+		for m, q := range group.GetItems() {
 			qualities[m].write(q)
 		}
 	}
@@ -421,61 +420,63 @@ func (q *QualityGroup) write(ctx context.Context, group *starr.Quality) {
 	tfsdk.ValueFrom(ctx, qualities, q.Qualities.Type(ctx), &q.Qualities)
 }
 
-func (q *Quality) write(quality *starr.Quality) {
-	q.ID = types.Int64Value(quality.Quality.ID)
-	q.Name = types.StringValue(quality.Quality.Name)
-	q.Source = types.StringValue(quality.Quality.Source)
-	q.Resolution = types.Int64Value(int64(quality.Quality.Resolution))
+func (q *Quality) write(quality *radarr.QualityProfileQualityItemResource) {
+	q.ID = types.Int64Value(int64(quality.Quality.GetId()))
+	q.Name = types.StringValue(quality.Quality.GetName())
+	q.Source = types.StringValue(string(quality.Quality.GetSource()))
+	q.Resolution = types.Int64Value(int64(quality.Quality.GetResolution()))
 }
 
-func (f *FormatItem) write(format *starr.FormatItem) {
-	f.Name = types.StringValue(format.Name)
-	f.Format = types.Int64Value(format.Format)
-	f.Score = types.Int64Value(format.Score)
+func (f *FormatItem) write(format *radarr.ProfileFormatItemResource) {
+	f.Name = types.StringValue(format.GetName())
+	f.Format = types.Int64Value(int64(format.GetFormat()))
+	f.Score = types.Int64Value(int64(format.GetScore()))
 }
 
-func (l *Language) write(language *starr.Value) {
-	l.Name = types.StringValue(language.Name)
-	l.ID = types.Int64Value(language.ID)
+func (l *Language) write(language *radarr.Language) {
+	l.Name = types.StringValue(language.GetName())
+	l.ID = types.Int64Value(int64(language.GetId()))
 }
 
-func (p *QualityProfile) read(ctx context.Context) *radarr.QualityProfile {
+func (p *QualityProfile) read(ctx context.Context) *radarr.QualityProfileResource {
 	groups := make([]QualityGroup, len(p.QualityGroups.Elements()))
 	tfsdk.ValueAs(ctx, p.QualityGroups, &groups)
-	qualities := make([]*starr.Quality, len(groups))
+	qualities := make([]*radarr.QualityProfileQualityItemResource, len(groups))
 
 	for n, g := range groups {
 		q := make([]Quality, len(g.Qualities.Elements()))
 		tfsdk.ValueAs(ctx, g.Qualities, &q)
 
 		if len(q) == 0 {
-			qualities[n] = &starr.Quality{
-				Allowed: true,
-				Quality: &starr.BaseQuality{
-					ID:   g.ID.ValueInt64(),
-					Name: g.Name.ValueString(),
-				},
-			}
+			quality := radarr.NewQuality()
+			quality.SetId(int32(g.ID.ValueInt64()))
+			quality.SetName(g.Name.ValueString())
+
+			item := radarr.NewQualityProfileQualityItemResource()
+			item.SetAllowed(true)
+			item.SetQuality(*quality)
+
+			qualities[n] = item
 
 			continue
 		}
 
-		items := make([]*starr.Quality, len(q))
+		items := make([]*radarr.QualityProfileQualityItemResource, len(q))
 		for m, q := range q {
 			items[m] = q.read()
 		}
 
-		qualities[n] = &starr.Quality{
-			Name:    g.Name.ValueString(),
-			ID:      int(g.ID.ValueInt64()),
-			Allowed: true,
-			Items:   items,
-		}
+		quality := radarr.NewQualityProfileQualityItemResource()
+		quality.SetId(int32(g.ID.ValueInt64()))
+		quality.SetName(g.Name.ValueString())
+		quality.SetAllowed(true)
+		quality.SetItems(items)
+		qualities[n] = quality
 	}
 
 	formats := make([]FormatItem, len(p.FormatItems.Elements()))
 	tfsdk.ValueAs(ctx, p.FormatItems, &formats)
-	formatItems := make([]*starr.FormatItem, len(formats))
+	formatItems := make([]*radarr.ProfileFormatItemResource, len(formats))
 
 	for n, f := range formats {
 		formatItems[n] = f.read()
@@ -484,42 +485,47 @@ func (p *QualityProfile) read(ctx context.Context) *radarr.QualityProfile {
 	language := Language{}
 	tfsdk.ValueAs(ctx, p.Language, &language)
 
-	return &radarr.QualityProfile{
-		UpgradeAllowed:    p.UpgradeAllowed.ValueBool(),
-		ID:                p.ID.ValueInt64(),
-		Cutoff:            p.Cutoff.ValueInt64(),
-		Name:              p.Name.ValueString(),
-		MinFormatScore:    p.MinFormatScore.ValueInt64(),
-		CutoffFormatScore: p.Cutoff.ValueInt64(),
-		Language:          language.read(),
-		Qualities:         qualities,
-		FormatItems:       formatItems,
-	}
+	profile := radarr.NewQualityProfileResource()
+	profile.SetUpgradeAllowed(p.UpgradeAllowed.ValueBool())
+	profile.SetId(int32(p.ID.ValueInt64()))
+	profile.SetCutoff(int32(p.Cutoff.ValueInt64()))
+	profile.SetMinFormatScore(int32(p.MinFormatScore.ValueInt64()))
+	profile.SetCutoffFormatScore(int32(p.CutoffFormatScore.ValueInt64()))
+	profile.SetName(p.Name.ValueString())
+	profile.SetLanguage(*language.read())
+	profile.SetItems(qualities)
+	profile.SetFormatItems(formatItems)
+
+	return profile
 }
 
-func (q *Quality) read() *starr.Quality {
-	return &starr.Quality{
-		Allowed: true,
-		Quality: &starr.BaseQuality{
-			Name:       q.Name.ValueString(),
-			ID:         q.ID.ValueInt64(),
-			Source:     q.Source.ValueString(),
-			Resolution: int(q.Resolution.ValueInt64()),
-		},
-	}
+func (q *Quality) read() *radarr.QualityProfileQualityItemResource {
+	quality := radarr.NewQuality()
+	quality.SetName(q.Name.ValueString())
+	quality.SetId(int32(q.ID.ValueInt64()))
+	quality.SetSource(radarr.Source(q.Source.ValueString()))
+	quality.SetResolution(int32(q.Resolution.ValueInt64()))
+
+	item := radarr.NewQualityProfileQualityItemResource()
+	item.SetAllowed(true)
+	item.SetQuality(*quality)
+
+	return item
 }
 
-func (f *FormatItem) read() *starr.FormatItem {
-	return &starr.FormatItem{
-		Format: f.Format.ValueInt64(),
-		Name:   f.Name.ValueString(),
-		Score:  f.Score.ValueInt64(),
-	}
+func (f *FormatItem) read() *radarr.ProfileFormatItemResource {
+	formatItem := radarr.NewProfileFormatItemResource()
+	formatItem.SetFormat(int32(f.Format.ValueInt64()))
+	formatItem.SetName(f.Name.ValueString())
+	formatItem.SetScore(int32(f.Score.ValueInt64()))
+
+	return formatItem
 }
 
-func (l *Language) read() *starr.Value {
-	return &starr.Value{
-		ID:   l.ID.ValueInt64(),
-		Name: l.Name.ValueString(),
-	}
+func (l *Language) read() *radarr.Language {
+	language := radarr.NewLanguage()
+	language.SetId(int32(l.ID.ValueInt64()))
+	language.SetName(l.Name.ValueString())
+
+	return language
 }

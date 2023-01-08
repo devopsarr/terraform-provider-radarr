@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/devopsarr/terraform-provider-sonarr/tools"
+	"github.com/devopsarr/radarr-go/radarr"
+	"github.com/devopsarr/terraform-provider-radarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -15,7 +16,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"golift.io/starr/radarr"
 )
 
 const mediaManagementResourceName = "media_management"
@@ -32,7 +32,7 @@ func NewMediaManagementResource() resource.Resource {
 
 // MediaManagementResource defines the media management implementation.
 type MediaManagementResource struct {
-	client *radarr.Radarr
+	client *radarr.APIClient
 }
 
 // MediaManagement describes the media management data model.
@@ -169,11 +169,11 @@ func (r *MediaManagementResource) Configure(ctx context.Context, req resource.Co
 		return
 	}
 
-	client, ok := req.ProviderData.(*radarr.Radarr)
+	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
 			tools.UnexpectedResourceConfigureType,
-			fmt.Sprintf("Expected *radarr.Radarr, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -193,18 +193,18 @@ func (r *MediaManagementResource) Create(ctx context.Context, req resource.Creat
 	}
 
 	// Build Create resource
-	data := management.read()
-	data.ID = 1
+	request := management.read()
+	request.SetId(1)
 
 	// Create new MediaManagement
-	response, err := r.client.UpdateMediaManagementContext(ctx, data)
+	response, _, err := r.client.MediaManagementConfigApi.UpdateConfigMediamanagement(ctx, strconv.Itoa(int(request.GetId()))).MediaManagementConfigResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create mediamanagement, got error: %s", err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "created media_management: "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "created media_management: "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	management.write(response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &management)...)
@@ -221,14 +221,14 @@ func (r *MediaManagementResource) Read(ctx context.Context, req resource.ReadReq
 	}
 
 	// Get mediamanagement current value
-	response, err := r.client.GetMediaManagementContext(ctx)
+	response, _, err := r.client.MediaManagementConfigApi.GetConfigMediamanagement(ctx).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", mediaManagementResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read "+mediaManagementResourceName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "read "+mediaManagementResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Map response body to resource schema attribute
 	management.write(response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &management)...)
@@ -245,17 +245,17 @@ func (r *MediaManagementResource) Update(ctx context.Context, req resource.Updat
 	}
 
 	// Build Update resource
-	data := management.read()
+	request := management.read()
 
 	// Update MediaManagement
-	response, err := r.client.UpdateMediaManagementContext(ctx, data)
+	response, _, err := r.client.MediaManagementConfigApi.UpdateConfigMediamanagement(ctx, strconv.Itoa(int(request.GetId()))).MediaManagementConfigResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update %s, got error: %s", mediaManagementResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "updated "+mediaManagementResourceName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "updated "+mediaManagementResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	management.write(response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &management)...)
@@ -273,50 +273,51 @@ func (r *MediaManagementResource) ImportState(ctx context.Context, req resource.
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), 1)...)
 }
 
-func (m *MediaManagement) write(mediaMgt *radarr.MediaManagement) {
-	m.AutoRenameFolders = types.BoolValue(mediaMgt.AutoRenameFolders)
-	m.AutoUnmonitorPreviouslyDownloadedMovies = types.BoolValue(mediaMgt.AutoUnmonitorPreviouslyDownloadedMovies)
-	m.CopyUsingHardlinks = types.BoolValue(mediaMgt.CopyUsingHardlinks)
-	m.CreateEmptyMovieFolders = types.BoolValue(mediaMgt.CreateEmptyMovieFolders)
-	m.DeleteEmptyFolders = types.BoolValue(mediaMgt.DeleteEmptyFolders)
-	m.EnableMediaInfo = types.BoolValue(mediaMgt.EnableMediaInfo)
-	m.ImportExtraFiles = types.BoolValue(mediaMgt.ImportExtraFiles)
-	m.PathsDefaultStatic = types.BoolValue(mediaMgt.PathsDefaultStatic)
-	m.SetPermissionsLinux = types.BoolValue(mediaMgt.SetPermissionsLinux)
-	m.SkipFreeSpaceCheckWhenImporting = types.BoolValue(mediaMgt.SkipFreeSpaceCheckWhenImporting)
-	m.ID = types.Int64Value(mediaMgt.ID)
-	m.MinimumFreeSpaceWhenImporting = types.Int64Value(mediaMgt.MinimumFreeSpaceWhenImporting)
-	m.RecycleBinCleanupDays = types.Int64Value(mediaMgt.RecycleBinCleanupDays)
-	m.ChmodFolder = types.StringValue(mediaMgt.ChmodFolder)
-	m.ChownGroup = types.StringValue(mediaMgt.ChownGroup)
-	m.DownloadPropersAndRepacks = types.StringValue(mediaMgt.DownloadPropersAndRepacks)
-	m.ExtraFileExtensions = types.StringValue(mediaMgt.ExtraFileExtensions)
-	m.FileDate = types.StringValue(mediaMgt.FileDate)
-	m.RecycleBin = types.StringValue(mediaMgt.RecycleBin)
-	m.RescanAfterRefresh = types.StringValue(mediaMgt.RescanAfterRefresh)
+func (m *MediaManagement) write(mediaMgt *radarr.MediaManagementConfigResource) {
+	m.AutoRenameFolders = types.BoolValue(mediaMgt.GetAutoRenameFolders())
+	m.AutoUnmonitorPreviouslyDownloadedMovies = types.BoolValue(mediaMgt.GetAutoUnmonitorPreviouslyDownloadedMovies())
+	m.CopyUsingHardlinks = types.BoolValue(mediaMgt.GetCopyUsingHardlinks())
+	m.CreateEmptyMovieFolders = types.BoolValue(mediaMgt.GetCreateEmptyMovieFolders())
+	m.DeleteEmptyFolders = types.BoolValue(mediaMgt.GetDeleteEmptyFolders())
+	m.EnableMediaInfo = types.BoolValue(mediaMgt.GetEnableMediaInfo())
+	m.ImportExtraFiles = types.BoolValue(mediaMgt.GetImportExtraFiles())
+	m.PathsDefaultStatic = types.BoolValue(mediaMgt.GetPathsDefaultStatic())
+	m.SetPermissionsLinux = types.BoolValue(mediaMgt.GetSetPermissionsLinux())
+	m.SkipFreeSpaceCheckWhenImporting = types.BoolValue(mediaMgt.GetSkipFreeSpaceCheckWhenImporting())
+	m.ID = types.Int64Value(int64(mediaMgt.GetId()))
+	m.MinimumFreeSpaceWhenImporting = types.Int64Value(int64(mediaMgt.GetMinimumFreeSpaceWhenImporting()))
+	m.RecycleBinCleanupDays = types.Int64Value(int64(mediaMgt.GetRecycleBinCleanupDays()))
+	m.ChmodFolder = types.StringValue(mediaMgt.GetChmodFolder())
+	m.ChownGroup = types.StringValue(mediaMgt.GetChownGroup())
+	m.DownloadPropersAndRepacks = types.StringValue(string(mediaMgt.GetDownloadPropersAndRepacks()))
+	m.ExtraFileExtensions = types.StringValue(mediaMgt.GetExtraFileExtensions())
+	m.FileDate = types.StringValue(string(mediaMgt.GetFileDate()))
+	m.RecycleBin = types.StringValue(mediaMgt.GetRecycleBin())
+	m.RescanAfterRefresh = types.StringValue(string(mediaMgt.GetRescanAfterRefresh()))
 }
 
-func (m *MediaManagement) read() *radarr.MediaManagement {
-	return &radarr.MediaManagement{
-		AutoRenameFolders:                       m.AutoRenameFolders.ValueBool(),
-		AutoUnmonitorPreviouslyDownloadedMovies: m.AutoUnmonitorPreviouslyDownloadedMovies.ValueBool(),
-		CopyUsingHardlinks:                      m.CopyUsingHardlinks.ValueBool(),
-		CreateEmptyMovieFolders:                 m.CreateEmptyMovieFolders.ValueBool(),
-		DeleteEmptyFolders:                      m.DeleteEmptyFolders.ValueBool(),
-		EnableMediaInfo:                         m.EnableMediaInfo.ValueBool(),
-		ImportExtraFiles:                        m.ImportExtraFiles.ValueBool(),
-		PathsDefaultStatic:                      m.PathsDefaultStatic.ValueBool(),
-		SetPermissionsLinux:                     m.SetPermissionsLinux.ValueBool(),
-		SkipFreeSpaceCheckWhenImporting:         m.SkipFreeSpaceCheckWhenImporting.ValueBool(),
-		ID:                                      m.ID.ValueInt64(),
-		MinimumFreeSpaceWhenImporting:           m.MinimumFreeSpaceWhenImporting.ValueInt64(),
-		RecycleBinCleanupDays:                   m.RecycleBinCleanupDays.ValueInt64(),
-		ChmodFolder:                             m.ChmodFolder.ValueString(),
-		ChownGroup:                              m.ChownGroup.ValueString(),
-		DownloadPropersAndRepacks:               m.DownloadPropersAndRepacks.ValueString(),
-		ExtraFileExtensions:                     m.ExtraFileExtensions.ValueString(),
-		FileDate:                                m.FileDate.ValueString(),
-		RecycleBin:                              m.RecycleBin.ValueString(),
-		RescanAfterRefresh:                      m.RescanAfterRefresh.ValueString(),
-	}
+func (m *MediaManagement) read() *radarr.MediaManagementConfigResource {
+	config := radarr.NewMediaManagementConfigResource()
+	config.SetAutoRenameFolders(m.AutoRenameFolders.ValueBool())
+	config.SetAutoUnmonitorPreviouslyDownloadedMovies(m.AutoUnmonitorPreviouslyDownloadedMovies.ValueBool())
+	config.SetCopyUsingHardlinks(m.CopyUsingHardlinks.ValueBool())
+	config.SetCreateEmptyMovieFolders(m.CreateEmptyMovieFolders.ValueBool())
+	config.SetDeleteEmptyFolders(m.DeleteEmptyFolders.ValueBool())
+	config.SetEnableMediaInfo(m.EnableMediaInfo.ValueBool())
+	config.SetImportExtraFiles(m.ImportExtraFiles.ValueBool())
+	config.SetPathsDefaultStatic(m.PathsDefaultStatic.ValueBool())
+	config.SetSetPermissionsLinux(m.SetPermissionsLinux.ValueBool())
+	config.SetSkipFreeSpaceCheckWhenImporting(m.SkipFreeSpaceCheckWhenImporting.ValueBool())
+	config.SetId(int32(m.ID.ValueInt64()))
+	config.SetMinimumFreeSpaceWhenImporting(int32(m.MinimumFreeSpaceWhenImporting.ValueInt64()))
+	config.SetRecycleBinCleanupDays(int32(m.RecycleBinCleanupDays.ValueInt64()))
+	config.SetChmodFolder(m.ChmodFolder.ValueString())
+	config.SetChownGroup(m.ChownGroup.ValueString())
+	config.SetDownloadPropersAndRepacks(radarr.ProperDownloadTypes(m.DownloadPropersAndRepacks.ValueString()))
+	config.SetExtraFileExtensions(m.ExtraFileExtensions.ValueString())
+	config.SetFileDate(radarr.FileDateType(m.FileDate.ValueString()))
+	config.SetRecycleBin(m.RecycleBin.ValueString())
+	config.SetRescanAfterRefresh(radarr.RescanAfterRefreshType(m.RescanAfterRefresh.ValueString()))
+
+	return config
 }
