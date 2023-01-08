@@ -2,7 +2,7 @@
 version: "3.9"
 services:
   radarr:
-    image: linuxserver/radarr:4.2.4
+    image: linuxserver/radarr:4.3.2
     container_name: radarr
     depends_on:
       - transmission
