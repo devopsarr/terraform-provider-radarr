@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/devopsarr/terraform-provider-sonarr/tools"
+	"github.com/devopsarr/radarr-go/radarr"
+	"github.com/devopsarr/terraform-provider-radarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -14,7 +15,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"golift.io/starr/radarr"
 )
 
 const restrictionName = "restriction"
@@ -31,7 +31,7 @@ func NewRestrictionResource() resource.Resource {
 
 // RestrictionResource defines the remote path restriction implementation.
 type RestrictionResource struct {
-	client *radarr.Radarr
+	client *radarr.APIClient
 }
 
 // Restriction describes the remote path restriction data model.
@@ -83,11 +83,11 @@ func (r *RestrictionResource) Configure(ctx context.Context, req resource.Config
 		return
 	}
 
-	client, ok := req.ProviderData.(*radarr.Radarr)
+	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
 			tools.UnexpectedResourceConfigureType,
-			fmt.Sprintf("Expected *radarr.Radarr, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -109,14 +109,14 @@ func (r *RestrictionResource) Create(ctx context.Context, req resource.CreateReq
 	// Create new Restriction
 	request := restriction.read(ctx)
 
-	response, err := r.client.AddRestrictionContext(ctx, request)
+	response, _, err := r.client.RestrictionApi.CreateRestriction(ctx).RestrictionResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create %s, got error: %s", restrictionName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "created "+restrictionName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "created "+restrictionName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	restriction.write(ctx, response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &restriction)...)
@@ -133,14 +133,14 @@ func (r *RestrictionResource) Read(ctx context.Context, req resource.ReadRequest
 	}
 
 	// Get restriction current value
-	response, err := r.client.GetRestrictionContext(ctx, restriction.ID.ValueInt64())
+	response, _, err := r.client.RestrictionApi.GetRestrictionById(ctx, int32(restriction.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", restrictionName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read "+restrictionName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "read "+restrictionName+": "+strconv.Itoa(int(response.GetId())))
 	// Map response body to resource schema attribute
 	restriction.write(ctx, response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &restriction)...)
@@ -159,14 +159,14 @@ func (r *RestrictionResource) Update(ctx context.Context, req resource.UpdateReq
 	// Update Restriction
 	request := restriction.read(ctx)
 
-	response, err := r.client.UpdateRestrictionContext(ctx, request)
+	response, _, err := r.client.RestrictionApi.UpdateRestriction(ctx, strconv.Itoa(int(request.GetId()))).RestrictionResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update %s, got error: %s", restrictionName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "updated "+restrictionName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "updated "+restrictionName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	restriction.write(ctx, response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &restriction)...)
@@ -183,7 +183,7 @@ func (r *RestrictionResource) Delete(ctx context.Context, req resource.DeleteReq
 	}
 
 	// Delete restriction current value
-	err := r.client.DeleteRestrictionContext(ctx, state.ID.ValueInt64())
+	_, err := r.client.RestrictionApi.DeleteRestriction(ctx, int32(state.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", restrictionName, err))
 
@@ -210,23 +210,24 @@ func (r *RestrictionResource) ImportState(ctx context.Context, req resource.Impo
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), id)...)
 }
 
-func (r *Restriction) write(ctx context.Context, restriction *radarr.Restriction) {
-	r.ID = types.Int64Value(restriction.ID)
-	r.Ignored = types.StringValue(restriction.Ignored)
-	r.Required = types.StringValue(restriction.Required)
+func (r *Restriction) write(ctx context.Context, restriction *radarr.RestrictionResource) {
+	r.ID = types.Int64Value(int64(restriction.GetId()))
+	r.Ignored = types.StringValue(restriction.GetIgnored())
+	r.Required = types.StringValue(restriction.GetRequired())
 	r.Tags = types.SetValueMust(types.Int64Type, nil)
 	tfsdk.ValueFrom(ctx, restriction.Tags, r.Tags.Type(ctx), &r.Tags)
 }
 
-func (r *Restriction) read(ctx context.Context) *radarr.Restriction {
-	var tags []int
+func (r *Restriction) read(ctx context.Context) *radarr.RestrictionResource {
+	var tags []*int32
 
 	tfsdk.ValueAs(ctx, r.Tags, &tags)
 
-	return &radarr.Restriction{
-		ID:       r.ID.ValueInt64(),
-		Ignored:  r.Ignored.ValueString(),
-		Required: r.Required.ValueString(),
-		Tags:     tags,
-	}
+	restriction := radarr.NewRestrictionResource()
+	restriction.SetId(int32(r.ID.ValueInt64()))
+	restriction.SetIgnored(r.Ignored.ValueString())
+	restriction.SetRequired(r.Required.ValueString())
+	restriction.SetTags(tags)
+
+	return restriction
 }

@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/devopsarr/terraform-provider-sonarr/tools"
+	"github.com/devopsarr/radarr-go/radarr"
+	"github.com/devopsarr/terraform-provider-radarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -15,8 +16,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"golang.org/x/exp/slices"
-	"golift.io/starr"
-	"golift.io/starr/radarr"
 )
 
 const customFormatResourceName = "custom_format"
@@ -38,7 +37,7 @@ func NewCustomFormatResource() resource.Resource {
 
 // CustomFormatResource defines the custom format implementation.
 type CustomFormatResource struct {
-	client *radarr.Radarr
+	client *radarr.APIClient
 }
 
 // CustomFormat describes the custom format data model.
@@ -143,11 +142,11 @@ func (r *CustomFormatResource) Configure(ctx context.Context, req resource.Confi
 		return
 	}
 
-	client, ok := req.ProviderData.(*radarr.Radarr)
+	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
 			tools.UnexpectedResourceConfigureType,
-			fmt.Sprintf("Expected *radarr.Radarr, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -169,14 +168,14 @@ func (r *CustomFormatResource) Create(ctx context.Context, req resource.CreateRe
 	// Create new CustomFormat
 	request := client.read(ctx)
 
-	response, err := r.client.AddCustomFormatContext(ctx, request)
+	response, _, err := r.client.CustomFormatApi.CreateCustomformat(ctx).CustomFormatResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create %s, got error: %s", customFormatResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "created "+customFormatResourceName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "created "+customFormatResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state CustomFormat
@@ -196,14 +195,14 @@ func (r *CustomFormatResource) Read(ctx context.Context, req resource.ReadReques
 	}
 
 	// Get CustomFormat current value
-	response, err := r.client.GetCustomFormatContext(ctx, client.ID.ValueInt64())
+	response, _, err := r.client.CustomFormatApi.GetCustomformatById(ctx, int32(client.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", customFormatResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read "+customFormatResourceName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "read "+customFormatResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Map response body to resource schema attribute
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state CustomFormat
@@ -225,14 +224,14 @@ func (r *CustomFormatResource) Update(ctx context.Context, req resource.UpdateRe
 	// Update CustomFormat
 	request := client.read(ctx)
 
-	response, err := r.client.UpdateCustomFormatContext(ctx, request)
+	response, _, err := r.client.CustomFormatApi.UpdateCustomformat(ctx, strconv.Itoa(int(request.GetId()))).CustomFormatResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update %s, got error: %s", customFormatResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "updated "+customFormatResourceName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "updated "+customFormatResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state CustomFormat
@@ -251,7 +250,7 @@ func (r *CustomFormatResource) Delete(ctx context.Context, req resource.DeleteRe
 	}
 
 	// Delete CustomFormat current value
-	err := r.client.DeleteCustomFormatContext(ctx, client.ID.ValueInt64())
+	_, err := r.client.CustomFormatApi.DeleteCustomformat(ctx, int32(client.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", customFormatResourceName, err))
 
@@ -278,10 +277,10 @@ func (r *CustomFormatResource) ImportState(ctx context.Context, req resource.Imp
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), id)...)
 }
 
-func (c *CustomFormat) write(ctx context.Context, customFormat *radarr.CustomFormatOutput) {
-	c.ID = types.Int64Value(customFormat.ID)
-	c.Name = types.StringValue(customFormat.Name)
-	c.IncludeCustomFormatWhenRenaming = types.BoolValue(customFormat.IncludeCFWhenRenaming)
+func (c *CustomFormat) write(ctx context.Context, customFormat *radarr.CustomFormatResource) {
+	c.ID = types.Int64Value(int64(customFormat.GetId()))
+	c.Name = types.StringValue(customFormat.GetName())
+	c.IncludeCustomFormatWhenRenaming = types.BoolValue(customFormat.GetIncludeCustomFormatWhenRenaming())
 	c.Specifications = types.SetValueMust(CustomFormatResource{}.getSpecificationSchema().Type(), nil)
 
 	specs := make([]Specification, len(customFormat.Specifications))
@@ -292,27 +291,27 @@ func (c *CustomFormat) write(ctx context.Context, customFormat *radarr.CustomFor
 	tfsdk.ValueFrom(ctx, specs, c.Specifications.Type(ctx), &c.Specifications)
 }
 
-func (s *Specification) write(spec *radarr.CustomFormatOutputSpec) {
-	s.Implementation = types.StringValue(spec.Implementation)
-	s.Name = types.StringValue(spec.Name)
-	s.Negate = types.BoolValue(spec.Negate)
-	s.Required = types.BoolValue(spec.Required)
+func (s *Specification) write(spec *radarr.CustomFormatSpecificationSchema) {
+	s.Implementation = types.StringValue(spec.GetImplementation())
+	s.Name = types.StringValue(spec.GetName())
+	s.Negate = types.BoolValue(spec.GetNegate())
+	s.Required = types.BoolValue(spec.GetRequired())
 	s.writeFields(spec.Fields)
 }
 
-func (s *Specification) writeFields(fields []*starr.FieldOutput) {
+func (s *Specification) writeFields(fields []*radarr.Field) {
 	for _, f := range fields {
 		if f.Value == nil {
 			continue
 		}
 
-		if slices.Contains(customFormatStringFields, f.Name) {
+		if slices.Contains(customFormatStringFields, f.GetName()) {
 			tools.WriteStringField(f, s)
 
 			continue
 		}
 
-		if slices.Contains(customFormatIntFields, f.Name) {
+		if slices.Contains(customFormatIntFields, f.GetName()) {
 			tools.WriteIntField(f, s)
 
 			continue
@@ -320,35 +319,38 @@ func (s *Specification) writeFields(fields []*starr.FieldOutput) {
 	}
 }
 
-func (c *CustomFormat) read(ctx context.Context) *radarr.CustomFormatInput {
+func (c *CustomFormat) read(ctx context.Context) *radarr.CustomFormatResource {
 	specifications := make([]Specification, len(c.Specifications.Elements()))
 	tfsdk.ValueAs(ctx, c.Specifications, &specifications)
-	specs := make([]*radarr.CustomFormatInputSpec, len(specifications))
+	specs := make([]*radarr.CustomFormatSpecificationSchema, len(specifications))
 
 	for n, d := range specifications {
 		specs[n] = d.read()
 	}
 
-	return &radarr.CustomFormatInput{
-		ID:                    c.ID.ValueInt64(),
-		Name:                  c.Name.ValueString(),
-		IncludeCFWhenRenaming: c.IncludeCustomFormatWhenRenaming.ValueBool(),
-		Specifications:        specs,
-	}
+	format := radarr.NewCustomFormatResource()
+	format.SetId(int32(c.ID.ValueInt64()))
+	format.SetName(c.Name.ValueString())
+	format.SetIncludeCustomFormatWhenRenaming(c.IncludeCustomFormatWhenRenaming.ValueBool())
+	format.SetSpecifications(specs)
+
+	return format
 }
 
-func (s *Specification) read() *radarr.CustomFormatInputSpec {
-	return &radarr.CustomFormatInputSpec{
-		Name:           s.Name.ValueString(),
-		Implementation: s.Implementation.ValueString(),
-		Negate:         s.Negate.ValueBool(),
-		Required:       s.Required.ValueBool(),
-		Fields:         s.readFields(),
-	}
+func (s *Specification) read() *radarr.CustomFormatSpecificationSchema {
+	spec := radarr.NewCustomFormatSpecificationSchema()
+	spec.SetName(s.Name.ValueString())
+
+	spec.SetImplementation(s.Implementation.ValueString())
+	spec.SetNegate(s.Negate.ValueBool())
+	spec.SetRequired(s.Required.ValueBool())
+	spec.SetFields(s.readFields())
+
+	return spec
 }
 
-func (s *Specification) readFields() []*starr.FieldInput {
-	var output []*starr.FieldInput
+func (s *Specification) readFields() []*radarr.Field {
+	var output []*radarr.Field
 
 	for _, i := range customFormatIntFields {
 		if field := tools.ReadIntField(i, s); field != nil {

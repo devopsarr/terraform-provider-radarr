@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/devopsarr/terraform-provider-sonarr/tools"
+	"github.com/devopsarr/radarr-go/radarr"
+	"github.com/devopsarr/terraform-provider-radarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"golift.io/starr/radarr"
 )
 
 const notificationsDataSourceName = "notifications"
@@ -25,7 +25,7 @@ func NewNotificationsDataSource() datasource.DataSource {
 
 // NotificationsDataSource defines the notifications implementation.
 type NotificationsDataSource struct {
-	client *radarr.Radarr
+	client *radarr.APIClient
 }
 
 // Notifications describes the notifications data model.
@@ -406,11 +406,11 @@ func (d *NotificationsDataSource) Configure(ctx context.Context, req datasource.
 		return
 	}
 
-	client, ok := req.ProviderData.(*radarr.Radarr)
+	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
 			tools.UnexpectedDataSourceConfigureType,
-			fmt.Sprintf("Expected *radarr.Radarr, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -428,7 +428,7 @@ func (d *NotificationsDataSource) Read(ctx context.Context, req datasource.ReadR
 		return
 	}
 	// Get notifications current value
-	response, err := d.client.GetNotificationsContext(ctx)
+	response, _, err := d.client.NotificationApi.ListNotification(ctx).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", notificationsDataSourceName, err))
 

@@ -4,12 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/devopsarr/terraform-provider-sonarr/tools"
+	"github.com/devopsarr/radarr-go/radarr"
+	"github.com/devopsarr/terraform-provider-radarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"golift.io/starr"
-	"golift.io/starr/radarr"
 )
 
 const tagDataSourceName = "tag"
@@ -23,7 +22,7 @@ func NewTagDataSource() datasource.DataSource {
 
 // TagDataSource defines the tag implementation.
 type TagDataSource struct {
-	client *radarr.Radarr
+	client *radarr.APIClient
 }
 
 func (d *TagDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -53,11 +52,11 @@ func (d *TagDataSource) Configure(ctx context.Context, req datasource.ConfigureR
 		return
 	}
 
-	client, ok := req.ProviderData.(*radarr.Radarr)
+	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
 			tools.UnexpectedDataSourceConfigureType,
-			fmt.Sprintf("Expected *radarr.Radarr, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -76,7 +75,7 @@ func (d *TagDataSource) Read(ctx context.Context, req datasource.ReadRequest, re
 	}
 
 	// Get tags current value
-	response, err := d.client.GetTagsContext(ctx)
+	response, _, err := d.client.TagApi.ListTag(ctx).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, tools.UnableToRead(tagDataSourceName, err))
 
@@ -96,9 +95,9 @@ func (d *TagDataSource) Read(ctx context.Context, req datasource.ReadRequest, re
 	resp.Diagnostics.Append(resp.State.Set(ctx, &tag)...)
 }
 
-func findTag(label string, tags []*starr.Tag) (*starr.Tag, error) {
+func findTag(label string, tags []*radarr.TagResource) (*radarr.TagResource, error) {
 	for _, t := range tags {
-		if t.Label == label {
+		if t.GetLabel() == label {
 			return t, nil
 		}
 	}

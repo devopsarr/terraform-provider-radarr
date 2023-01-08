@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/devopsarr/terraform-provider-sonarr/tools"
+	"github.com/devopsarr/radarr-go/radarr"
+	"github.com/devopsarr/terraform-provider-radarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"golift.io/starr/radarr"
 )
 
 const qualityProfilesDataSourceName = "quality_profiles"
@@ -25,7 +25,7 @@ func NewQualityProfilesDataSource() datasource.DataSource {
 
 // QualityProfilesDataSource defines the qyality profiles implementation.
 type QualityProfilesDataSource struct {
-	client *radarr.Radarr
+	client *radarr.APIClient
 }
 
 // QualityProfiles describes the qyality profiles data model.
@@ -163,11 +163,11 @@ func (d *QualityProfilesDataSource) Configure(ctx context.Context, req datasourc
 		return
 	}
 
-	client, ok := req.ProviderData.(*radarr.Radarr)
+	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
 			tools.UnexpectedDataSourceConfigureType,
-			fmt.Sprintf("Expected *radarr.Radarr, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -185,7 +185,7 @@ func (d *QualityProfilesDataSource) Read(ctx context.Context, req datasource.Rea
 		return
 	}
 	// Get qualityprofiles current value
-	response, err := d.client.GetQualityProfilesContext(ctx)
+	response, _, err := d.client.QualityProfileApi.ListQualityprofile(ctx).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", qualityProfilesDataSourceName, err))
 
@@ -202,7 +202,7 @@ func (d *QualityProfilesDataSource) Read(ctx context.Context, req datasource.Rea
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func writeQualitiyprofiles(ctx context.Context, qualities []*radarr.QualityProfile) *[]QualityProfile {
+func writeQualitiyprofiles(ctx context.Context, qualities []*radarr.QualityProfileResource) *[]QualityProfile {
 	output := make([]QualityProfile, len(qualities))
 	for i, p := range qualities {
 		output[i].write(ctx, p)

@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/devopsarr/terraform-provider-sonarr/tools"
+	"github.com/devopsarr/radarr-go/radarr"
+	"github.com/devopsarr/terraform-provider-radarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -13,7 +14,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"golift.io/starr/radarr"
 )
 
 const indexerConfigResourceName = "indexer_config"
@@ -30,7 +30,7 @@ func NewIndexerConfigResource() resource.Resource {
 
 // IndexerConfigResource defines the indexer config implementation.
 type IndexerConfigResource struct {
-	client *radarr.Radarr
+	client *radarr.APIClient
 }
 
 // IndexerConfig describes the indexer config data model.
@@ -103,11 +103,11 @@ func (r *IndexerConfigResource) Configure(ctx context.Context, req resource.Conf
 		return
 	}
 
-	client, ok := req.ProviderData.(*radarr.Radarr)
+	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
 			tools.UnexpectedResourceConfigureType,
-			fmt.Sprintf("Expected *radarr.Radarr, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -127,18 +127,18 @@ func (r *IndexerConfigResource) Create(ctx context.Context, req resource.CreateR
 	}
 
 	// Build Create resource
-	data := config.read()
-	data.ID = 1
+	request := config.read()
+	request.SetId(1)
 
 	// Create new IndexerConfig
-	response, err := r.client.UpdateIndexerConfigContext(ctx, data)
+	response, _, err := r.client.IndexerConfigApi.UpdateConfigIndexer(ctx, strconv.Itoa(int(request.GetId()))).IndexerConfigResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create %s, got error: %s", indexerConfigResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "created "+indexerConfigResourceName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "created "+indexerConfigResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	config.write(response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &config)...)
@@ -155,14 +155,14 @@ func (r *IndexerConfigResource) Read(ctx context.Context, req resource.ReadReque
 	}
 
 	// Get indexerConfig current value
-	response, err := r.client.GetIndexerConfigContext(ctx)
+	response, _, err := r.client.IndexerConfigApi.GetConfigIndexer(ctx).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", indexerConfigResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read "+indexerConfigResourceName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "read "+indexerConfigResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Map response body to resource schema attribute
 	config.write(response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &config)...)
@@ -179,17 +179,17 @@ func (r *IndexerConfigResource) Update(ctx context.Context, req resource.UpdateR
 	}
 
 	// Build Update resource
-	data := config.read()
+	request := config.read()
 
 	// Update IndexerConfig
-	response, err := r.client.UpdateIndexerConfigContext(ctx, data)
+	response, _, err := r.client.IndexerConfigApi.UpdateConfigIndexer(ctx, strconv.Itoa(int(request.GetId()))).IndexerConfigResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update %s, got error: %s", indexerConfigResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "updated "+indexerConfigResourceName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "updated "+indexerConfigResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	config.write(response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &config)...)
@@ -207,28 +207,29 @@ func (r *IndexerConfigResource) ImportState(ctx context.Context, req resource.Im
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), 1)...)
 }
 
-func (c *IndexerConfig) write(indexerConfig *radarr.IndexerConfig) {
-	c.ID = types.Int64Value(indexerConfig.ID)
-	c.MaximumSize = types.Int64Value(indexerConfig.MaximumSize)
-	c.MinimumAge = types.Int64Value(indexerConfig.MinimumAge)
-	c.Retention = types.Int64Value(indexerConfig.Retention)
-	c.RssSyncInterval = types.Int64Value(indexerConfig.RssSyncInterval)
-	c.AvailabilityDelay = types.Int64Value(int64(indexerConfig.AvailabilityDelay))
-	c.AllowHardcodedSubs = types.BoolValue(indexerConfig.AllowHardcodedSubs)
-	c.PreferIndexerFlags = types.BoolValue(indexerConfig.PreferIndexerFlags)
-	c.WhitelistedHardcodedSubs = types.StringValue(indexerConfig.WhitelistedHardcodedSubs)
+func (c *IndexerConfig) write(indexerConfig *radarr.IndexerConfigResource) {
+	c.ID = types.Int64Value(int64(indexerConfig.GetId()))
+	c.MaximumSize = types.Int64Value(int64(indexerConfig.GetMaximumSize()))
+	c.MinimumAge = types.Int64Value(int64(indexerConfig.GetMinimumAge()))
+	c.Retention = types.Int64Value(int64(indexerConfig.GetRetention()))
+	c.RssSyncInterval = types.Int64Value(int64(indexerConfig.GetRssSyncInterval()))
+	c.AvailabilityDelay = types.Int64Value(int64(indexerConfig.GetAvailabilityDelay()))
+	c.AllowHardcodedSubs = types.BoolValue(indexerConfig.GetAllowHardcodedSubs())
+	c.PreferIndexerFlags = types.BoolValue(indexerConfig.GetPreferIndexerFlags())
+	c.WhitelistedHardcodedSubs = types.StringValue(indexerConfig.GetWhitelistedHardcodedSubs())
 }
 
-func (c *IndexerConfig) read() *radarr.IndexerConfig {
-	return &radarr.IndexerConfig{
-		WhitelistedHardcodedSubs: c.WhitelistedHardcodedSubs.ValueString(),
-		ID:                       c.ID.ValueInt64(),
-		MaximumSize:              c.MaximumSize.ValueInt64(),
-		MinimumAge:               c.MinimumAge.ValueInt64(),
-		Retention:                c.Retention.ValueInt64(),
-		RssSyncInterval:          c.RssSyncInterval.ValueInt64(),
-		AvailabilityDelay:        int(c.AvailabilityDelay.ValueInt64()),
-		PreferIndexerFlags:       c.PreferIndexerFlags.ValueBool(),
-		AllowHardcodedSubs:       c.AllowHardcodedSubs.ValueBool(),
-	}
+func (c *IndexerConfig) read() *radarr.IndexerConfigResource {
+	config := radarr.NewIndexerConfigResource()
+	config.SetAllowHardcodedSubs(c.AllowHardcodedSubs.ValueBool())
+	config.SetAvailabilityDelay(int32(c.AvailabilityDelay.ValueInt64()))
+	config.SetId(int32(c.ID.ValueInt64()))
+	config.SetMaximumSize(int32(c.MaximumSize.ValueInt64()))
+	config.SetMinimumAge(int32(c.MinimumAge.ValueInt64()))
+	config.SetRetention(int32(c.Retention.ValueInt64()))
+	config.SetPreferIndexerFlags(c.PreferIndexerFlags.ValueBool())
+	config.SetRssSyncInterval(int32(c.RssSyncInterval.ValueInt64()))
+	config.SetWhitelistedHardcodedSubs(c.WhitelistedHardcodedSubs.ValueString())
+
+	return config
 }

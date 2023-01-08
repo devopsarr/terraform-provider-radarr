@@ -1,12 +1,10 @@
 package provider
 
 import (
-	"os"
+	"context"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"golift.io/starr"
-	"golift.io/starr/radarr"
 )
 
 func TestAccQualityProfilesDataSource(t *testing.T) {
@@ -35,8 +33,8 @@ data "radarr_quality_profiles" "test" {
 
 func qualityprofilesDSInit() {
 	// keep only first two profiles to avoid longer tests
-	client := *radarr.New(starr.New(os.Getenv("RADARR_API_KEY"), os.Getenv("RADARR_URL"), 0))
+	client := testAccAPIClient()
 	for i := 3; i < 7; i++ {
-		_ = client.DeleteQualityProfile(int64(i))
+		client.QualityProfileApi.DeleteQualityprofile(context.TODO(), int32(i))
 	}
 }

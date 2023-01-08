@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/devopsarr/terraform-provider-sonarr/tools"
+	"github.com/devopsarr/radarr-go/radarr"
+	"github.com/devopsarr/terraform-provider-radarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"golift.io/starr/radarr"
 )
 
 const restrictionDataSourceName = "restriction"
@@ -24,7 +24,7 @@ func NewRestrictionDataSource() datasource.DataSource {
 
 // RestrictionDataSource defines the remote path restriction implementation.
 type RestrictionDataSource struct {
-	client *radarr.Radarr
+	client *radarr.APIClient
 }
 
 func (d *RestrictionDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -63,11 +63,11 @@ func (d *RestrictionDataSource) Configure(ctx context.Context, req datasource.Co
 		return
 	}
 
-	client, ok := req.ProviderData.(*radarr.Radarr)
+	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
 			tools.UnexpectedDataSourceConfigureType,
-			fmt.Sprintf("Expected *radarr.Radarr, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -85,7 +85,7 @@ func (d *RestrictionDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 	// Get remote path restriction current value
-	response, err := d.client.GetRestrictionsContext(ctx)
+	response, _, err := d.client.RestrictionApi.ListRestriction(ctx).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", restrictionDataSourceName, err))
 
@@ -106,9 +106,9 @@ func (d *RestrictionDataSource) Read(ctx context.Context, req datasource.ReadReq
 	resp.Diagnostics.Append(resp.State.Set(ctx, &restriction)...)
 }
 
-func findRestriction(id int64, restrictions []*radarr.Restriction) (*radarr.Restriction, error) {
+func findRestriction(id int64, restrictions []*radarr.RestrictionResource) (*radarr.RestrictionResource, error) {
 	for _, m := range restrictions {
-		if m.ID == id {
+		if int64(m.GetId()) == id {
 			return m, nil
 		}
 	}

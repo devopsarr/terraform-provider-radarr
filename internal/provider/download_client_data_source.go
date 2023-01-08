@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/devopsarr/terraform-provider-sonarr/tools"
+	"github.com/devopsarr/radarr-go/radarr"
+	"github.com/devopsarr/terraform-provider-radarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"golift.io/starr/radarr"
 )
 
 const downloadClientDataSourceName = "download_client"
@@ -25,7 +25,7 @@ func NewDownloadClientDataSource() datasource.DataSource {
 
 // DownloadClientDataSource defines the download_client implementation.
 type DownloadClientDataSource struct {
-	client *radarr.Radarr
+	client *radarr.APIClient
 }
 
 func (d *DownloadClientDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -227,11 +227,11 @@ func (d *DownloadClientDataSource) Configure(ctx context.Context, req datasource
 		return
 	}
 
-	client, ok := req.ProviderData.(*radarr.Radarr)
+	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
 			tools.UnexpectedDataSourceConfigureType,
-			fmt.Sprintf("Expected *radarr.Radarr, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -249,7 +249,7 @@ func (d *DownloadClientDataSource) Read(ctx context.Context, req datasource.Read
 		return
 	}
 	// Get downloadClient current value
-	response, err := d.client.GetDownloadClientsContext(ctx)
+	response, _, err := d.client.DownloadClientApi.ListDownloadclient(ctx).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", downloadClientDataSourceName, err))
 
@@ -268,9 +268,9 @@ func (d *DownloadClientDataSource) Read(ctx context.Context, req datasource.Read
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func findDownloadClient(name string, downloadClients []*radarr.DownloadClientOutput) (*radarr.DownloadClientOutput, error) {
+func findDownloadClient(name string, downloadClients []*radarr.DownloadClientResource) (*radarr.DownloadClientResource, error) {
 	for _, i := range downloadClients {
-		if i.Name == name {
+		if i.GetName() == name {
 			return i, nil
 		}
 	}

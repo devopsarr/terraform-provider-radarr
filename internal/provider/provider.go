@@ -4,13 +4,12 @@ import (
 	"context"
 	"os"
 
+	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"golift.io/starr"
-	"golift.io/starr/radarr"
 )
 
 // needed for tf debug mode
@@ -119,9 +118,13 @@ func (p *RadarrProvider) Configure(ctx context.Context, req provider.ConfigureRe
 
 		return
 	}
-	// If the upstream provider SDK or HTTP client requires configuration, such
-	// as authentication or logging, this is a great opportunity to do so.
-	client := radarr.New(starr.New(key, url, 0))
+
+	// Configuring client. API Key management could be changed once new options avail in sdk.
+	config := radarr.NewConfiguration()
+	config.AddDefaultHeader("X-Api-Key", key)
+	config.Servers[0].URL = url
+	client := radarr.NewAPIClient(config)
+
 	resp.DataSourceData = client
 	resp.ResourceData = client
 }

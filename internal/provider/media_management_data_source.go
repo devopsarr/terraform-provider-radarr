@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/devopsarr/terraform-provider-sonarr/tools"
+	"github.com/devopsarr/radarr-go/radarr"
+	"github.com/devopsarr/terraform-provider-radarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"golift.io/starr/radarr"
 )
 
 const mediaManagementDataSourceName = "media_management"
@@ -22,7 +22,7 @@ func NewMediaManagementDataSource() datasource.DataSource {
 
 // MediaManagementDataSource defines the media management implementation.
 type MediaManagementDataSource struct {
-	client *radarr.Radarr
+	client *radarr.APIClient
 }
 
 func (d *MediaManagementDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -124,11 +124,11 @@ func (d *MediaManagementDataSource) Configure(ctx context.Context, req datasourc
 		return
 	}
 
-	client, ok := req.ProviderData.(*radarr.Radarr)
+	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
 			tools.UnexpectedDataSourceConfigureType,
-			fmt.Sprintf("Expected *radarr.Radarr, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -139,7 +139,7 @@ func (d *MediaManagementDataSource) Configure(ctx context.Context, req datasourc
 
 func (d *MediaManagementDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get indexer config current value
-	response, err := d.client.GetMediaManagementContext(ctx)
+	response, _, err := d.client.MediaManagementConfigApi.GetConfigMediamanagement(ctx).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", mediaManagementDataSourceName, err))
 

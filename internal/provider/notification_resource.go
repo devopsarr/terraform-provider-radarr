@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/devopsarr/terraform-provider-sonarr/tools"
+	"github.com/devopsarr/radarr-go/radarr"
+	"github.com/devopsarr/terraform-provider-radarr/tools"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -17,8 +18,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"golang.org/x/exp/slices"
-	"golift.io/starr"
-	"golift.io/starr/radarr"
 )
 
 const notificationResourceName = "notification"
@@ -43,7 +42,7 @@ func NewNotificationResource() resource.Resource {
 
 // NotificationResource defines the notification implementation.
 type NotificationResource struct {
-	client *radarr.Radarr
+	client *radarr.APIClient
 }
 
 // Notification describes the notification data model.
@@ -577,11 +576,11 @@ func (r *NotificationResource) Configure(ctx context.Context, req resource.Confi
 		return
 	}
 
-	client, ok := req.ProviderData.(*radarr.Radarr)
+	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
 			tools.UnexpectedResourceConfigureType,
-			fmt.Sprintf("Expected *radarr.Radarr, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -603,14 +602,14 @@ func (r *NotificationResource) Create(ctx context.Context, req resource.CreateRe
 	// Create new Notification
 	request := notification.read(ctx)
 
-	response, err := r.client.AddNotificationContext(ctx, request)
+	response, _, err := r.client.NotificationApi.CreateNotification(ctx).NotificationResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create %s, got error: %s", notificationResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "created "+notificationResourceName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "created "+notificationResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state Notification
@@ -630,14 +629,14 @@ func (r *NotificationResource) Read(ctx context.Context, req resource.ReadReques
 	}
 
 	// Get Notification current value
-	response, err := r.client.GetNotificationContext(ctx, int(notification.ID.ValueInt64()))
+	response, _, err := r.client.NotificationApi.GetNotificationById(ctx, int32(notification.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", notificationResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read "+notificationResourceName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "read "+notificationResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Map response body to resource schema attribute
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state Notification
@@ -659,14 +658,14 @@ func (r *NotificationResource) Update(ctx context.Context, req resource.UpdateRe
 	// Update Notification
 	request := notification.read(ctx)
 
-	response, err := r.client.UpdateNotificationContext(ctx, request)
+	response, _, err := r.client.NotificationApi.UpdateNotification(ctx, strconv.Itoa(int(request.GetId()))).NotificationResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update %s, got error: %s", notificationResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "updated "+notificationResourceName+": "+strconv.Itoa(int(response.ID)))
+	tflog.Trace(ctx, "updated "+notificationResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state Notification
@@ -685,7 +684,7 @@ func (r *NotificationResource) Delete(ctx context.Context, req resource.DeleteRe
 	}
 
 	// Delete Notification current value
-	err := r.client.DeleteNotificationContext(ctx, notification.ID.ValueInt64())
+	_, err := r.client.NotificationApi.DeleteNotification(ctx, int32(notification.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", notificationResourceName, err))
 
@@ -712,22 +711,22 @@ func (r *NotificationResource) ImportState(ctx context.Context, req resource.Imp
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), id)...)
 }
 
-func (n *Notification) write(ctx context.Context, notification *radarr.NotificationOutput) {
-	n.OnGrab = types.BoolValue(notification.OnGrab)
-	n.OnDownload = types.BoolValue(notification.OnDownload)
-	n.OnUpgrade = types.BoolValue(notification.OnUpgrade)
-	n.OnRename = types.BoolValue(notification.OnRename)
-	n.OnMovieAdded = types.BoolValue(notification.OnMovieAdded)
-	n.OnMovieDelete = types.BoolValue(notification.OnMovieDelete)
-	n.OnMovieFileDelete = types.BoolValue(notification.OnMovieFileDelete)
-	n.OnMovieFileDeleteForUpgrade = types.BoolValue(notification.OnMovieFileDeleteForUpgrade)
-	n.OnHealthIssue = types.BoolValue(notification.OnHealthIssue)
-	n.OnApplicationUpdate = types.BoolValue(notification.OnApplicationUpdate)
-	n.IncludeHealthWarnings = types.BoolValue(notification.IncludeHealthWarnings)
-	n.ID = types.Int64Value(notification.ID)
-	n.Name = types.StringValue(notification.Name)
-	n.Implementation = types.StringValue(notification.Implementation)
-	n.ConfigContract = types.StringValue(notification.ConfigContract)
+func (n *Notification) write(ctx context.Context, notification *radarr.NotificationResource) {
+	n.OnGrab = types.BoolValue(notification.GetOnGrab())
+	n.OnDownload = types.BoolValue(notification.GetOnDownload())
+	n.OnUpgrade = types.BoolValue(notification.GetOnUpgrade())
+	n.OnRename = types.BoolValue(notification.GetOnRename())
+	n.OnMovieAdded = types.BoolValue(notification.GetOnMovieAdded())
+	n.OnMovieDelete = types.BoolValue(notification.GetOnMovieDelete())
+	n.OnMovieFileDelete = types.BoolValue(notification.GetOnMovieFileDelete())
+	n.OnMovieFileDeleteForUpgrade = types.BoolValue(notification.GetOnMovieFileDeleteForUpgrade())
+	n.OnHealthIssue = types.BoolValue(notification.GetOnHealthIssue())
+	n.OnApplicationUpdate = types.BoolValue(notification.GetOnApplicationUpdate())
+	n.IncludeHealthWarnings = types.BoolValue(notification.GetIncludeHealthWarnings())
+	n.ID = types.Int64Value(int64(notification.GetId()))
+	n.Name = types.StringValue(notification.GetName())
+	n.Implementation = types.StringValue(notification.GetImplementation())
+	n.ConfigContract = types.StringValue(notification.GetConfigContract())
 	n.GrabFields = types.SetValueMust(types.Int64Type, nil)
 	n.ImportFields = types.SetValueMust(types.Int64Type, nil)
 	n.Tags = types.SetValueMust(types.Int64Type, nil)
@@ -744,70 +743,71 @@ func (n *Notification) write(ctx context.Context, notification *radarr.Notificat
 	n.writeFields(ctx, notification.Fields)
 }
 
-func (n *Notification) writeFields(ctx context.Context, fields []*starr.FieldOutput) {
+func (n *Notification) writeFields(ctx context.Context, fields []*radarr.Field) {
 	for _, f := range fields {
 		if f.Value == nil {
 			continue
 		}
 
-		if slices.Contains(notificationStringFields, f.Name) {
+		if slices.Contains(notificationStringFields, f.GetName()) {
 			tools.WriteStringField(f, n)
 
 			continue
 		}
 
-		if slices.Contains(notificationBoolFields, f.Name) {
+		if slices.Contains(notificationBoolFields, f.GetName()) {
 			tools.WriteBoolField(f, n)
 
 			continue
 		}
 
-		if slices.Contains(notificationIntFields, f.Name) {
+		if slices.Contains(notificationIntFields, f.GetName()) {
 			tools.WriteIntField(f, n)
 
 			continue
 		}
 
-		if slices.Contains(notificationStringSliceFields, f.Name) || f.Name == "tags" {
+		if slices.Contains(notificationStringSliceFields, f.GetName()) || f.GetName() == "tags" {
 			tools.WriteStringSliceField(ctx, f, n)
 
 			continue
 		}
 
-		if slices.Contains(notificationIntSliceFields, f.Name) {
+		if slices.Contains(notificationIntSliceFields, f.GetName()) {
 			tools.WriteIntSliceField(ctx, f, n)
 		}
 	}
 }
 
-func (n *Notification) read(ctx context.Context) *radarr.NotificationInput {
-	var tags []int
+func (n *Notification) read(ctx context.Context) *radarr.NotificationResource {
+	var tags []*int32
 
 	tfsdk.ValueAs(ctx, n.Tags, &tags)
 
-	return &radarr.NotificationInput{
-		OnGrab:                      n.OnGrab.ValueBool(),
-		OnDownload:                  n.OnDownload.ValueBool(),
-		OnUpgrade:                   n.OnUpgrade.ValueBool(),
-		OnRename:                    n.OnRename.ValueBool(),
-		OnMovieAdded:                n.OnMovieAdded.ValueBool(),
-		OnMovieDelete:               n.OnMovieDelete.ValueBool(),
-		OnMovieFileDelete:           n.OnMovieFileDelete.ValueBool(),
-		OnMovieFileDeleteForUpgrade: n.OnMovieFileDeleteForUpgrade.ValueBool(),
-		OnHealthIssue:               n.OnHealthIssue.ValueBool(),
-		OnApplicationUpdate:         n.OnApplicationUpdate.ValueBool(),
-		IncludeHealthWarnings:       n.IncludeHealthWarnings.ValueBool(),
-		ID:                          n.ID.ValueInt64(),
-		Name:                        n.Name.ValueString(),
-		Implementation:              n.Implementation.ValueString(),
-		ConfigContract:              n.ConfigContract.ValueString(),
-		Tags:                        tags,
-		Fields:                      n.readFields(ctx),
-	}
+	notification := radarr.NewNotificationResource()
+	notification.SetOnGrab(n.OnGrab.ValueBool())
+	notification.SetOnDownload(n.OnDownload.ValueBool())
+	notification.SetOnUpgrade(n.OnUpgrade.ValueBool())
+	notification.SetOnRename(n.OnRename.ValueBool())
+	notification.SetOnMovieAdded(n.OnMovieAdded.ValueBool())
+	notification.SetOnMovieDelete(n.OnMovieDelete.ValueBool())
+	notification.SetOnMovieFileDelete(n.OnMovieFileDelete.ValueBool())
+	notification.SetOnMovieFileDeleteForUpgrade(n.OnMovieFileDeleteForUpgrade.ValueBool())
+	notification.SetOnHealthIssue(n.OnHealthIssue.ValueBool())
+	notification.SetOnApplicationUpdate(n.OnApplicationUpdate.ValueBool())
+	notification.SetIncludeHealthWarnings(n.IncludeHealthWarnings.ValueBool())
+	notification.SetId(int32(n.ID.ValueInt64()))
+	notification.SetName(n.Name.ValueString())
+	notification.SetImplementation(n.Implementation.ValueString())
+	notification.SetConfigContract(n.ConfigContract.ValueString())
+	notification.SetTags(tags)
+	notification.SetFields(n.readFields(ctx))
+
+	return notification
 }
 
-func (n *Notification) readFields(ctx context.Context) []*starr.FieldInput {
-	var output []*starr.FieldInput
+func (n *Notification) readFields(ctx context.Context) []*radarr.Field {
+	var output []*radarr.Field
 
 	for _, b := range notificationBoolFields {
 		if field := tools.ReadBoolField(b, n); field != nil {
