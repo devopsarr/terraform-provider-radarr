@@ -6,10 +6,8 @@ import (
 
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/tools"
-	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -122,9 +120,14 @@ func (d *DownloadClientDataSource) Schema(ctx context.Context, req datasource.Sc
 			"older_movie_priority": schema.Int64Attribute{
 				MarkdownDescription: "Older Movie priority. `0` Last, `1` First.",
 				Computed:            true,
-				Validators: []validator.Int64{
-					int64validator.OneOf(0, 1),
-				},
+			},
+			"recent_priority": schema.Int64Attribute{
+				MarkdownDescription: "Recent Movie priority. `0` Last, `1` First.",
+				Computed:            true,
+			},
+			"older_priority": schema.Int64Attribute{
+				MarkdownDescription: "Older Movie priority. `0` Last, `1` First.",
+				Computed:            true,
 			},
 			"initial_state": schema.Int64Attribute{
 				MarkdownDescription: "Initial state. `0` Start, `1` ForceStart, `2` Pause.",
@@ -150,6 +153,19 @@ func (d *DownloadClientDataSource) Schema(ctx context.Context, req datasource.Sc
 				MarkdownDescription: "Base URL.",
 				Computed:            true,
 			},
+			"api_url": schema.StringAttribute{
+				MarkdownDescription: "API URL.",
+				Computed:            true,
+			},
+			"app_id": schema.StringAttribute{
+				MarkdownDescription: "App ID.",
+				Computed:            true,
+			},
+			"app_token": schema.StringAttribute{
+				MarkdownDescription: "App Token.",
+				Computed:            true,
+				Sensitive:           true,
+			},
 			"secret_token": schema.StringAttribute{
 				MarkdownDescription: "Secret token.",
 				Computed:            true,
@@ -171,6 +187,10 @@ func (d *DownloadClientDataSource) Schema(ctx context.Context, req datasource.Sc
 				Computed:            true,
 			},
 			"movie_directory": schema.StringAttribute{
+				MarkdownDescription: "Movie directory.",
+				Computed:            true,
+			},
+			"destination_directory": schema.StringAttribute{
 				MarkdownDescription: "Movie directory.",
 				Computed:            true,
 			},

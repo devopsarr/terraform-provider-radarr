@@ -31,8 +31,8 @@ var (
 
 var (
 	downloadClientBoolFields        = []string{"addPaused", "useSsl", "startOnAdd", "sequentialOrder", "firstAndLast", "addStopped", "saveMagnetFiles", "readOnly"}
-	downloadClientIntFields         = []string{"port", "recentMoviePriority", "olderMoviePriority", "initialState", "intialState"}
-	downloadClientStringFields      = []string{"host", "apiKey", "urlBase", "rpcPath", "secretToken", "password", "username", "movieCategory", "movieImportedCategory", "movieDirectory", "destination", "category", "nzbFolder", "strmFolder", "torrentFolder", "magnetFileExtension", "watchFolder"}
+	downloadClientIntFields         = []string{"port", "recentMoviePriority", "olderMoviePriority", "recentPriority", "olderPriority", "initialState", "intialState"}
+	downloadClientStringFields      = []string{"host", "apiKey", "urlBase", "rpcPath", "secretToken", "password", "username", "movieCategory", "movieImportedCategory", "movieDirectory", "destinationDirectory", "destination", "category", "nzbFolder", "strmFolder", "torrentFolder", "magnetFileExtension", "watchFolder", "apiUrl", "appId", "appToken"}
 	downloadClientStringSliceFields = []string{"fieldTags", "postImportTags"}
 	downloadClientIntSliceFields    = []string{"additionalTags"}
 )
@@ -71,8 +71,14 @@ type DownloadClient struct {
 	SecretToken              types.String `tfsdk:"secret_token"`
 	RPCPath                  types.String `tfsdk:"rpc_path"`
 	URLBase                  types.String `tfsdk:"url_base"`
+	APIURL                   types.String `tfsdk:"api_url"`
 	APIKey                   types.String `tfsdk:"api_key"`
+	AppID                    types.String `tfsdk:"app_id"`
+	AppToken                 types.String `tfsdk:"app_token"`
 	WatchFolder              types.String `tfsdk:"watch_folder"`
+	DestinationDirectory     types.String `tfsdk:"destination_directory"`
+	RecentPriority           types.Int64  `tfsdk:"recent_priority"`
+	OlderPriority            types.Int64  `tfsdk:"older_priority"`
 	RecentMoviePriority      types.Int64  `tfsdk:"recent_movie_priority"`
 	IntialState              types.Int64  `tfsdk:"intial_state"`
 	InitialState             types.Int64  `tfsdk:"initial_state"`
@@ -215,6 +221,22 @@ func (r *DownloadClientResource) Schema(ctx context.Context, req resource.Schema
 					int64validator.OneOf(0, 1),
 				},
 			},
+			"recent_priority": schema.Int64Attribute{
+				MarkdownDescription: "Recent Movie priority. `0` Last, `1` First.",
+				Optional:            true,
+				Computed:            true,
+				Validators: []validator.Int64{
+					int64validator.OneOf(0, 1),
+				},
+			},
+			"older_priority": schema.Int64Attribute{
+				MarkdownDescription: "Older Movie priority. `0` Last, `1` First.",
+				Optional:            true,
+				Computed:            true,
+				Validators: []validator.Int64{
+					int64validator.OneOf(0, 1),
+				},
+			},
 			"initial_state": schema.Int64Attribute{
 				MarkdownDescription: "Initial state. `0` Start, `1` ForceStart, `2` Pause.",
 				Optional:            true,
@@ -248,6 +270,22 @@ func (r *DownloadClientResource) Schema(ctx context.Context, req resource.Schema
 				Optional:            true,
 				Computed:            true,
 			},
+			"api_url": schema.StringAttribute{
+				MarkdownDescription: "API URL.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"app_id": schema.StringAttribute{
+				MarkdownDescription: "App ID.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"app_token": schema.StringAttribute{
+				MarkdownDescription: "App Token.",
+				Optional:            true,
+				Computed:            true,
+				Sensitive:           true,
+			},
 			"secret_token": schema.StringAttribute{
 				MarkdownDescription: "Secret token.",
 				Optional:            true,
@@ -262,6 +300,7 @@ func (r *DownloadClientResource) Schema(ctx context.Context, req resource.Schema
 				MarkdownDescription: "Password.",
 				Optional:            true,
 				Computed:            true,
+				Sensitive:           true,
 			},
 			"movie_category": schema.StringAttribute{
 				MarkdownDescription: "Movie category.",
@@ -274,6 +313,11 @@ func (r *DownloadClientResource) Schema(ctx context.Context, req resource.Schema
 				Computed:            true,
 			},
 			"movie_directory": schema.StringAttribute{
+				MarkdownDescription: "Movie directory.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"destination_directory": schema.StringAttribute{
 				MarkdownDescription: "Movie directory.",
 				Optional:            true,
 				Computed:            true,

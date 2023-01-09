@@ -20,39 +20,39 @@ import (
 )
 
 const (
-	downloadClientTransmissionResourceName   = "download_client_transmission"
-	downloadClientTransmissionImplementation = "Transmission"
-	downloadClientTransmissionConfigContract = "TransmissionSettings"
-	downloadClientTransmissionProtocol       = "torrent"
+	downloadClientFreeboxResourceName   = "download_client_freebox"
+	downloadClientFreeboxImplementation = "TorrentFreeboxDownload"
+	downloadClientFreeboxConfigContract = "FreeboxDownloadSettings"
+	downloadClientFreeboxProtocol       = "torrent"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var (
-	_ resource.Resource                = &DownloadClientTransmissionResource{}
-	_ resource.ResourceWithImportState = &DownloadClientTransmissionResource{}
+	_ resource.Resource                = &DownloadClientFreeboxResource{}
+	_ resource.ResourceWithImportState = &DownloadClientFreeboxResource{}
 )
 
-func NewDownloadClientTransmissionResource() resource.Resource {
-	return &DownloadClientTransmissionResource{}
+func NewDownloadClientFreeboxResource() resource.Resource {
+	return &DownloadClientFreeboxResource{}
 }
 
-// DownloadClientTransmissionResource defines the download client implementation.
-type DownloadClientTransmissionResource struct {
+// DownloadClientFreeboxResource defines the download client implementation.
+type DownloadClientFreeboxResource struct {
 	client *radarr.APIClient
 }
 
-// DownloadClientTransmission describes the download client data model.
-type DownloadClientTransmission struct {
+// DownloadClientFreebox describes the download client data model.
+type DownloadClientFreebox struct {
 	Tags                     types.Set    `tfsdk:"tags"`
 	Name                     types.String `tfsdk:"name"`
 	Host                     types.String `tfsdk:"host"`
-	URLBase                  types.String `tfsdk:"url_base"`
-	Username                 types.String `tfsdk:"username"`
-	Password                 types.String `tfsdk:"password"`
-	MovieCategory            types.String `tfsdk:"movie_category"`
-	MovieDirectory           types.String `tfsdk:"movie_directory"`
-	RecentMoviePriority      types.Int64  `tfsdk:"recent_movie_priority"`
-	OlderMoviePriority       types.Int64  `tfsdk:"older_movie_priority"`
+	APIURL                   types.String `tfsdk:"api_url"`
+	AppID                    types.String `tfsdk:"app_id"`
+	AppToken                 types.String `tfsdk:"app_token"`
+	Category                 types.String `tfsdk:"category"`
+	DestinationDirectory     types.String `tfsdk:"destination_directory"`
+	RecentPriority           types.Int64  `tfsdk:"recent_priority"`
+	OlderPriority            types.Int64  `tfsdk:"older_priority"`
 	Priority                 types.Int64  `tfsdk:"priority"`
 	Port                     types.Int64  `tfsdk:"port"`
 	ID                       types.Int64  `tfsdk:"id"`
@@ -63,18 +63,18 @@ type DownloadClientTransmission struct {
 	RemoveCompletedDownloads types.Bool   `tfsdk:"remove_completed_downloads"`
 }
 
-func (d DownloadClientTransmission) toDownloadClient() *DownloadClient {
+func (d DownloadClientFreebox) toDownloadClient() *DownloadClient {
 	return &DownloadClient{
 		Tags:                     d.Tags,
 		Name:                     d.Name,
 		Host:                     d.Host,
-		URLBase:                  d.URLBase,
-		Username:                 d.Username,
-		Password:                 d.Password,
-		MovieCategory:            d.MovieCategory,
-		MovieDirectory:           d.MovieDirectory,
-		RecentMoviePriority:      d.RecentMoviePriority,
-		OlderMoviePriority:       d.OlderMoviePriority,
+		APIURL:                   d.APIURL,
+		AppID:                    d.AppID,
+		AppToken:                 d.AppToken,
+		Category:                 d.Category,
+		DestinationDirectory:     d.DestinationDirectory,
+		RecentPriority:           d.RecentPriority,
+		OlderPriority:            d.OlderPriority,
 		Priority:                 d.Priority,
 		Port:                     d.Port,
 		ID:                       d.ID,
@@ -86,17 +86,17 @@ func (d DownloadClientTransmission) toDownloadClient() *DownloadClient {
 	}
 }
 
-func (d *DownloadClientTransmission) fromDownloadClient(client *DownloadClient) {
+func (d *DownloadClientFreebox) fromDownloadClient(client *DownloadClient) {
 	d.Tags = client.Tags
 	d.Name = client.Name
 	d.Host = client.Host
-	d.URLBase = client.URLBase
-	d.Username = client.Username
-	d.Password = client.Password
-	d.MovieCategory = client.MovieCategory
-	d.MovieDirectory = client.MovieDirectory
-	d.RecentMoviePriority = client.RecentMoviePriority
-	d.OlderMoviePriority = client.OlderMoviePriority
+	d.APIURL = client.APIURL
+	d.AppID = client.AppID
+	d.AppToken = client.AppToken
+	d.Category = client.Category
+	d.DestinationDirectory = client.DestinationDirectory
+	d.RecentPriority = client.RecentPriority
+	d.OlderPriority = client.OlderPriority
 	d.Priority = client.Priority
 	d.Port = client.Port
 	d.ID = client.ID
@@ -107,13 +107,13 @@ func (d *DownloadClientTransmission) fromDownloadClient(client *DownloadClient) 
 	d.RemoveCompletedDownloads = client.RemoveCompletedDownloads
 }
 
-func (r *DownloadClientTransmissionResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_" + downloadClientTransmissionResourceName
+func (r *DownloadClientFreeboxResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_" + downloadClientFreeboxResourceName
 }
 
-func (r *DownloadClientTransmissionResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *DownloadClientFreeboxResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Download Clients -->Download Client Transmission resource.\nFor more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [Transmission](https://wiki.servarr.com/radarr/supported#transmission).",
+		MarkdownDescription: "<!-- subcategory:Download Clients -->Download Client Freebox resource.\nFor more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [Freebox](https://wiki.servarr.com/radarr/supported#torrentfreeboxdownload).",
 		Attributes: map[string]schema.Attribute{
 			"enable": schema.BoolAttribute{
 				MarkdownDescription: "Enable flag.",
@@ -165,10 +165,9 @@ func (r *DownloadClientTransmissionResource) Schema(ctx context.Context, req res
 			},
 			"port": schema.Int64Attribute{
 				MarkdownDescription: "Port.",
-				Optional:            true,
-				Computed:            true,
+				Required:            true,
 			},
-			"recent_movie_priority": schema.Int64Attribute{
+			"recent_priority": schema.Int64Attribute{
 				MarkdownDescription: "Recent Movie priority. `0` Last, `1` First.",
 				Optional:            true,
 				Computed:            true,
@@ -176,7 +175,7 @@ func (r *DownloadClientTransmissionResource) Schema(ctx context.Context, req res
 					int64validator.OneOf(0, 1),
 				},
 			},
-			"older_movie_priority": schema.Int64Attribute{
+			"older_priority": schema.Int64Attribute{
 				MarkdownDescription: "Older Movie priority. `0` Last, `1` First.",
 				Optional:            true,
 				Computed:            true,
@@ -186,31 +185,27 @@ func (r *DownloadClientTransmissionResource) Schema(ctx context.Context, req res
 			},
 			"host": schema.StringAttribute{
 				MarkdownDescription: "host.",
-				Optional:            true,
-				Computed:            true,
+				Required:            true,
 			},
-			"url_base": schema.StringAttribute{
-				MarkdownDescription: "Base URL.",
-				Optional:            true,
-				Computed:            true,
+			"api_url": schema.StringAttribute{
+				MarkdownDescription: "API URL.",
+				Required:            true,
 			},
-			"username": schema.StringAttribute{
-				MarkdownDescription: "Username.",
-				Optional:            true,
-				Computed:            true,
+			"app_id": schema.StringAttribute{
+				MarkdownDescription: "App ID.",
+				Required:            true,
 			},
-			"password": schema.StringAttribute{
-				MarkdownDescription: "Password.",
-				Optional:            true,
-				Computed:            true,
+			"app_token": schema.StringAttribute{
+				MarkdownDescription: "App Token.",
+				Required:            true,
 				Sensitive:           true,
 			},
-			"movie_category": schema.StringAttribute{
-				MarkdownDescription: "Movie category.",
+			"category": schema.StringAttribute{
+				MarkdownDescription: "category.",
 				Optional:            true,
 				Computed:            true,
 			},
-			"movie_directory": schema.StringAttribute{
+			"destination_directory": schema.StringAttribute{
 				MarkdownDescription: "Movie directory.",
 				Optional:            true,
 				Computed:            true,
@@ -219,7 +214,7 @@ func (r *DownloadClientTransmissionResource) Schema(ctx context.Context, req res
 	}
 }
 
-func (r *DownloadClientTransmissionResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *DownloadClientFreeboxResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -238,9 +233,9 @@ func (r *DownloadClientTransmissionResource) Configure(ctx context.Context, req 
 	r.client = client
 }
 
-func (r *DownloadClientTransmissionResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+func (r *DownloadClientFreeboxResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	// Retrieve values from plan
-	var client *DownloadClientTransmission
+	var client *DownloadClientFreebox
 
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &client)...)
 
@@ -248,25 +243,25 @@ func (r *DownloadClientTransmissionResource) Create(ctx context.Context, req res
 		return
 	}
 
-	// Create new DownloadClientTransmission
+	// Create new DownloadClientFreebox
 	request := client.read(ctx)
 
 	response, _, err := r.client.DownloadClientApi.CreateDownloadClient(ctx).DownloadClientResource(*request).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create %s, got error: %s", downloadClientTransmissionResourceName, err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create %s, got error: %s", downloadClientFreeboxResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "created "+downloadClientTransmissionResourceName+": "+strconv.Itoa(int(response.GetId())))
+	tflog.Trace(ctx, "created "+downloadClientFreeboxResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	client.write(ctx, response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &client)...)
 }
 
-func (r *DownloadClientTransmissionResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *DownloadClientFreeboxResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	// Get current state
-	var client DownloadClientTransmission
+	var client DownloadClientFreebox
 
 	resp.Diagnostics.Append(req.State.Get(ctx, &client)...)
 
@@ -274,23 +269,23 @@ func (r *DownloadClientTransmissionResource) Read(ctx context.Context, req resou
 		return
 	}
 
-	// Get DownloadClientTransmission current value
+	// Get DownloadClientFreebox current value
 	response, _, err := r.client.DownloadClientApi.GetDownloadClientById(ctx, int32(client.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", downloadClientTransmissionResourceName, err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", downloadClientFreeboxResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read "+downloadClientTransmissionResourceName+": "+strconv.Itoa(int(response.GetId())))
+	tflog.Trace(ctx, "read "+downloadClientFreeboxResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Map response body to resource schema attribute
 	client.write(ctx, response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &client)...)
 }
 
-func (r *DownloadClientTransmissionResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *DownloadClientFreeboxResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	// Get plan values
-	var client *DownloadClientTransmission
+	var client *DownloadClientFreebox
 
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &client)...)
 
@@ -298,24 +293,24 @@ func (r *DownloadClientTransmissionResource) Update(ctx context.Context, req res
 		return
 	}
 
-	// Update DownloadClientTransmission
+	// Update DownloadClientFreebox
 	request := client.read(ctx)
 
 	response, _, err := r.client.DownloadClientApi.UpdateDownloadClient(ctx, strconv.Itoa(int(request.GetId()))).DownloadClientResource(*request).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update %s, got error: %s", downloadClientTransmissionResourceName, err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update %s, got error: %s", downloadClientFreeboxResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "updated "+downloadClientTransmissionResourceName+": "+strconv.Itoa(int(response.GetId())))
+	tflog.Trace(ctx, "updated "+downloadClientFreeboxResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	client.write(ctx, response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &client)...)
 }
 
-func (r *DownloadClientTransmissionResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var client *DownloadClientTransmission
+func (r *DownloadClientFreeboxResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var client *DownloadClientFreebox
 
 	resp.Diagnostics.Append(req.State.Get(ctx, &client)...)
 
@@ -323,19 +318,19 @@ func (r *DownloadClientTransmissionResource) Delete(ctx context.Context, req res
 		return
 	}
 
-	// Delete DownloadClientTransmission current value
+	// Delete DownloadClientFreebox current value
 	_, err := r.client.DownloadClientApi.DeleteDownloadClient(ctx, int32(client.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", downloadClientTransmissionResourceName, err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", downloadClientFreeboxResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "deleted "+downloadClientTransmissionResourceName+": "+strconv.Itoa(int(client.ID.ValueInt64())))
+	tflog.Trace(ctx, "deleted "+downloadClientFreeboxResourceName+": "+strconv.Itoa(int(client.ID.ValueInt64())))
 	resp.State.RemoveResource(ctx)
 }
 
-func (r *DownloadClientTransmissionResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+func (r *DownloadClientFreeboxResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	// resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 	id, err := strconv.Atoi(req.ID)
 	if err != nil {
@@ -347,11 +342,11 @@ func (r *DownloadClientTransmissionResource) ImportState(ctx context.Context, re
 		return
 	}
 
-	tflog.Trace(ctx, "imported "+downloadClientTransmissionResourceName+": "+strconv.Itoa(id))
+	tflog.Trace(ctx, "imported "+downloadClientFreeboxResourceName+": "+strconv.Itoa(id))
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), id)...)
 }
 
-func (d *DownloadClientTransmission) write(ctx context.Context, downloadClient *radarr.DownloadClientResource) {
+func (d *DownloadClientFreebox) write(ctx context.Context, downloadClient *radarr.DownloadClientResource) {
 	genericDownloadClient := DownloadClient{
 		Enable:                   types.BoolValue(downloadClient.GetEnable()),
 		RemoveCompletedDownloads: types.BoolValue(downloadClient.GetRemoveCompletedDownloads()),
@@ -366,7 +361,7 @@ func (d *DownloadClientTransmission) write(ctx context.Context, downloadClient *
 	d.fromDownloadClient(&genericDownloadClient)
 }
 
-func (d *DownloadClientTransmission) read(ctx context.Context) *radarr.DownloadClientResource {
+func (d *DownloadClientFreebox) read(ctx context.Context) *radarr.DownloadClientResource {
 	var tags []*int32
 
 	tfsdk.ValueAs(ctx, d.Tags, &tags)
@@ -377,10 +372,10 @@ func (d *DownloadClientTransmission) read(ctx context.Context) *radarr.DownloadC
 	client.SetRemoveFailedDownloads(d.RemoveFailedDownloads.ValueBool())
 	client.SetPriority(int32(d.Priority.ValueInt64()))
 	client.SetId(int32(d.ID.ValueInt64()))
-	client.SetConfigContract(downloadClientTransmissionConfigContract)
-	client.SetImplementation(downloadClientTransmissionImplementation)
+	client.SetConfigContract(downloadClientFreeboxConfigContract)
+	client.SetImplementation(downloadClientFreeboxImplementation)
 	client.SetName(d.Name.ValueString())
-	client.SetProtocol(downloadClientTransmissionProtocol)
+	client.SetProtocol(downloadClientFreeboxProtocol)
 	client.SetTags(tags)
 	client.SetFields(d.toDownloadClient().readFields(ctx))
 

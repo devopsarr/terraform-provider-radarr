@@ -138,6 +138,14 @@ func (d *DownloadClientsDataSource) Schema(ctx context.Context, req datasource.S
 							MarkdownDescription: "Older Movie priority. `0` Last, `1` First.",
 							Computed:            true,
 						},
+						"recent_priority": schema.Int64Attribute{
+							MarkdownDescription: "Recent Movie priority. `0` Last, `1` First.",
+							Computed:            true,
+						},
+						"older_priority": schema.Int64Attribute{
+							MarkdownDescription: "Older Movie priority. `0` Last, `1` First.",
+							Computed:            true,
+						},
 						"initial_state": schema.Int64Attribute{
 							MarkdownDescription: "Initial state. `0` Start, `1` ForceStart, `2` Pause.",
 							Computed:            true,
@@ -162,6 +170,19 @@ func (d *DownloadClientsDataSource) Schema(ctx context.Context, req datasource.S
 							MarkdownDescription: "Base URL.",
 							Computed:            true,
 						},
+						"api_url": schema.StringAttribute{
+							MarkdownDescription: "API URL.",
+							Computed:            true,
+						},
+						"app_id": schema.StringAttribute{
+							MarkdownDescription: "App ID.",
+							Computed:            true,
+						},
+						"app_token": schema.StringAttribute{
+							MarkdownDescription: "App Token.",
+							Computed:            true,
+							Sensitive:           true,
+						},
 						"secret_token": schema.StringAttribute{
 							MarkdownDescription: "Secret token.",
 							Computed:            true,
@@ -183,6 +204,10 @@ func (d *DownloadClientsDataSource) Schema(ctx context.Context, req datasource.S
 							Computed:            true,
 						},
 						"movie_directory": schema.StringAttribute{
+							MarkdownDescription: "Movie directory.",
+							Computed:            true,
+						},
+						"destination_directory": schema.StringAttribute{
 							MarkdownDescription: "Movie directory.",
 							Computed:            true,
 						},

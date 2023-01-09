@@ -34,9 +34,13 @@ Read-Only:
 - `add_stopped` (Boolean) Add stopped flag.
 - `additional_tags` (Set of Number) Additional tags, `0` TitleSlug, `1` Quality, `2` Language, `3` ReleaseGroup, `4` Year, `5` Indexer, `6` Network.
 - `api_key` (String) API key.
+- `api_url` (String) API URL.
+- `app_id` (String) App ID.
+- `app_token` (String, Sensitive) App Token.
 - `category` (String) Category.
 - `config_contract` (String) DownloadClient configuration template.
 - `destination` (String) Destination.
+- `destination_directory` (String) Movie directory.
 - `enable` (Boolean) Enable flag.
 - `field_tags` (Set of String) Field tags.
 - `first_and_last` (Boolean) First and last flag.
@@ -52,6 +56,7 @@ Read-Only:
 - `name` (String) Download Client name.
 - `nzb_folder` (String) NZB folder.
 - `older_movie_priority` (Number) Older Movie priority. `0` Last, `1` First.
+- `older_priority` (Number) Older Movie priority. `0` Last, `1` First.
 - `password` (String) Password.
 - `port` (Number) Port.
 - `post_import_tags` (Set of String) Post import tags.
@@ -59,6 +64,7 @@ Read-Only:
 - `protocol` (String) Protocol. Valid values are 'usenet' and 'torrent'.
 - `read_only` (Boolean) Read only flag.
 - `recent_movie_priority` (Number) Recent Movie priority. `0` Last, `1` First.
+- `recent_priority` (Number) Recent Movie priority. `0` Last, `1` First.
 - `remove_completed_downloads` (Boolean) Remove completed downloads flag.
 - `remove_failed_downloads` (Boolean) Remove failed downloads flag.
 - `rpc_path` (String) RPC path.
