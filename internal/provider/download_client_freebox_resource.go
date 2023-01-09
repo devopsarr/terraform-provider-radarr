@@ -20,67 +20,65 @@ import (
 )
 
 const (
-	downloadClientRtorrentResourceName   = "download_client_rtorrent"
-	downloadClientRtorrentImplementation = "RTorrent"
-	downloadClientRtorrentConfigContract = "RTorrentSettings"
-	downloadClientRtorrentProtocol       = "torrent"
+	downloadClientFreeboxResourceName   = "download_client_freebox"
+	downloadClientFreeboxImplementation = "TorrentFreeboxDownload"
+	downloadClientFreeboxConfigContract = "FreeboxDownloadSettings"
+	downloadClientFreeboxProtocol       = "torrent"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var (
-	_ resource.Resource                = &DownloadClientRtorrentResource{}
-	_ resource.ResourceWithImportState = &DownloadClientRtorrentResource{}
+	_ resource.Resource                = &DownloadClientFreeboxResource{}
+	_ resource.ResourceWithImportState = &DownloadClientFreeboxResource{}
 )
 
-func NewDownloadClientRtorrentResource() resource.Resource {
-	return &DownloadClientRtorrentResource{}
+func NewDownloadClientFreeboxResource() resource.Resource {
+	return &DownloadClientFreeboxResource{}
 }
 
-// DownloadClientRtorrentResource defines the download client implementation.
-type DownloadClientRtorrentResource struct {
+// DownloadClientFreeboxResource defines the download client implementation.
+type DownloadClientFreeboxResource struct {
 	client *radarr.APIClient
 }
 
-// DownloadClientRtorrent describes the download client data model.
-type DownloadClientRtorrent struct {
+// DownloadClientFreebox describes the download client data model.
+type DownloadClientFreebox struct {
 	Tags                     types.Set    `tfsdk:"tags"`
 	Name                     types.String `tfsdk:"name"`
 	Host                     types.String `tfsdk:"host"`
-	URLBase                  types.String `tfsdk:"url_base"`
-	Username                 types.String `tfsdk:"username"`
-	Password                 types.String `tfsdk:"password"`
-	MovieCategory            types.String `tfsdk:"movie_category"`
-	MovieDirectory           types.String `tfsdk:"movie_directory"`
-	MovieImportedCategory    types.String `tfsdk:"movie_imported_category"`
-	RecentMoviePriority      types.Int64  `tfsdk:"recent_movie_priority"`
-	OlderMoviePriority       types.Int64  `tfsdk:"older_movie_priority"`
+	APIURL                   types.String `tfsdk:"api_url"`
+	AppID                    types.String `tfsdk:"app_id"`
+	AppToken                 types.String `tfsdk:"app_token"`
+	Category                 types.String `tfsdk:"category"`
+	DestinationDirectory     types.String `tfsdk:"destination_directory"`
+	RecentPriority           types.Int64  `tfsdk:"recent_priority"`
+	OlderPriority            types.Int64  `tfsdk:"older_priority"`
 	Priority                 types.Int64  `tfsdk:"priority"`
 	Port                     types.Int64  `tfsdk:"port"`
 	ID                       types.Int64  `tfsdk:"id"`
-	AddStopped               types.Bool   `tfsdk:"add_stopped"`
+	AddPaused                types.Bool   `tfsdk:"add_paused"`
 	UseSsl                   types.Bool   `tfsdk:"use_ssl"`
 	Enable                   types.Bool   `tfsdk:"enable"`
 	RemoveFailedDownloads    types.Bool   `tfsdk:"remove_failed_downloads"`
 	RemoveCompletedDownloads types.Bool   `tfsdk:"remove_completed_downloads"`
 }
 
-func (d DownloadClientRtorrent) toDownloadClient() *DownloadClient {
+func (d DownloadClientFreebox) toDownloadClient() *DownloadClient {
 	return &DownloadClient{
 		Tags:                     d.Tags,
 		Name:                     d.Name,
 		Host:                     d.Host,
-		URLBase:                  d.URLBase,
-		Username:                 d.Username,
-		Password:                 d.Password,
-		MovieCategory:            d.MovieCategory,
-		MovieDirectory:           d.MovieDirectory,
-		MovieImportedCategory:    d.MovieImportedCategory,
-		RecentMoviePriority:      d.RecentMoviePriority,
-		OlderMoviePriority:       d.OlderMoviePriority,
+		APIURL:                   d.APIURL,
+		AppID:                    d.AppID,
+		AppToken:                 d.AppToken,
+		Category:                 d.Category,
+		DestinationDirectory:     d.DestinationDirectory,
+		RecentPriority:           d.RecentPriority,
+		OlderPriority:            d.OlderPriority,
 		Priority:                 d.Priority,
 		Port:                     d.Port,
 		ID:                       d.ID,
-		AddStopped:               d.AddStopped,
+		AddPaused:                d.AddPaused,
 		UseSsl:                   d.UseSsl,
 		Enable:                   d.Enable,
 		RemoveFailedDownloads:    d.RemoveFailedDownloads,
@@ -88,35 +86,34 @@ func (d DownloadClientRtorrent) toDownloadClient() *DownloadClient {
 	}
 }
 
-func (d *DownloadClientRtorrent) fromDownloadClient(client *DownloadClient) {
+func (d *DownloadClientFreebox) fromDownloadClient(client *DownloadClient) {
 	d.Tags = client.Tags
 	d.Name = client.Name
 	d.Host = client.Host
-	d.URLBase = client.URLBase
-	d.Username = client.Username
-	d.Password = client.Password
-	d.MovieCategory = client.MovieCategory
-	d.MovieDirectory = client.MovieDirectory
-	d.MovieImportedCategory = client.MovieImportedCategory
-	d.RecentMoviePriority = client.RecentMoviePriority
-	d.OlderMoviePriority = client.OlderMoviePriority
+	d.APIURL = client.APIURL
+	d.AppID = client.AppID
+	d.AppToken = client.AppToken
+	d.Category = client.Category
+	d.DestinationDirectory = client.DestinationDirectory
+	d.RecentPriority = client.RecentPriority
+	d.OlderPriority = client.OlderPriority
 	d.Priority = client.Priority
 	d.Port = client.Port
 	d.ID = client.ID
-	d.AddStopped = client.AddStopped
+	d.AddPaused = client.AddPaused
 	d.UseSsl = client.UseSsl
 	d.Enable = client.Enable
 	d.RemoveFailedDownloads = client.RemoveFailedDownloads
 	d.RemoveCompletedDownloads = client.RemoveCompletedDownloads
 }
 
-func (r *DownloadClientRtorrentResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_" + downloadClientRtorrentResourceName
+func (r *DownloadClientFreeboxResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_" + downloadClientFreeboxResourceName
 }
 
-func (r *DownloadClientRtorrentResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *DownloadClientFreeboxResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Download Clients -->Download Client RTorrent resource.\nFor more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [RTorrent](https://wiki.servarr.com/radarr/supported#rtorrent).",
+		MarkdownDescription: "<!-- subcategory:Download Clients -->Download Client Freebox resource.\nFor more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [Freebox](https://wiki.servarr.com/radarr/supported#torrentfreeboxdownload).",
 		Attributes: map[string]schema.Attribute{
 			"enable": schema.BoolAttribute{
 				MarkdownDescription: "Enable flag.",
@@ -156,8 +153,8 @@ func (r *DownloadClientRtorrentResource) Schema(ctx context.Context, req resourc
 				},
 			},
 			// Field values
-			"add_stopped": schema.BoolAttribute{
-				MarkdownDescription: "Add stopped flag.",
+			"add_paused": schema.BoolAttribute{
+				MarkdownDescription: "Add paused flag.",
 				Optional:            true,
 				Computed:            true,
 			},
@@ -168,58 +165,48 @@ func (r *DownloadClientRtorrentResource) Schema(ctx context.Context, req resourc
 			},
 			"port": schema.Int64Attribute{
 				MarkdownDescription: "Port.",
-				Optional:            true,
-				Computed:            true,
+				Required:            true,
 			},
-			"recent_movie_priority": schema.Int64Attribute{
-				MarkdownDescription: "Recent Movie priority. `0` VeryLow, `1` Low, `2` Normal, `3` High.",
+			"recent_priority": schema.Int64Attribute{
+				MarkdownDescription: "Recent Movie priority. `0` Last, `1` First.",
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.Int64{
-					int64validator.OneOf(0, 1, 2, 3),
+					int64validator.OneOf(0, 1),
 				},
 			},
-			"older_movie_priority": schema.Int64Attribute{
-				MarkdownDescription: "Older Movie priority. `0` VeryLow, `1` Low, `2` Normal, `3` High.",
+			"older_priority": schema.Int64Attribute{
+				MarkdownDescription: "Older Movie priority. `0` Last, `1` First.",
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.Int64{
-					int64validator.OneOf(0, 1, 2, 3),
+					int64validator.OneOf(0, 1),
 				},
 			},
 			"host": schema.StringAttribute{
 				MarkdownDescription: "host.",
-				Optional:            true,
-				Computed:            true,
+				Required:            true,
 			},
-			"url_base": schema.StringAttribute{
-				MarkdownDescription: "Base URL.",
-				Optional:            true,
-				Computed:            true,
+			"api_url": schema.StringAttribute{
+				MarkdownDescription: "API URL.",
+				Required:            true,
 			},
-			"username": schema.StringAttribute{
-				MarkdownDescription: "Username.",
-				Optional:            true,
-				Computed:            true,
+			"app_id": schema.StringAttribute{
+				MarkdownDescription: "App ID.",
+				Required:            true,
 			},
-			"password": schema.StringAttribute{
-				MarkdownDescription: "Password.",
-				Optional:            true,
-				Computed:            true,
+			"app_token": schema.StringAttribute{
+				MarkdownDescription: "App Token.",
+				Required:            true,
 				Sensitive:           true,
 			},
-			"movie_category": schema.StringAttribute{
-				MarkdownDescription: "Movie category.",
+			"category": schema.StringAttribute{
+				MarkdownDescription: "category.",
 				Optional:            true,
 				Computed:            true,
 			},
-			"movie_directory": schema.StringAttribute{
+			"destination_directory": schema.StringAttribute{
 				MarkdownDescription: "Movie directory.",
-				Optional:            true,
-				Computed:            true,
-			},
-			"movie_imported_category": schema.StringAttribute{
-				MarkdownDescription: "Movie imported category.",
 				Optional:            true,
 				Computed:            true,
 			},
@@ -227,7 +214,7 @@ func (r *DownloadClientRtorrentResource) Schema(ctx context.Context, req resourc
 	}
 }
 
-func (r *DownloadClientRtorrentResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *DownloadClientFreeboxResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -246,9 +233,9 @@ func (r *DownloadClientRtorrentResource) Configure(ctx context.Context, req reso
 	r.client = client
 }
 
-func (r *DownloadClientRtorrentResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+func (r *DownloadClientFreeboxResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	// Retrieve values from plan
-	var client *DownloadClientRtorrent
+	var client *DownloadClientFreebox
 
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &client)...)
 
@@ -256,25 +243,25 @@ func (r *DownloadClientRtorrentResource) Create(ctx context.Context, req resourc
 		return
 	}
 
-	// Create new DownloadClientRtorrent
+	// Create new DownloadClientFreebox
 	request := client.read(ctx)
 
 	response, _, err := r.client.DownloadClientApi.CreateDownloadClient(ctx).DownloadClientResource(*request).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create %s, got error: %s", downloadClientRtorrentResourceName, err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create %s, got error: %s", downloadClientFreeboxResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "created "+downloadClientRtorrentResourceName+": "+strconv.Itoa(int(response.GetId())))
+	tflog.Trace(ctx, "created "+downloadClientFreeboxResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	client.write(ctx, response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &client)...)
 }
 
-func (r *DownloadClientRtorrentResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *DownloadClientFreeboxResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	// Get current state
-	var client DownloadClientRtorrent
+	var client DownloadClientFreebox
 
 	resp.Diagnostics.Append(req.State.Get(ctx, &client)...)
 
@@ -282,23 +269,23 @@ func (r *DownloadClientRtorrentResource) Read(ctx context.Context, req resource.
 		return
 	}
 
-	// Get DownloadClientRtorrent current value
+	// Get DownloadClientFreebox current value
 	response, _, err := r.client.DownloadClientApi.GetDownloadClientById(ctx, int32(client.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", downloadClientRtorrentResourceName, err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", downloadClientFreeboxResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read "+downloadClientRtorrentResourceName+": "+strconv.Itoa(int(response.GetId())))
+	tflog.Trace(ctx, "read "+downloadClientFreeboxResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Map response body to resource schema attribute
 	client.write(ctx, response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &client)...)
 }
 
-func (r *DownloadClientRtorrentResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *DownloadClientFreeboxResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	// Get plan values
-	var client *DownloadClientRtorrent
+	var client *DownloadClientFreebox
 
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &client)...)
 
@@ -306,24 +293,24 @@ func (r *DownloadClientRtorrentResource) Update(ctx context.Context, req resourc
 		return
 	}
 
-	// Update DownloadClientRtorrent
+	// Update DownloadClientFreebox
 	request := client.read(ctx)
 
 	response, _, err := r.client.DownloadClientApi.UpdateDownloadClient(ctx, strconv.Itoa(int(request.GetId()))).DownloadClientResource(*request).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update %s, got error: %s", downloadClientRtorrentResourceName, err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update %s, got error: %s", downloadClientFreeboxResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "updated "+downloadClientRtorrentResourceName+": "+strconv.Itoa(int(response.GetId())))
+	tflog.Trace(ctx, "updated "+downloadClientFreeboxResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	client.write(ctx, response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &client)...)
 }
 
-func (r *DownloadClientRtorrentResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var client *DownloadClientRtorrent
+func (r *DownloadClientFreeboxResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var client *DownloadClientFreebox
 
 	resp.Diagnostics.Append(req.State.Get(ctx, &client)...)
 
@@ -331,19 +318,19 @@ func (r *DownloadClientRtorrentResource) Delete(ctx context.Context, req resourc
 		return
 	}
 
-	// Delete DownloadClientRtorrent current value
+	// Delete DownloadClientFreebox current value
 	_, err := r.client.DownloadClientApi.DeleteDownloadClient(ctx, int32(client.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", downloadClientRtorrentResourceName, err))
+		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", downloadClientFreeboxResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "deleted "+downloadClientRtorrentResourceName+": "+strconv.Itoa(int(client.ID.ValueInt64())))
+	tflog.Trace(ctx, "deleted "+downloadClientFreeboxResourceName+": "+strconv.Itoa(int(client.ID.ValueInt64())))
 	resp.State.RemoveResource(ctx)
 }
 
-func (r *DownloadClientRtorrentResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+func (r *DownloadClientFreeboxResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	// resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 	id, err := strconv.Atoi(req.ID)
 	if err != nil {
@@ -355,11 +342,11 @@ func (r *DownloadClientRtorrentResource) ImportState(ctx context.Context, req re
 		return
 	}
 
-	tflog.Trace(ctx, "imported "+downloadClientRtorrentResourceName+": "+strconv.Itoa(id))
+	tflog.Trace(ctx, "imported "+downloadClientFreeboxResourceName+": "+strconv.Itoa(id))
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), id)...)
 }
 
-func (d *DownloadClientRtorrent) write(ctx context.Context, downloadClient *radarr.DownloadClientResource) {
+func (d *DownloadClientFreebox) write(ctx context.Context, downloadClient *radarr.DownloadClientResource) {
 	genericDownloadClient := DownloadClient{
 		Enable:                   types.BoolValue(downloadClient.GetEnable()),
 		RemoveCompletedDownloads: types.BoolValue(downloadClient.GetRemoveCompletedDownloads()),
@@ -367,13 +354,14 @@ func (d *DownloadClientRtorrent) write(ctx context.Context, downloadClient *rada
 		Priority:                 types.Int64Value(int64(downloadClient.GetPriority())),
 		ID:                       types.Int64Value(int64(downloadClient.GetId())),
 		Name:                     types.StringValue(downloadClient.GetName()),
+		Tags:                     types.SetValueMust(types.Int64Type, nil),
 	}
-	genericDownloadClient.Tags, _ = types.SetValueFrom(ctx, types.Int64Type, downloadClient.Tags)
+	tfsdk.ValueFrom(ctx, downloadClient.Tags, genericDownloadClient.Tags.Type(ctx), &genericDownloadClient.Tags)
 	genericDownloadClient.writeFields(ctx, downloadClient.Fields)
 	d.fromDownloadClient(&genericDownloadClient)
 }
 
-func (d *DownloadClientRtorrent) read(ctx context.Context) *radarr.DownloadClientResource {
+func (d *DownloadClientFreebox) read(ctx context.Context) *radarr.DownloadClientResource {
 	var tags []*int32
 
 	tfsdk.ValueAs(ctx, d.Tags, &tags)
@@ -384,10 +372,10 @@ func (d *DownloadClientRtorrent) read(ctx context.Context) *radarr.DownloadClien
 	client.SetRemoveFailedDownloads(d.RemoveFailedDownloads.ValueBool())
 	client.SetPriority(int32(d.Priority.ValueInt64()))
 	client.SetId(int32(d.ID.ValueInt64()))
-	client.SetConfigContract(downloadClientRtorrentConfigContract)
-	client.SetImplementation(downloadClientRtorrentImplementation)
+	client.SetConfigContract(downloadClientFreeboxConfigContract)
+	client.SetImplementation(downloadClientFreeboxImplementation)
 	client.SetName(d.Name.ValueString())
-	client.SetProtocol(downloadClientRtorrentProtocol)
+	client.SetProtocol(downloadClientFreeboxProtocol)
 	client.SetTags(tags)
 	client.SetFields(d.toDownloadClient().readFields(ctx))
 

@@ -35,8 +35,8 @@ resource "radarr_download_client_torrent_download_station" "example" {
 
 - `enable` (Boolean) Enable flag.
 - `host` (String) host.
-- `movie_category` (String) TV category.
-- `movie_directory` (String) TV directory.
+- `movie_category` (String) Movie category.
+- `movie_directory` (String) Movie directory.
 - `password` (String, Sensitive) Password.
 - `port` (Number) Port.
 - `priority` (Number) Priority.

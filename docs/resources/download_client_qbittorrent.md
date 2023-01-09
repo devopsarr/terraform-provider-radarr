@@ -40,14 +40,14 @@ resource "radarr_download_client_qbittorrent" "example" {
 - `first_and_last` (Boolean) First and last flag.
 - `host` (String) host.
 - `initial_state` (Number) Initial state, with Stop support. `0` Start, `1` ForceStart, `2` Pause.
-- `movie_category` (String) TV category.
-- `movie_directory` (String) TV directory.
-- `movie_imported_category` (String) TV imported category.
-- `older_movie_priority` (Number) Older TV priority. `0` Last, `1` First.
+- `movie_category` (String) Movie category.
+- `movie_directory` (String) Movie directory.
+- `movie_imported_category` (String) Movie imported category.
+- `older_movie_priority` (Number) Older Movie priority. `0` Last, `1` First.
 - `password` (String, Sensitive) Password.
 - `port` (Number) Port.
 - `priority` (Number) Priority.
-- `recent_movie_priority` (Number) Recent TV priority. `0` Last, `1` First.
+- `recent_movie_priority` (Number) Recent Movie priority. `0` Last, `1` First.
 - `remove_completed_downloads` (Boolean) Remove completed downloads flag.
 - `remove_failed_downloads` (Boolean) Remove failed downloads flag.
 - `sequential_order` (Boolean) Sequential order flag.

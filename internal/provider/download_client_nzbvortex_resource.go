@@ -155,7 +155,7 @@ func (r *DownloadClientNzbvortexResource) Schema(ctx context.Context, req resour
 				Computed:            true,
 			},
 			"recent_movie_priority": schema.Int64Attribute{
-				MarkdownDescription: "Recent TV priority. `-1` Low, `0` Normal, `1` High.",
+				MarkdownDescription: "Recent Movie priority. `-1` Low, `0` Normal, `1` High.",
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.Int64{
@@ -163,7 +163,7 @@ func (r *DownloadClientNzbvortexResource) Schema(ctx context.Context, req resour
 				},
 			},
 			"older_movie_priority": schema.Int64Attribute{
-				MarkdownDescription: "Older TV priority. `-1` Low, `0` Normal, `1` High.",
+				MarkdownDescription: "Older Movie priority. `-1` Low, `0` Normal, `1` High.",
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.Int64{
@@ -185,7 +185,7 @@ func (r *DownloadClientNzbvortexResource) Schema(ctx context.Context, req resour
 				Required:            true,
 			},
 			"movie_category": schema.StringAttribute{
-				MarkdownDescription: "TV category.",
+				MarkdownDescription: "Movie category.",
 				Optional:            true,
 				Computed:            true,
 			},

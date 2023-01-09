@@ -34,9 +34,13 @@ Read-Only:
 - `add_stopped` (Boolean) Add stopped flag.
 - `additional_tags` (Set of Number) Additional tags, `0` TitleSlug, `1` Quality, `2` Language, `3` ReleaseGroup, `4` Year, `5` Indexer, `6` Network.
 - `api_key` (String) API key.
+- `api_url` (String) API URL.
+- `app_id` (String) App ID.
+- `app_token` (String, Sensitive) App Token.
 - `category` (String) Category.
 - `config_contract` (String) DownloadClient configuration template.
 - `destination` (String) Destination.
+- `destination_directory` (String) Movie directory.
 - `enable` (Boolean) Enable flag.
 - `field_tags` (Set of String) Field tags.
 - `first_and_last` (Boolean) First and last flag.
@@ -46,19 +50,21 @@ Read-Only:
 - `initial_state` (Number) Initial state. `0` Start, `1` ForceStart, `2` Pause.
 - `intial_state` (Number) Initial state, with Stop support. `0` Start, `1` ForceStart, `2` Pause, `3` Stop.
 - `magnet_file_extension` (String) Magnet file extension.
-- `movie_category` (String) TV category.
-- `movie_directory` (String) TV directory.
-- `movie_imported_category` (String) TV imported category.
+- `movie_category` (String) Movie category.
+- `movie_directory` (String) Movie directory.
+- `movie_imported_category` (String) Movie imported category.
 - `name` (String) Download Client name.
 - `nzb_folder` (String) NZB folder.
-- `older_movie_priority` (Number) Older TV priority. `0` Last, `1` First.
+- `older_movie_priority` (Number) Older Movie priority. `0` Last, `1` First.
+- `older_priority` (Number) Older Movie priority. `0` Last, `1` First.
 - `password` (String) Password.
 - `port` (Number) Port.
 - `post_import_tags` (Set of String) Post import tags.
 - `priority` (Number) Priority.
 - `protocol` (String) Protocol. Valid values are 'usenet' and 'torrent'.
 - `read_only` (Boolean) Read only flag.
-- `recent_movie_priority` (Number) Recent TV priority. `0` Last, `1` First.
+- `recent_movie_priority` (Number) Recent Movie priority. `0` Last, `1` First.
+- `recent_priority` (Number) Recent Movie priority. `0` Last, `1` First.
 - `remove_completed_downloads` (Boolean) Remove completed downloads flag.
 - `remove_failed_downloads` (Boolean) Remove failed downloads flag.
 - `rpc_path` (String) RPC path.

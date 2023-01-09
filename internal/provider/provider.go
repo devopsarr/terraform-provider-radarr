@@ -138,6 +138,7 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewDownloadClientAria2Resource,
 		NewDownloadClientDelugeResource,
 		NewDownloadClientFloodResource,
+		NewDownloadClientFreeboxResource,
 		NewDownloadClientHadoukenResource,
 		NewDownloadClientNzbgetResource,
 		NewDownloadClientNzbvortexResource,

@@ -41,7 +41,6 @@ type NotificationNotifiarrResource struct {
 // NotificationNotifiarr describes the notification data model.
 type NotificationNotifiarr struct {
 	Tags                        types.Set    `tfsdk:"tags"`
-	InstanceName                types.String `tfsdk:"instance_name"`
 	Name                        types.String `tfsdk:"name"`
 	APIKey                      types.String `tfsdk:"api_key"`
 	ID                          types.Int64  `tfsdk:"id"`
@@ -60,7 +59,6 @@ type NotificationNotifiarr struct {
 func (n NotificationNotifiarr) toNotification() *Notification {
 	return &Notification{
 		Tags:                        n.Tags,
-		InstanceName:                n.InstanceName,
 		APIKey:                      n.APIKey,
 		Name:                        n.Name,
 		ID:                          n.ID,
@@ -79,7 +77,6 @@ func (n NotificationNotifiarr) toNotification() *Notification {
 
 func (n *NotificationNotifiarr) fromNotification(notification *Notification) {
 	n.Tags = notification.Tags
-	n.InstanceName = notification.InstanceName
 	n.APIKey = notification.APIKey
 	n.Name = notification.Name
 	n.ID = notification.ID
@@ -170,11 +167,6 @@ func (r *NotificationNotifiarrResource) Schema(ctx context.Context, req resource
 				},
 			},
 			// Field values
-			"instance_name": schema.StringAttribute{
-				MarkdownDescription: "Instance Name.",
-				Optional:            true,
-				Computed:            true,
-			},
 			"api_key": schema.StringAttribute{
 				MarkdownDescription: "API key.",
 				Required:            true,
