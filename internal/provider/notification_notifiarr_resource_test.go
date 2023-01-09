@@ -57,6 +57,5 @@ func testAccNotificationNotifiarrResourceConfig(name, key string) string {
 		name                    = "%s"
 	  
 		api_key = "%s"
-		instance_name = "radarr"
 	}`, name, key)
 }

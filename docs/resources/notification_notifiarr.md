@@ -29,8 +29,7 @@ resource "radarr_notification_notifiarr" "example" {
   include_health_warnings = false
   name                    = "Example"
 
-  api_key       = "Token"
-  instance_name = "radarr"
+  api_key = "Token"
 }
 ```
 
@@ -46,7 +45,6 @@ resource "radarr_notification_notifiarr" "example" {
 ### Optional
 
 - `include_health_warnings` (Boolean) Include health warnings.
-- `instance_name` (String) Instance Name.
 - `on_application_update` (Boolean) On application update flag.
 - `on_download` (Boolean) On download flag.
 - `on_grab` (Boolean) On grab flag.

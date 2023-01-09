@@ -12,6 +12,5 @@ resource "radarr_notification_notifiarr" "example" {
   include_health_warnings = false
   name                    = "Example"
 
-  api_key       = "Token"
-  instance_name = "radarr"
+  api_key = "Token"
 }
