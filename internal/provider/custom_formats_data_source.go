@@ -136,7 +136,7 @@ func (d *CustomFormatsDataSource) Read(ctx context.Context, req datasource.ReadR
 		return
 	}
 	// Get download clients current value
-	response, _, err := d.client.CustomFormatApi.ListCustomformat(ctx).Execute()
+	response, _, err := d.client.CustomFormatApi.ListCustomFormat(ctx).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", customFormatsDataSourceName, err))
 

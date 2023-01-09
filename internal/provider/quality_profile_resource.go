@@ -260,7 +260,7 @@ func (r *QualityProfileResource) Create(ctx context.Context, req resource.Create
 	request := profile.read(ctx)
 
 	// Create new QualityProfile
-	response, _, err := r.client.QualityProfileApi.CreateQualityprofile(ctx).QualityProfileResource(*request).Execute()
+	response, _, err := r.client.QualityProfileApi.CreateQualityProfile(ctx).QualityProfileResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create %s, got error: %s", qualityProfileResourceName, err))
 
@@ -284,7 +284,7 @@ func (r *QualityProfileResource) Read(ctx context.Context, req resource.ReadRequ
 	}
 
 	// Get qualityprofile current value
-	response, _, err := r.client.QualityProfileApi.GetQualityprofileById(ctx, int32(profile.ID.ValueInt64())).Execute()
+	response, _, err := r.client.QualityProfileApi.GetQualityProfileById(ctx, int32(profile.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", qualityProfileResourceName, err))
 
@@ -311,7 +311,7 @@ func (r *QualityProfileResource) Update(ctx context.Context, req resource.Update
 	request := profile.read(ctx)
 
 	// Update QualityProfile
-	response, _, err := r.client.QualityProfileApi.UpdateQualityprofile(ctx, strconv.Itoa(int(request.GetId()))).QualityProfileResource(*request).Execute()
+	response, _, err := r.client.QualityProfileApi.UpdateQualityProfile(ctx, strconv.Itoa(int(request.GetId()))).QualityProfileResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update %s, got error: %s", qualityProfileResourceName, err))
 
@@ -334,7 +334,7 @@ func (r *QualityProfileResource) Delete(ctx context.Context, req resource.Delete
 	}
 
 	// Delete qualityprofile current value
-	_, err := r.client.QualityProfileApi.DeleteQualityprofile(ctx, int32(profile.ID.ValueInt64())).Execute()
+	_, err := r.client.QualityProfileApi.DeleteQualityProfile(ctx, int32(profile.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", qualityProfileResourceName, err))
 
