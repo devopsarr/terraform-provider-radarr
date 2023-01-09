@@ -166,7 +166,7 @@ func (r *DownloadClientNzbgetResource) Schema(ctx context.Context, req resource.
 				Computed:            true,
 			},
 			"recent_movie_priority": schema.Int64Attribute{
-				MarkdownDescription: "Recent TV priority. `-100` VeryLow, `-50` Low, `0` Normal, `50` High, `100` VeryHigh, `900` Force.",
+				MarkdownDescription: "Recent Movie priority. `-100` VeryLow, `-50` Low, `0` Normal, `50` High, `100` VeryHigh, `900` Force.",
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.Int64{
@@ -174,7 +174,7 @@ func (r *DownloadClientNzbgetResource) Schema(ctx context.Context, req resource.
 				},
 			},
 			"older_movie_priority": schema.Int64Attribute{
-				MarkdownDescription: "Older TV priority. `-100` VeryLow, `-50` Low, `0` Normal, `50` High, `100` VeryHigh, `900` Force.",
+				MarkdownDescription: "Older Movie priority. `-100` VeryLow, `-50` Low, `0` Normal, `50` High, `100` VeryHigh, `900` Force.",
 				Optional:            true,
 				Computed:            true,
 				Validators: []validator.Int64{
@@ -203,7 +203,7 @@ func (r *DownloadClientNzbgetResource) Schema(ctx context.Context, req resource.
 				Sensitive:           true,
 			},
 			"movie_category": schema.StringAttribute{
-				MarkdownDescription: "TV category.",
+				MarkdownDescription: "Movie category.",
 				Optional:            true,
 				Computed:            true,
 			},

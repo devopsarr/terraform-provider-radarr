@@ -37,11 +37,11 @@ resource "radarr_download_client_nzbvortex" "example" {
 
 - `enable` (Boolean) Enable flag.
 - `host` (String) host.
-- `movie_category` (String) TV category.
-- `older_movie_priority` (Number) Older TV priority. `-1` Low, `0` Normal, `1` High.
+- `movie_category` (String) Movie category.
+- `older_movie_priority` (Number) Older Movie priority. `-1` Low, `0` Normal, `1` High.
 - `port` (Number) Port.
 - `priority` (Number) Priority.
-- `recent_movie_priority` (Number) Recent TV priority. `-1` Low, `0` Normal, `1` High.
+- `recent_movie_priority` (Number) Recent Movie priority. `-1` Low, `0` Normal, `1` High.
 - `remove_completed_downloads` (Boolean) Remove completed downloads flag.
 - `remove_failed_downloads` (Boolean) Remove failed downloads flag.
 - `tags` (Set of Number) List of associated tags.

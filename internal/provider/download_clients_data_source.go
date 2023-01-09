@@ -131,11 +131,11 @@ func (d *DownloadClientsDataSource) Schema(ctx context.Context, req datasource.S
 							Computed:            true,
 						},
 						"recent_movie_priority": schema.Int64Attribute{
-							MarkdownDescription: "Recent TV priority. `0` Last, `1` First.",
+							MarkdownDescription: "Recent Movie priority. `0` Last, `1` First.",
 							Computed:            true,
 						},
 						"older_movie_priority": schema.Int64Attribute{
-							MarkdownDescription: "Older TV priority. `0` Last, `1` First.",
+							MarkdownDescription: "Older Movie priority. `0` Last, `1` First.",
 							Computed:            true,
 						},
 						"initial_state": schema.Int64Attribute{
@@ -175,15 +175,15 @@ func (d *DownloadClientsDataSource) Schema(ctx context.Context, req datasource.S
 							Computed:            true,
 						},
 						"movie_category": schema.StringAttribute{
-							MarkdownDescription: "TV category.",
+							MarkdownDescription: "Movie category.",
 							Computed:            true,
 						},
 						"movie_imported_category": schema.StringAttribute{
-							MarkdownDescription: "TV imported category.",
+							MarkdownDescription: "Movie imported category.",
 							Computed:            true,
 						},
 						"movie_directory": schema.StringAttribute{
-							MarkdownDescription: "TV directory.",
+							MarkdownDescription: "Movie directory.",
 							Computed:            true,
 						},
 						"destination": schema.StringAttribute{

@@ -166,12 +166,12 @@ func (r *DownloadClientTorrentDownloadStationResource) Schema(ctx context.Contex
 				Sensitive:           true,
 			},
 			"movie_category": schema.StringAttribute{
-				MarkdownDescription: "TV category.",
+				MarkdownDescription: "Movie category.",
 				Optional:            true,
 				Computed:            true,
 			},
 			"movie_directory": schema.StringAttribute{
-				MarkdownDescription: "TV directory.",
+				MarkdownDescription: "Movie directory.",
 				Optional:            true,
 				Computed:            true,
 			},
