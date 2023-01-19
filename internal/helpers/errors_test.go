@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/devopsarr/radarr-go/radarr"
@@ -34,11 +35,17 @@ func TestParseClientError(t *testing.T) {
 		err      error
 		expected string
 	}{
-		"tag_create": {
+		"openapi": {
 			action:   "create",
 			name:     "radarr_tag",
 			err:      &radarr.GenericOpenAPIError{},
 			expected: "Unable to create radarr_tag, got error: \nDetails:\n",
+		},
+		"generic": {
+			action:   "create",
+			name:     "radarr_tag",
+			err:      errors.New("other error"),
+			expected: "Unable to create radarr_tag, got error: other error",
 		},
 	}
 	for name, test := range tests {

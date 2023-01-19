@@ -69,8 +69,8 @@ type FormatItem struct {
 	Score  types.Int64  `tfsdk:"score"`
 }
 
-// Language is part of QualityProfile.
-type Language struct {
+// QualityLanguage is part of QualityProfile.
+type QualityLanguage struct {
 	Name types.String `tfsdk:"name"`
 	ID   types.Int64  `tfsdk:"id"`
 }
@@ -117,7 +117,7 @@ func (r *QualityProfileResource) Schema(ctx context.Context, req resource.Schema
 			"language": schema.SingleNestedAttribute{
 				MarkdownDescription: "Language.",
 				Required:            true,
-				Attributes:          r.getLanguageSchema().Attributes,
+				Attributes:          r.getQualityLanguageSchema().Attributes,
 			},
 			"quality_groups": schema.SetNestedAttribute{
 				MarkdownDescription: "Quality groups.",
@@ -211,7 +211,7 @@ func (r QualityProfileResource) getFormatItemsSchema() schema.Schema {
 	}
 }
 
-func (r QualityProfileResource) getLanguageSchema() schema.Schema {
+func (r QualityProfileResource) getQualityLanguageSchema() schema.Schema {
 	return schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
@@ -346,19 +346,8 @@ func (r *QualityProfileResource) Delete(ctx context.Context, req resource.Delete
 }
 
 func (r *QualityProfileResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	// resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
-	id, err := strconv.Atoi(req.ID)
-	if err != nil {
-		resp.Diagnostics.AddError(
-			helpers.UnexpectedImportIdentifier,
-			fmt.Sprintf("Expected import identifier with format: ID. Got: %q", req.ID),
-		)
-
-		return
-	}
-
-	tflog.Trace(ctx, "imported "+qualityProfileResourceName+": "+strconv.Itoa(id))
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), id)...)
+	helpers.ImportStatePassthroughIntID(ctx, path.Root("id"), req, resp)
+	tflog.Trace(ctx, "imported "+qualityProfileResourceName+": "+req.ID)
 }
 
 func (p *QualityProfile) write(ctx context.Context, profile *radarr.QualityProfileResource) {
@@ -381,9 +370,9 @@ func (p *QualityProfile) write(ctx context.Context, profile *radarr.QualityProfi
 		formatItems[n].write(f)
 	}
 
-	language := Language{}
+	language := QualityLanguage{}
 	language.write(profile.Language)
-	tfsdk.ValueFrom(ctx, language, QualityProfileResource{}.getLanguageSchema().Type(), &p.Language)
+	tfsdk.ValueFrom(ctx, language, QualityProfileResource{}.getQualityLanguageSchema().Type(), &p.Language)
 
 	tfsdk.ValueFrom(ctx, qualityGroups, p.QualityGroups.Type(ctx), &p.QualityGroups)
 	tfsdk.ValueFrom(ctx, formatItems, p.FormatItems.Type(ctx), &p.FormatItems)
@@ -434,7 +423,7 @@ func (f *FormatItem) write(format *radarr.ProfileFormatItemResource) {
 	f.Score = types.Int64Value(int64(format.GetScore()))
 }
 
-func (l *Language) write(language *radarr.Language) {
+func (l *QualityLanguage) write(language *radarr.Language) {
 	l.Name = types.StringValue(language.GetName())
 	l.ID = types.Int64Value(int64(language.GetId()))
 }
@@ -483,7 +472,7 @@ func (p *QualityProfile) read(ctx context.Context) *radarr.QualityProfileResourc
 		formatItems[n] = f.read()
 	}
 
-	language := Language{}
+	language := QualityLanguage{}
 	tfsdk.ValueAs(ctx, p.Language, &language)
 
 	profile := radarr.NewQualityProfileResource()
@@ -523,7 +512,7 @@ func (f *FormatItem) read() *radarr.ProfileFormatItemResource {
 	return formatItem
 }
 
-func (l *Language) read() *radarr.Language {
+func (l *QualityLanguage) read() *radarr.Language {
 	language := radarr.NewLanguage()
 	language.SetId(int32(l.ID.ValueInt64()))
 	language.SetName(l.Name.ValueString())
