@@ -371,13 +371,13 @@ func (p *QualityProfile) write(ctx context.Context, profile *radarr.QualityProfi
 	p.QualityGroups = types.SetValueMust(QualityProfileResource{}.getQualityGroupSchema().Type(), nil)
 	p.FormatItems = types.SetValueMust(QualityProfileResource{}.getFormatItemsSchema().Type(), nil)
 
-	qualityGroups := make([]QualityGroup, len(profile.Items))
+	qualityGroups := make([]QualityGroup, len(profile.GetItems()))
 	for n, g := range profile.GetItems() {
 		qualityGroups[n].write(ctx, g)
 	}
 
-	formatItems := make([]FormatItem, len(profile.FormatItems))
-	for n, f := range profile.FormatItems {
+	formatItems := make([]FormatItem, len(profile.GetFormatItems()))
+	for n, f := range profile.GetFormatItems() {
 		formatItems[n].write(f)
 	}
 
@@ -386,6 +386,7 @@ func (p *QualityProfile) write(ctx context.Context, profile *radarr.QualityProfi
 	tfsdk.ValueFrom(ctx, language, QualityProfileResource{}.getLanguageSchema().Type(), &p.Language)
 
 	tfsdk.ValueFrom(ctx, qualityGroups, p.QualityGroups.Type(ctx), &p.QualityGroups)
+	tfsdk.ValueFrom(ctx, formatItems, p.FormatItems.Type(ctx), &p.FormatItems)
 }
 
 func (q *QualityGroup) write(ctx context.Context, group *radarr.QualityProfileQualityItemResource) {

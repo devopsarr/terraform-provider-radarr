@@ -42,6 +42,9 @@ func TestAccQualityProfileResource(t *testing.T) {
 
 func testAccQualityProfileResourceConfig(name string) string {
 	return fmt.Sprintf(`
+	data "radarr_custom_formats" "test" {
+	}
+
 	resource "radarr_quality_profile" "test" {
 		name            = "%s"
 		upgrade_allowed = true
@@ -72,6 +75,14 @@ func testAccQualityProfileResourceConfig(name string) string {
 				]
 			}
 		]
-	}
-	`, name)
+
+		format_items = [
+			for format in data.radarr_custom_formats.test.custom_formats :
+			{
+				name   = format.name
+				format = format.id
+				score  = 0
+			}
+		]
+	}`, name)
 }
