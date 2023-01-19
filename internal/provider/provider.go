@@ -242,6 +242,7 @@ func (p *RadarrProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewCustomFormatsDataSource,
 		NewDelayProfileDataSource,
 		NewDelayProfilesDataSource,
+		NewLanguageDataSource,
 		NewQualityProfileDataSource,
 		NewQualityProfilesDataSource,
 
