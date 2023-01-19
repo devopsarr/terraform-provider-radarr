@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/devopsarr/radarr-go/radarr"
-	"github.com/devopsarr/terraform-provider-radarr/tools"
+	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -96,7 +96,7 @@ func (d *CustomFormatDataSource) Configure(ctx context.Context, req datasource.C
 	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
-			tools.UnexpectedDataSourceConfigureType,
+			helpers.UnexpectedDataSourceConfigureType,
 			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
@@ -117,14 +117,14 @@ func (d *CustomFormatDataSource) Read(ctx context.Context, req datasource.ReadRe
 	// Get customFormat current value
 	response, _, err := d.client.CustomFormatApi.ListCustomFormat(ctx).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", customFormatDataSourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, customFormatDataSourceName, err))
 
 		return
 	}
 
 	customFormat, err := findCustomFormat(data.Name.ValueString(), response)
 	if err != nil {
-		resp.Diagnostics.AddError(tools.DataSourceError, fmt.Sprintf("Unable to find %s, got error: %s", customFormatDataSourceName, err))
+		resp.Diagnostics.AddError(helpers.DataSourceError, fmt.Sprintf("Unable to find %s, got error: %s", customFormatDataSourceName, err))
 
 		return
 	}
@@ -141,5 +141,5 @@ func findCustomFormat(name string, customFormats []*radarr.CustomFormatResource)
 		}
 	}
 
-	return nil, tools.ErrDataNotFoundError(customFormatDataSourceName, "name", name)
+	return nil, helpers.ErrDataNotFoundError(customFormatDataSourceName, "name", name)
 }

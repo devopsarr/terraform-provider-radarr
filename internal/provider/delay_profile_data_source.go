@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/devopsarr/radarr-go/radarr"
-	"github.com/devopsarr/terraform-provider-radarr/tools"
+	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -86,7 +86,7 @@ func (d *DelayProfileDataSource) Configure(ctx context.Context, req datasource.C
 	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
-			tools.UnexpectedDataSourceConfigureType,
+			helpers.UnexpectedDataSourceConfigureType,
 			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
@@ -107,14 +107,14 @@ func (d *DelayProfileDataSource) Read(ctx context.Context, req datasource.ReadRe
 	// Get delayprofiles current value
 	response, _, err := d.client.DelayProfileApi.ListDelayProfile(ctx).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", delayProfileDataSourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, delayProfileDataSourceName, err))
 
 		return
 	}
 
 	profile, err := findDelayProfile(delayProfile.ID.ValueInt64(), response)
 	if err != nil {
-		resp.Diagnostics.AddError(tools.DataSourceError, fmt.Sprintf("Unable to find %s, got error: %s", delayProfileDataSourceName, err))
+		resp.Diagnostics.AddError(helpers.DataSourceError, fmt.Sprintf("Unable to find %s, got error: %s", delayProfileDataSourceName, err))
 
 		return
 	}
@@ -131,5 +131,5 @@ func findDelayProfile(id int64, profiles []*radarr.DelayProfileResource) (*radar
 		}
 	}
 
-	return nil, tools.ErrDataNotFoundError(delayProfileDataSourceName, "id", strconv.Itoa(int(id)))
+	return nil, helpers.ErrDataNotFoundError(delayProfileDataSourceName, "id", strconv.Itoa(int(id)))
 }

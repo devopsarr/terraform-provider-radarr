@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/devopsarr/radarr-go/radarr"
-	"github.com/devopsarr/terraform-provider-radarr/tools"
+	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -388,7 +388,7 @@ func (r *DownloadClientResource) Configure(ctx context.Context, req resource.Con
 	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
-			tools.UnexpectedResourceConfigureType,
+			helpers.UnexpectedResourceConfigureType,
 			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
@@ -413,7 +413,7 @@ func (r *DownloadClientResource) Create(ctx context.Context, req resource.Create
 
 	response, _, err := r.client.DownloadClientApi.CreateDownloadClient(ctx).DownloadClientResource(*request).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create %s, got error: %s", downloadClientResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, downloadClientResourceName, err))
 
 		return
 	}
@@ -440,7 +440,7 @@ func (r *DownloadClientResource) Read(ctx context.Context, req resource.ReadRequ
 	// Get DownloadClient current value
 	response, _, err := r.client.DownloadClientApi.GetDownloadClientById(ctx, int32(client.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", downloadClientResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, downloadClientResourceName, err))
 
 		return
 	}
@@ -469,7 +469,7 @@ func (r *DownloadClientResource) Update(ctx context.Context, req resource.Update
 
 	response, _, err := r.client.DownloadClientApi.UpdateDownloadClient(ctx, strconv.Itoa(int(request.GetId()))).DownloadClientResource(*request).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update %s, got error: %s", downloadClientResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, downloadClientResourceName, err))
 
 		return
 	}
@@ -495,7 +495,7 @@ func (r *DownloadClientResource) Delete(ctx context.Context, req resource.Delete
 	// Delete DownloadClient current value
 	_, err := r.client.DownloadClientApi.DeleteDownloadClient(ctx, int32(client.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", downloadClientResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, downloadClientResourceName, err))
 
 		return
 	}
@@ -509,7 +509,7 @@ func (r *DownloadClientResource) ImportState(ctx context.Context, req resource.I
 	id, err := strconv.Atoi(req.ID)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			tools.UnexpectedImportIdentifier,
+			helpers.UnexpectedImportIdentifier,
 			fmt.Sprintf("Expected import identifier with format: ID. Got: %q", req.ID),
 		)
 
@@ -545,31 +545,31 @@ func (d *DownloadClient) writeFields(ctx context.Context, fields []*radarr.Field
 		}
 
 		if slices.Contains(downloadClientStringFields, f.GetName()) {
-			tools.WriteStringField(f, d)
+			helpers.WriteStringField(f, d)
 
 			continue
 		}
 
 		if slices.Contains(downloadClientBoolFields, f.GetName()) {
-			tools.WriteBoolField(f, d)
+			helpers.WriteBoolField(f, d)
 
 			continue
 		}
 
 		if slices.Contains(downloadClientIntFields, f.GetName()) {
-			tools.WriteIntField(f, d)
+			helpers.WriteIntField(f, d)
 
 			continue
 		}
 
 		if slices.Contains(downloadClientIntSliceFields, f.GetName()) {
-			tools.WriteIntSliceField(ctx, f, d)
+			helpers.WriteIntSliceField(ctx, f, d)
 
 			continue
 		}
 
 		if slices.Contains(downloadClientStringSliceFields, f.GetName()) || f.GetName() == "tags" {
-			tools.WriteStringSliceField(ctx, f, d)
+			helpers.WriteStringSliceField(ctx, f, d)
 		}
 	}
 }
@@ -599,31 +599,31 @@ func (d *DownloadClient) readFields(ctx context.Context) []*radarr.Field {
 	var output []*radarr.Field
 
 	for _, b := range downloadClientBoolFields {
-		if field := tools.ReadBoolField(b, d); field != nil {
+		if field := helpers.ReadBoolField(b, d); field != nil {
 			output = append(output, field)
 		}
 	}
 
 	for _, i := range downloadClientIntFields {
-		if field := tools.ReadIntField(i, d); field != nil {
+		if field := helpers.ReadIntField(i, d); field != nil {
 			output = append(output, field)
 		}
 	}
 
 	for _, s := range downloadClientStringFields {
-		if field := tools.ReadStringField(s, d); field != nil {
+		if field := helpers.ReadStringField(s, d); field != nil {
 			output = append(output, field)
 		}
 	}
 
 	for _, s := range downloadClientStringSliceFields {
-		if field := tools.ReadStringSliceField(ctx, s, d); field != nil {
+		if field := helpers.ReadStringSliceField(ctx, s, d); field != nil {
 			output = append(output, field)
 		}
 	}
 
 	for _, s := range downloadClientIntSliceFields {
-		if field := tools.ReadIntSliceField(ctx, s, d); field != nil {
+		if field := helpers.ReadIntSliceField(ctx, s, d); field != nil {
 			output = append(output, field)
 		}
 	}
