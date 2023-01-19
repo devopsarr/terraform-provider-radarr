@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/devopsarr/radarr-go/radarr"
-	"github.com/devopsarr/terraform-provider-radarr/tools"
+	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -145,7 +145,7 @@ func (r *CustomFormatResource) Configure(ctx context.Context, req resource.Confi
 	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
-			tools.UnexpectedResourceConfigureType,
+			helpers.UnexpectedResourceConfigureType,
 			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
@@ -170,7 +170,7 @@ func (r *CustomFormatResource) Create(ctx context.Context, req resource.CreateRe
 
 	response, _, err := r.client.CustomFormatApi.CreateCustomFormat(ctx).CustomFormatResource(*request).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create %s, got error: %s", customFormatResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, customFormatResourceName, err))
 
 		return
 	}
@@ -197,7 +197,7 @@ func (r *CustomFormatResource) Read(ctx context.Context, req resource.ReadReques
 	// Get CustomFormat current value
 	response, _, err := r.client.CustomFormatApi.GetCustomFormatById(ctx, int32(client.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", customFormatResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, customFormatResourceName, err))
 
 		return
 	}
@@ -226,7 +226,7 @@ func (r *CustomFormatResource) Update(ctx context.Context, req resource.UpdateRe
 
 	response, _, err := r.client.CustomFormatApi.UpdateCustomFormat(ctx, strconv.Itoa(int(request.GetId()))).CustomFormatResource(*request).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update %s, got error: %s", customFormatResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, customFormatResourceName, err))
 
 		return
 	}
@@ -252,7 +252,7 @@ func (r *CustomFormatResource) Delete(ctx context.Context, req resource.DeleteRe
 	// Delete CustomFormat current value
 	_, err := r.client.CustomFormatApi.DeleteCustomFormat(ctx, int32(client.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", customFormatResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, customFormatResourceName, err))
 
 		return
 	}
@@ -266,7 +266,7 @@ func (r *CustomFormatResource) ImportState(ctx context.Context, req resource.Imp
 	id, err := strconv.Atoi(req.ID)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			tools.UnexpectedImportIdentifier,
+			helpers.UnexpectedImportIdentifier,
 			fmt.Sprintf("Expected import identifier with format: ID. Got: %q", req.ID),
 		)
 
@@ -306,13 +306,13 @@ func (s *Specification) writeFields(fields []*radarr.Field) {
 		}
 
 		if slices.Contains(customFormatStringFields, f.GetName()) {
-			tools.WriteStringField(f, s)
+			helpers.WriteStringField(f, s)
 
 			continue
 		}
 
 		if slices.Contains(customFormatIntFields, f.GetName()) {
-			tools.WriteIntField(f, s)
+			helpers.WriteIntField(f, s)
 
 			continue
 		}
@@ -353,13 +353,13 @@ func (s *Specification) readFields() []*radarr.Field {
 	var output []*radarr.Field
 
 	for _, i := range customFormatIntFields {
-		if field := tools.ReadIntField(i, s); field != nil {
+		if field := helpers.ReadIntField(i, s); field != nil {
 			output = append(output, field)
 		}
 	}
 
 	for _, str := range customFormatStringFields {
-		if field := tools.ReadStringField(str, s); field != nil {
+		if field := helpers.ReadStringField(str, s); field != nil {
 			output = append(output, field)
 		}
 	}

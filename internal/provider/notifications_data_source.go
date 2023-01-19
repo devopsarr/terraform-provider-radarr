@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/devopsarr/radarr-go/radarr"
-	"github.com/devopsarr/terraform-provider-radarr/tools"
+	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
@@ -409,7 +409,7 @@ func (d *NotificationsDataSource) Configure(ctx context.Context, req datasource.
 	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
-			tools.UnexpectedDataSourceConfigureType,
+			helpers.UnexpectedDataSourceConfigureType,
 			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
@@ -430,7 +430,7 @@ func (d *NotificationsDataSource) Read(ctx context.Context, req datasource.ReadR
 	// Get notifications current value
 	response, _, err := d.client.NotificationApi.ListNotification(ctx).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", notificationsDataSourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.List, notificationsDataSourceName, err))
 
 		return
 	}

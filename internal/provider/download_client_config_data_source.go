@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/devopsarr/radarr-go/radarr"
-	"github.com/devopsarr/terraform-provider-radarr/tools"
+	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -67,7 +67,7 @@ func (d *DownloadClientConfigDataSource) Configure(ctx context.Context, req data
 	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
-			tools.UnexpectedDataSourceConfigureType,
+			helpers.UnexpectedDataSourceConfigureType,
 			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
@@ -81,7 +81,7 @@ func (d *DownloadClientConfigDataSource) Read(ctx context.Context, req datasourc
 	// Get indexer config current value
 	response, _, err := d.client.DownloadClientConfigApi.GetDownloadClientConfig(ctx).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", downloadClientConfigDataSourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, downloadClientConfigDataSourceName, err))
 
 		return
 	}

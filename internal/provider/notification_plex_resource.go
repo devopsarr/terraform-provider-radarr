@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/devopsarr/radarr-go/radarr"
-	"github.com/devopsarr/terraform-provider-radarr/tools"
+	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -200,7 +200,7 @@ func (r *NotificationPlexResource) Configure(ctx context.Context, req resource.C
 	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
-			tools.UnexpectedResourceConfigureType,
+			helpers.UnexpectedResourceConfigureType,
 			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
@@ -225,7 +225,7 @@ func (r *NotificationPlexResource) Create(ctx context.Context, req resource.Crea
 
 	response, _, err := r.client.NotificationApi.CreateNotification(ctx).NotificationResource(*request).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to create %s, got error: %s", notificationPlexResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, notificationPlexResourceName, err))
 
 		return
 	}
@@ -249,7 +249,7 @@ func (r *NotificationPlexResource) Read(ctx context.Context, req resource.ReadRe
 	// Get NotificationPlex current value
 	response, _, err := r.client.NotificationApi.GetNotificationById(ctx, int32(notification.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", notificationPlexResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, notificationPlexResourceName, err))
 
 		return
 	}
@@ -275,7 +275,7 @@ func (r *NotificationPlexResource) Update(ctx context.Context, req resource.Upda
 
 	response, _, err := r.client.NotificationApi.UpdateNotification(ctx, strconv.Itoa(int(request.GetId()))).NotificationResource(*request).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to update %s, got error: %s", notificationPlexResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, notificationPlexResourceName, err))
 
 		return
 	}
@@ -298,7 +298,7 @@ func (r *NotificationPlexResource) Delete(ctx context.Context, req resource.Dele
 	// Delete NotificationPlex current value
 	_, err := r.client.NotificationApi.DeleteNotification(ctx, int32(notification.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", notificationPlexResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, notificationPlexResourceName, err))
 
 		return
 	}
@@ -312,7 +312,7 @@ func (r *NotificationPlexResource) ImportState(ctx context.Context, req resource
 	id, err := strconv.Atoi(req.ID)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			tools.UnexpectedImportIdentifier,
+			helpers.UnexpectedImportIdentifier,
 			fmt.Sprintf("Expected import identifier with format: ID. Got: %q", req.ID),
 		)
 

@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/devopsarr/radarr-go/radarr"
-	"github.com/devopsarr/terraform-provider-radarr/tools"
+	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -66,7 +66,7 @@ func (d *RestrictionDataSource) Configure(ctx context.Context, req datasource.Co
 	client, ok := req.ProviderData.(*radarr.APIClient)
 	if !ok {
 		resp.Diagnostics.AddError(
-			tools.UnexpectedDataSourceConfigureType,
+			helpers.UnexpectedDataSourceConfigureType,
 			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
@@ -87,7 +87,7 @@ func (d *RestrictionDataSource) Read(ctx context.Context, req datasource.ReadReq
 	// Get remote path restriction current value
 	response, _, err := d.client.RestrictionApi.ListRestriction(ctx).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(tools.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", restrictionDataSourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, restrictionDataSourceName, err))
 
 		return
 	}
@@ -95,7 +95,7 @@ func (d *RestrictionDataSource) Read(ctx context.Context, req datasource.ReadReq
 	// Map response body to resource schema attribute
 	value, err := findRestriction(restriction.ID.ValueInt64(), response)
 	if err != nil {
-		resp.Diagnostics.AddError(tools.DataSourceError, fmt.Sprintf("Unable to find %s, got error: %s", restrictionDataSourceName, err))
+		resp.Diagnostics.AddError(helpers.DataSourceError, fmt.Sprintf("Unable to find %s, got error: %s", restrictionDataSourceName, err))
 
 		return
 	}
@@ -113,5 +113,5 @@ func findRestriction(id int64, restrictions []*radarr.RestrictionResource) (*rad
 		}
 	}
 
-	return nil, tools.ErrDataNotFoundError(restrictionDataSourceName, "id", strconv.Itoa(int(id)))
+	return nil, helpers.ErrDataNotFoundError(restrictionDataSourceName, "id", strconv.Itoa(int(id)))
 }

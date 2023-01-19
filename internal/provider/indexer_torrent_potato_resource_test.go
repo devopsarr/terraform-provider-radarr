@@ -16,7 +16,7 @@ func TestAccIndexerTorrentPotatoResource(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
-				Config: testAccIndexerTorrentPotatoResourceConfig("torznabResourceTest", 1),
+				Config: testAccIndexerTorrentPotatoResourceConfig("torrentPotatoResourceTest", 1),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("radarr_indexer_torrent_potato.test", "minimum_seeders", "1"),
 					resource.TestCheckResourceAttrSet("radarr_indexer_torrent_potato.test", "id"),
@@ -24,7 +24,7 @@ func TestAccIndexerTorrentPotatoResource(t *testing.T) {
 			},
 			// Update and Read testing
 			{
-				Config: testAccIndexerTorrentPotatoResourceConfig("torznabResourceTest", 2),
+				Config: testAccIndexerTorrentPotatoResourceConfig("torrentPotatoResourceTest", 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("radarr_indexer_torrent_potato.test", "minimum_seeders", "2"),
 				),
