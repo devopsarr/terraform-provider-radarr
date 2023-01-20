@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/devopsarr/radarr-go/radarr"
+	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 )
@@ -31,4 +33,42 @@ func ImportStatePassthroughIntID(ctx context.Context, attrPath path.Path, req re
 	}
 
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, attrPath, id)...)
+}
+
+func ResourceConfigure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) *radarr.APIClient {
+	// Prevent panic if the provider has not been configured.
+	if req.ProviderData == nil {
+		return nil
+	}
+
+	client, ok := req.ProviderData.(*radarr.APIClient)
+	if !ok {
+		resp.Diagnostics.AddError(
+			UnexpectedResourceConfigureType,
+			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+		)
+
+		return nil
+	}
+
+	return client
+}
+
+func DataSourceConfigure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) *radarr.APIClient {
+	// Prevent panic if the provider has not been configured.
+	if req.ProviderData == nil {
+		return nil
+	}
+
+	client, ok := req.ProviderData.(*radarr.APIClient)
+	if !ok {
+		resp.Diagnostics.AddError(
+			UnexpectedDataSourceConfigureType,
+			fmt.Sprintf("Expected *radarr.APIClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+		)
+
+		return nil
+	}
+
+	return client
 }
