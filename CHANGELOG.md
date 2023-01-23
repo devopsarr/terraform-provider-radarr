@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.7.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v1.6.0...v1.7.0) (2023-01-23)
+
+
+### Features
+
+* add freebox download client ([9bd8cc4](https://github.com/devopsarr/terraform-provider-radarr/commit/9bd8cc47790ebcf51c1c6ef3da1554ff610965c4))
+* add language data source ([a9b75d6](https://github.com/devopsarr/terraform-provider-radarr/commit/a9b75d6383be2d1c0273c837427be47bff158c02))
+* add languages data source ([94da3d4](https://github.com/devopsarr/terraform-provider-radarr/commit/94da3d413dee96195c11c855e4baddd7971e6670))
+* add movie datasource ([381c551](https://github.com/devopsarr/terraform-provider-radarr/commit/381c551e82d88ed9c41f0af5d373221f69406924))
+* add movie resource ([04b1f95](https://github.com/devopsarr/terraform-provider-radarr/commit/04b1f957237f9d131a2e6b7073cf3b6d05849dcf))
+* add movies datasource ([e36ead9](https://github.com/devopsarr/terraform-provider-radarr/commit/e36ead9fb45e0efcc8033ca658f5c35813ccece8))
+* make notification flags optional ([419b9c6](https://github.com/devopsarr/terraform-provider-radarr/commit/419b9c6638aa217d5c888a1cbda254cef0c14906))
+
+
+### Bug Fixes
+
+* quality profile custom format write ([fbf263c](https://github.com/devopsarr/terraform-provider-radarr/commit/fbf263c9fdbf99f0524acb8b2ddc652a9565a8a6))
+* remove unused parameter form notifiarr ([2db4824](https://github.com/devopsarr/terraform-provider-radarr/commit/2db482417ebf8514065a28857bf30a72482255dd))
+* update sdk method naming ([0f48fc2](https://github.com/devopsarr/terraform-provider-radarr/commit/0f48fc2c2209cead9309c5eb799eb77a7f3588cd))
+
 ## [1.6.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v1.5.0...v1.6.0) (2022-12-09)
 
 
