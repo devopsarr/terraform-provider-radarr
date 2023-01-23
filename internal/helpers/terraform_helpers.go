@@ -35,6 +35,7 @@ func ImportStatePassthroughIntID(ctx context.Context, attrPath path.Path, req re
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, attrPath, id)...)
 }
 
+// ResourceConfigure is a helper function to set the client for a specific resource.
 func ResourceConfigure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) *radarr.APIClient {
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
@@ -54,6 +55,7 @@ func ResourceConfigure(ctx context.Context, req resource.ConfigureRequest, resp 
 	return client
 }
 
+// DataSourceConfigure is a helper function to set the client for a specific data source.
 func DataSourceConfigure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) *radarr.APIClient {
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
