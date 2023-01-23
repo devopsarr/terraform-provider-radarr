@@ -175,6 +175,9 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewNamingResource,
 		NewRootFolderResource,
 
+		// Movies
+		NewMovieResource,
+
 		// Notifications
 		NewNotificationResource,
 		NewNotificationBoxcarResource,
@@ -232,6 +235,10 @@ func (p *RadarrProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewNamingDataSource,
 		NewRootFolderDataSource,
 		NewRootFoldersDataSource,
+
+		// Movies
+		NewMovieDataSource,
+		NewMoviesDataSource,
 
 		// Notifications
 		NewNotificationDataSource,
