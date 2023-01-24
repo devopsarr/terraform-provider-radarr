@@ -38,6 +38,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/devopsarr/radarr-go v0.0.0-20230108112146-e30ebffa5aa2 h1:nlnQEzbQWcgc9ThqjOrBs/ducVIwX/MWYbvayt1m1n8=
 github.com/devopsarr/radarr-go v0.0.0-20230108112146-e30ebffa5aa2/go.mod h1:PljEH7w2hq0DK8IYoZ0d/yKUuxGdvkTvSspEe1Nn51c=
+github.com/devopsarr/radarr-go v1.0.0 h1:xCWkYYAvz9ECXmR9xfxHnGC9AKfgqTE8g3xZfLolyQg=
+github.com/devopsarr/radarr-go v1.0.0/go.mod h1:PljEH7w2hq0DK8IYoZ0d/yKUuxGdvkTvSspEe1Nn51c=
 github.com/emirpasic/gods v1.12.0 h1:QAUIPSaCu4G+POclxeqb3F+WPpdKqFGlw36+yOzGlrg=
 github.com/emirpasic/gods v1.12.0/go.mod h1:YfzfFFoVP/catgzJb4IKIqXjX78Ha8FMSDh3ymbK86o=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
