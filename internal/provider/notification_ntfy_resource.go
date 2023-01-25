@@ -359,8 +359,7 @@ func (n *NotificationNtfy) write(ctx context.Context, notification *radarr.Notif
 }
 
 func (n *NotificationNtfy) read(ctx context.Context) *radarr.NotificationResource {
-	var tags []*int32
-
+	tags := make([]*int32, len(n.Tags.Elements()))
 	tfsdk.ValueAs(ctx, n.Tags, &tags)
 
 	notification := radarr.NewNotificationResource()

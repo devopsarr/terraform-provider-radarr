@@ -346,8 +346,7 @@ func (i *IndexerHdbits) write(ctx context.Context, indexer *radarr.IndexerResour
 }
 
 func (i *IndexerHdbits) read(ctx context.Context) *radarr.IndexerResource {
-	var tags []*int32
-
+	tags := make([]*int32, len(i.Tags.Elements()))
 	tfsdk.ValueAs(ctx, i.Tags, &tags)
 
 	indexer := radarr.NewIndexerResource()

@@ -312,8 +312,7 @@ func (m *Movie) write(ctx context.Context, movie *radarr.MovieResource) {
 }
 
 func (m *Movie) read(ctx context.Context) *radarr.MovieResource {
-	var tags []*int32
-
+	tags := make([]*int32, len(m.Tags.Elements()))
 	tfsdk.ValueAs(ctx, m.Tags, &tags)
 
 	movie := radarr.NewMovieResource()

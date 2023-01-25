@@ -320,8 +320,7 @@ func (i *IndexerPassThePopcorn) write(ctx context.Context, indexer *radarr.Index
 }
 
 func (i *IndexerPassThePopcorn) read(ctx context.Context) *radarr.IndexerResource {
-	var tags []*int32
-
+	tags := make([]*int32, len(i.Tags.Elements()))
 	tfsdk.ValueAs(ctx, i.Tags, &tags)
 
 	indexer := radarr.NewIndexerResource()

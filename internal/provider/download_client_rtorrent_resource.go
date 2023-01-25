@@ -349,8 +349,7 @@ func (d *DownloadClientRtorrent) write(ctx context.Context, downloadClient *rada
 }
 
 func (d *DownloadClientRtorrent) read(ctx context.Context) *radarr.DownloadClientResource {
-	var tags []*int32
-
+	tags := make([]*int32, len(d.Tags.Elements()))
 	tfsdk.ValueAs(ctx, d.Tags, &tags)
 
 	client := radarr.NewDownloadClientResource()
