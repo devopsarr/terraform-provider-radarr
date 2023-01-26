@@ -33,7 +33,7 @@ resource "radarr_import_list_stevenlu" "example" {
 
 ### Required
 
-- `link` (String, Sensitive) Link.
+- `link` (String) Link.
 - `minimum_availability` (String) Minimum availability.
 - `monitor` (String) Should monitor.
 - `name` (String) Import List name.

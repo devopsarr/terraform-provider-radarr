@@ -159,7 +159,6 @@ func (r *ImportListRSSResource) Schema(ctx context.Context, req resource.SchemaR
 			"link": schema.StringAttribute{
 				MarkdownDescription: "Link.",
 				Required:            true,
-				Sensitive:           true,
 			},
 		},
 	}
