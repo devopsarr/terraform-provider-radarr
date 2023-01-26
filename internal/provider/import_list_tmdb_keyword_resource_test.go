@@ -17,7 +17,7 @@ func TestAccImportListTMDBKeywordResource(t *testing.T) {
 			// Create and Read testing
 			{
 				PreConfig: rootFolderDSInit,
-				Config:    testAccImportListTMDBKeywordResourceConfig("resourceTMDBKeywordTest", "none"),
+				Config:    testAccImportListTMDBKeywordResourceConfig("resourceTMDKeywordTest", "none"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("radarr_import_list_tmdb_keyword.test", "monitor", "none"),
 					resource.TestCheckResourceAttrSet("radarr_import_list_tmdb_keyword.test", "id"),
@@ -25,7 +25,7 @@ func TestAccImportListTMDBKeywordResource(t *testing.T) {
 			},
 			// Update and Read testing
 			{
-				Config: testAccImportListTMDBKeywordResourceConfig("resourceTMDBTest", "movieOnly"),
+				Config: testAccImportListTMDBKeywordResourceConfig("resourceTMDTest", "movieOnly"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("radarr_import_list_tmdb_keyword.test", "monitor", "movieOnly"),
 				),

@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccImportListTMDBCompanyResource(t *testing.T) {
+func TestAccImportListTMDBListResource(t *testing.T) {
 	t.Parallel()
 
 	resource.Test(t, resource.TestCase{
@@ -17,22 +17,22 @@ func TestAccImportListTMDBCompanyResource(t *testing.T) {
 			// Create and Read testing
 			{
 				PreConfig: rootFolderDSInit,
-				Config:    testAccImportListTMDBCompanyResourceConfig("resourceTMDCompanyTest", "none"),
+				Config:    testAccImportListTMDBListResourceConfig("resourceTMDListTest", "none"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("radarr_import_list_tmdb_company.test", "monitor", "none"),
-					resource.TestCheckResourceAttrSet("radarr_import_list_tmdb_company.test", "id"),
+					resource.TestCheckResourceAttr("radarr_import_list_tmdb_list.test", "monitor", "none"),
+					resource.TestCheckResourceAttrSet("radarr_import_list_tmdb_list.test", "id"),
 				),
 			},
 			// Update and Read testing
 			{
-				Config: testAccImportListTMDBCompanyResourceConfig("resourceTMDCompanyTest", "movieOnly"),
+				Config: testAccImportListTMDBListResourceConfig("resourceTMDListTest", "movieOnly"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("radarr_import_list_tmdb_company.test", "monitor", "movieOnly"),
+					resource.TestCheckResourceAttr("radarr_import_list_tmdb_list.test", "monitor", "movieOnly"),
 				),
 			},
 			// ImportState testing
 			{
-				ResourceName:      "radarr_import_list_tmdb_company.test",
+				ResourceName:      "radarr_import_list_tmdb_list.test",
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
@@ -41,9 +41,9 @@ func TestAccImportListTMDBCompanyResource(t *testing.T) {
 	})
 }
 
-func testAccImportListTMDBCompanyResourceConfig(name, monitor string) string {
+func testAccImportListTMDBListResourceConfig(name, monitor string) string {
 	return fmt.Sprintf(`
-	resource "radarr_import_list_tmdb_company" "test" {
+	resource "radarr_import_list_tmdb_list" "test" {
 		enabled = false
 		enable_auto = false
 		search_on_add = false
@@ -52,6 +52,6 @@ func testAccImportListTMDBCompanyResourceConfig(name, monitor string) string {
 		minimum_availability = "tba"
 		quality_profile_id = 1
 		name = "%s"
-		company_id = "11842"
+		list_id = "11842"
 	}`, monitor, name)
 }

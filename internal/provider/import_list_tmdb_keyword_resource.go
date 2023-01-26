@@ -19,29 +19,29 @@ import (
 )
 
 const (
-	importListTMDKeywordBResourceName   = "import_list_tmdb_keyword"
-	importListTMDKeywordBImplementation = "TMDbKeywordImport"
-	importListTMDKeywordBConfigContract = "TMDbKeywordSettings"
-	importListTMDKeywordBType           = "advanced"
+	importListTMDBKeywordResourceName   = "import_list_tmdb_keyword"
+	importListTMDBKeywordImplementation = "TMDbKeywordImport"
+	importListTMDBKeywordConfigContract = "TMDbKeywordSettings"
+	importListTMDBKeywordType           = "advanced"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var (
-	_ resource.Resource                = &ImportListTMDKeywordBResource{}
-	_ resource.ResourceWithImportState = &ImportListTMDKeywordBResource{}
+	_ resource.Resource                = &ImportListTMDBKeywordResource{}
+	_ resource.ResourceWithImportState = &ImportListTMDBKeywordResource{}
 )
 
-func NewImportListTMDKeywordBResource() resource.Resource {
-	return &ImportListTMDKeywordBResource{}
+func NewImportListTMDBKeywordResource() resource.Resource {
+	return &ImportListTMDBKeywordResource{}
 }
 
-// ImportListTMDKeywordBResource defines the import list implementation.
-type ImportListTMDKeywordBResource struct {
+// ImportListTMDBKeywordResource defines the import list implementation.
+type ImportListTMDBKeywordResource struct {
 	client *radarr.APIClient
 }
 
-// ImportListTMDKeywordB describes the import list data model.
-type ImportListTMDKeywordB struct {
+// ImportListTMDBKeyword describes the import list data model.
+type ImportListTMDBKeyword struct {
 	Tags                types.Set    `tfsdk:"tags"`
 	Name                types.String `tfsdk:"name"`
 	Monitor             types.String `tfsdk:"monitor"`
@@ -56,7 +56,7 @@ type ImportListTMDKeywordB struct {
 	SearchOnAdd         types.Bool   `tfsdk:"search_on_add"`
 }
 
-func (i ImportListTMDKeywordB) toImportList() *ImportList {
+func (i ImportListTMDBKeyword) toImportList() *ImportList {
 	return &ImportList{
 		Tags:                i.Tags,
 		Name:                i.Name,
@@ -73,7 +73,7 @@ func (i ImportListTMDKeywordB) toImportList() *ImportList {
 	}
 }
 
-func (i *ImportListTMDKeywordB) fromImportList(importList *ImportList) {
+func (i *ImportListTMDBKeyword) fromImportList(importList *ImportList) {
 	i.Tags = importList.Tags
 	i.Name = importList.Name
 	i.Monitor = importList.Monitor
@@ -88,11 +88,11 @@ func (i *ImportListTMDKeywordB) fromImportList(importList *ImportList) {
 	i.SearchOnAdd = importList.SearchOnAdd
 }
 
-func (r *ImportListTMDKeywordBResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_" + importListTMDKeywordBResourceName
+func (r *ImportListTMDBKeywordResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_" + importListTMDBKeywordResourceName
 }
 
-func (r *ImportListTMDKeywordBResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *ImportListTMDBKeywordResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List TMDB Keyword resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [TMDB Keyword](https://wiki.servarr.com/radarr/supported#tmdbkeywordimport).",
 		Attributes: map[string]schema.Attribute{
@@ -164,15 +164,15 @@ func (r *ImportListTMDKeywordBResource) Schema(ctx context.Context, req resource
 	}
 }
 
-func (r *ImportListTMDKeywordBResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *ImportListTMDBKeywordResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
 	}
 }
 
-func (r *ImportListTMDKeywordBResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+func (r *ImportListTMDBKeywordResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	// Retrieve values from plan
-	var importList *ImportListTMDKeywordB
+	var importList *ImportListTMDBKeyword
 
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &importList)...)
 
@@ -180,25 +180,25 @@ func (r *ImportListTMDKeywordBResource) Create(ctx context.Context, req resource
 		return
 	}
 
-	// Create new ImportListTMDKeywordB
+	// Create new ImportListTMDBKeyword
 	request := importList.read(ctx)
 
 	response, _, err := r.client.ImportListApi.CreateImportList(ctx).ImportListResource(*request).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, importListTMDKeywordBResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, importListTMDBKeywordResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "created "+importListTMDKeywordBResourceName+": "+strconv.Itoa(int(response.GetId())))
+	tflog.Trace(ctx, "created "+importListTMDBKeywordResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	importList.write(ctx, response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &importList)...)
 }
 
-func (r *ImportListTMDKeywordBResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *ImportListTMDBKeywordResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	// Get current state
-	var importList *ImportListTMDKeywordB
+	var importList *ImportListTMDBKeyword
 
 	resp.Diagnostics.Append(req.State.Get(ctx, &importList)...)
 
@@ -206,23 +206,23 @@ func (r *ImportListTMDKeywordBResource) Read(ctx context.Context, req resource.R
 		return
 	}
 
-	// Get ImportListTMDKeywordB current value
+	// Get ImportListTMDBKeyword current value
 	response, _, err := r.client.ImportListApi.GetImportListById(ctx, int32(importList.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListTMDKeywordBResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListTMDBKeywordResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read "+importListTMDKeywordBResourceName+": "+strconv.Itoa(int(response.GetId())))
+	tflog.Trace(ctx, "read "+importListTMDBKeywordResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Map response body to resource schema attribute
 	importList.write(ctx, response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &importList)...)
 }
 
-func (r *ImportListTMDKeywordBResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *ImportListTMDBKeywordResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	// Get plan values
-	var importList *ImportListTMDKeywordB
+	var importList *ImportListTMDBKeyword
 
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &importList)...)
 
@@ -230,24 +230,24 @@ func (r *ImportListTMDKeywordBResource) Update(ctx context.Context, req resource
 		return
 	}
 
-	// Update ImportListTMDKeywordB
+	// Update ImportListTMDBKeyword
 	request := importList.read(ctx)
 
 	response, _, err := r.client.ImportListApi.UpdateImportList(ctx, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, importListTMDKeywordBResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, importListTMDBKeywordResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "updated "+importListTMDKeywordBResourceName+": "+strconv.Itoa(int(response.GetId())))
+	tflog.Trace(ctx, "updated "+importListTMDBKeywordResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	importList.write(ctx, response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &importList)...)
 }
 
-func (r *ImportListTMDKeywordBResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var importList *ImportListTMDKeywordB
+func (r *ImportListTMDBKeywordResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var importList *ImportListTMDBKeyword
 
 	resp.Diagnostics.Append(req.State.Get(ctx, &importList)...)
 
@@ -255,24 +255,24 @@ func (r *ImportListTMDKeywordBResource) Delete(ctx context.Context, req resource
 		return
 	}
 
-	// Delete ImportListTMDKeywordB current value
+	// Delete ImportListTMDBKeyword current value
 	_, err := r.client.ImportListApi.DeleteImportList(ctx, int32(importList.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListTMDKeywordBResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListTMDBKeywordResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "deleted "+importListTMDKeywordBResourceName+": "+strconv.Itoa(int(importList.ID.ValueInt64())))
+	tflog.Trace(ctx, "deleted "+importListTMDBKeywordResourceName+": "+strconv.Itoa(int(importList.ID.ValueInt64())))
 	resp.State.RemoveResource(ctx)
 }
 
-func (r *ImportListTMDKeywordBResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+func (r *ImportListTMDBKeywordResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	helpers.ImportStatePassthroughIntID(ctx, path.Root("id"), req, resp)
-	tflog.Trace(ctx, "imported "+importListTMDKeywordBResourceName+": "+req.ID)
+	tflog.Trace(ctx, "imported "+importListTMDBKeywordResourceName+": "+req.ID)
 }
 
-func (i *ImportListTMDKeywordB) write(ctx context.Context, importList *radarr.ImportListResource) {
+func (i *ImportListTMDBKeyword) write(ctx context.Context, importList *radarr.ImportListResource) {
 	genericImportList := ImportList{
 		Name:                types.StringValue(importList.GetName()),
 		Monitor:             types.StringValue(string(importList.GetMonitor())),
@@ -290,7 +290,7 @@ func (i *ImportListTMDKeywordB) write(ctx context.Context, importList *radarr.Im
 	i.fromImportList(&genericImportList)
 }
 
-func (i *ImportListTMDKeywordB) read(ctx context.Context) *radarr.ImportListResource {
+func (i *ImportListTMDBKeyword) read(ctx context.Context) *radarr.ImportListResource {
 	tags := make([]*int32, len(i.Tags.Elements()))
 	tfsdk.ValueAs(ctx, i.Tags, &tags)
 
@@ -303,9 +303,9 @@ func (i *ImportListTMDKeywordB) read(ctx context.Context) *radarr.ImportListReso
 	list.SetEnableAuto(i.EnableAuto.ValueBool())
 	list.SetEnabled(i.Enabled.ValueBool())
 	list.SetSearchOnAdd(i.SearchOnAdd.ValueBool())
-	list.SetListType(importListTMDKeywordBType)
-	list.SetConfigContract(importListTMDKeywordBConfigContract)
-	list.SetImplementation(importListTMDKeywordBImplementation)
+	list.SetListType(importListTMDBKeywordType)
+	list.SetConfigContract(importListTMDBKeywordConfigContract)
+	list.SetImplementation(importListTMDBKeywordImplementation)
 	list.SetId(int32(i.ID.ValueInt64()))
 	list.SetName(i.Name.ValueString())
 	list.SetTags(tags)
