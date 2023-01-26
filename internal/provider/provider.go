@@ -251,6 +251,7 @@ func (p *RadarrProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewMoviesDataSource,
 
 		// Notifications
+		NewImportListDataSource,
 		NewImportListsDataSource,
 		NewNotificationDataSource,
 		NewNotificationsDataSource,
