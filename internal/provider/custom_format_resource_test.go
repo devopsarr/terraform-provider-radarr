@@ -60,6 +60,14 @@ func testAccCustomFormatResourceConfig(name, enable string) string {
 				negate = false
 				required = false
 				value = "31"
+			},
+			{
+				name = "Size"
+				implementation = "SizeSpecification"
+				negate = false
+				required = false
+				min = 0
+				max = 100
 			}
 		]	
 	}`, enable, name)
