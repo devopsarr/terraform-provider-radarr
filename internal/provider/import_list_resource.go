@@ -30,7 +30,7 @@ var (
 var (
 	importListBoolFields     = []string{"onlyActive", "personCast", "personCastDirector", "personCastProducer", "personCastSound", "personCastWriting"}
 	importListIntFields      = []string{"port", "source", "minScore", "tMDbListType", "listType", "limit", "traktListType", "languageCode"}
-	importListStringFields   = []string{"baseUrl", "urlBase", "link", "apiKey", "url", "accessToken", "refreshToken", "expires", "companyId", "keywordId", "listId", "personId", "accountId", "authUser", "username", "listname", "traktAdditionalParameters", "certification", "genres", "years", "rating", "minVoteAverage", "minVotes", "certification", "includeGenreIds", "excludeGenreIds"}
+	importListStringFields   = []string{"baseUrl", "urlBase", "link", "apiKey", "url", "accessToken", "refreshToken", "expires", "companyId", "keywordId", "listId", "personId", "accountId", "authUser", "username", "listname", "traktAdditionalParameters", "tmdbCertification", "genres", "years", "rating", "minVoteAverage", "minVotes", "certification", "includeGenreIds", "excludeGenreIds"}
 	importListIntSliceFields = []string{"profileIds", "tagIds"}
 )
 
@@ -87,7 +87,7 @@ type ImportList struct {
 	Port                      types.Int64  `tfsdk:"port"`
 	Source                    types.Int64  `tfsdk:"source"`
 	MinScore                  types.Int64  `tfsdk:"min_score"`
-	TMDbListType              types.Int64  `tfsdk:"tmdb_list_type"`
+	TMDBListType              types.Int64  `tfsdk:"tmdb_list_type"`
 	UserListType              types.Int64  `tfsdk:"user_list_type"`
 	Limit                     types.Int64  `tfsdk:"limit"`
 	TraktListType             types.Int64  `tfsdk:"trakt_list_type"`
@@ -555,13 +555,13 @@ func (i *ImportList) writeFields(ctx context.Context, fields []*radarr.Field) {
 			continue
 		}
 
-		if slices.Contains(importListStringFields, f.GetName()) {
+		if slices.Contains(importListStringFields, f.GetName()) || f.GetName() == "filterCriteria.certification" || f.GetName() == "filterCriteria.minVoteAverage" || f.GetName() == "filterCriteria.minVotes" || f.GetName() == "filterCriteria.includeGenreIds" || f.GetName() == "filterCriteria.excludeGenreIds" {
 			helpers.WriteStringField(f, i)
 
 			continue
 		}
 
-		if slices.Contains(importListIntFields, f.GetName()) {
+		if slices.Contains(importListIntFields, f.GetName()) || f.GetName() == "filterCriteria.languageCode" {
 			helpers.WriteIntField(f, i)
 
 			continue

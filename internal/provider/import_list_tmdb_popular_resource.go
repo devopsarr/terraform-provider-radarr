@@ -6,6 +6,7 @@ import (
 
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -19,97 +20,100 @@ import (
 )
 
 const (
-	importListTMDBPersonResourceName   = "import_list_tmdb_person"
-	importListTMDBPersonImplementation = "TMDbPersonImport"
-	importListTMDBPersonConfigContract = "TMDbPersonSettings"
-	importListTMDBPersonType           = "tmdb"
+	importListTMDBPopularResourceName   = "import_list_tmdb_popular"
+	importListTMDBPopularImplementation = "TMDbPopularImport"
+	importListTMDBPopularConfigContract = "TMDbPopularSettings"
+	importListTMDBPopularType           = "tmdb"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var (
-	_ resource.Resource                = &ImportListTMDBPersonResource{}
-	_ resource.ResourceWithImportState = &ImportListTMDBPersonResource{}
+	_ resource.Resource                = &ImportListTMDBPopularResource{}
+	_ resource.ResourceWithImportState = &ImportListTMDBPopularResource{}
 )
 
-func NewImportListTMDBPersonResource() resource.Resource {
-	return &ImportListTMDBPersonResource{}
+func NewImportListTMDBPopularResource() resource.Resource {
+	return &ImportListTMDBPopularResource{}
 }
 
-// ImportListTMDBPersonResource defines the import list implementation.
-type ImportListTMDBPersonResource struct {
+// ImportListTMDBPopularResource defines the import list implementation.
+type ImportListTMDBPopularResource struct {
 	client *radarr.APIClient
 }
 
-// ImportListTMDBPerson describes the import list data model.
-type ImportListTMDBPerson struct {
+// ImportListTMDBPopular describes the import list data model.
+type ImportListTMDBPopular struct {
 	Tags                types.Set    `tfsdk:"tags"`
 	Name                types.String `tfsdk:"name"`
 	Monitor             types.String `tfsdk:"monitor"`
 	MinimumAvailability types.String `tfsdk:"minimum_availability"`
 	RootFolderPath      types.String `tfsdk:"root_folder_path"`
-	PersonID            types.String `tfsdk:"person_id"`
+	MinVoteAverage      types.String `tfsdk:"min_vote_average"`
+	MinVotes            types.String `tfsdk:"min_votes"`
+	TMDBCertification   types.String `tfsdk:"tmdb_certification"`
+	IncludeGenreIds     types.String `tfsdk:"include_genre_ids"`
+	ExcludeGenreIds     types.String `tfsdk:"exclude_genre_ids"`
+	LanguageCode        types.Int64  `tfsdk:"language_code"`
+	TMDBListType        types.Int64  `tfsdk:"tmdb_list_type"`
 	ListOrder           types.Int64  `tfsdk:"list_order"`
 	ID                  types.Int64  `tfsdk:"id"`
 	QualityProfileID    types.Int64  `tfsdk:"quality_profile_id"`
 	Enabled             types.Bool   `tfsdk:"enabled"`
 	EnableAuto          types.Bool   `tfsdk:"enable_auto"`
 	SearchOnAdd         types.Bool   `tfsdk:"search_on_add"`
-	PersonCast          types.Bool   `tfsdk:"cast"`
-	PersonCastDirector  types.Bool   `tfsdk:"cast_director"`
-	PersonCastProducer  types.Bool   `tfsdk:"cast_producer"`
-	PersonCastSound     types.Bool   `tfsdk:"cast_sound"`
-	PersonCastWriting   types.Bool   `tfsdk:"cast_writing"`
 }
 
-func (i ImportListTMDBPerson) toImportList() *ImportList {
+func (i ImportListTMDBPopular) toImportList() *ImportList {
 	return &ImportList{
 		Tags:                i.Tags,
 		Name:                i.Name,
 		Monitor:             i.Monitor,
 		MinimumAvailability: i.MinimumAvailability,
 		RootFolderPath:      i.RootFolderPath,
-		PersonID:            i.PersonID,
+		TMDBListType:        i.TMDBListType,
+		MinVoteAverage:      i.MinVoteAverage,
+		MinVotes:            i.MinVotes,
+		TMDBCertification:   i.TMDBCertification,
+		IncludeGenreIds:     i.IncludeGenreIds,
+		ExcludeGenreIds:     i.ExcludeGenreIds,
+		LanguageCode:        i.LanguageCode,
 		ListOrder:           i.ListOrder,
 		ID:                  i.ID,
 		QualityProfileID:    i.QualityProfileID,
 		Enabled:             i.Enabled,
 		EnableAuto:          i.EnableAuto,
 		SearchOnAdd:         i.SearchOnAdd,
-		PersonCast:          i.PersonCast,
-		PersonCastDirector:  i.PersonCastDirector,
-		PersonCastProducer:  i.PersonCastProducer,
-		PersonCastSound:     i.PersonCastSound,
-		PersonCastWriting:   i.PersonCastWriting,
 	}
 }
 
-func (i *ImportListTMDBPerson) fromImportList(importList *ImportList) {
+func (i *ImportListTMDBPopular) fromImportList(importList *ImportList) {
 	i.Tags = importList.Tags
 	i.Name = importList.Name
 	i.Monitor = importList.Monitor
 	i.MinimumAvailability = importList.MinimumAvailability
 	i.RootFolderPath = importList.RootFolderPath
-	i.PersonID = importList.PersonID
+	i.TMDBListType = importList.TMDBListType
+	i.MinVoteAverage = importList.MinVoteAverage
+	i.MinVotes = importList.MinVotes
+	i.TMDBCertification = importList.TMDBCertification
+	i.IncludeGenreIds = importList.IncludeGenreIds
+	i.ExcludeGenreIds = importList.ExcludeGenreIds
+	i.LanguageCode = importList.LanguageCode
 	i.ListOrder = importList.ListOrder
 	i.ID = importList.ID
 	i.QualityProfileID = importList.QualityProfileID
 	i.Enabled = importList.Enabled
 	i.EnableAuto = importList.EnableAuto
 	i.SearchOnAdd = importList.SearchOnAdd
-	i.PersonCast = importList.PersonCast
-	i.PersonCastDirector = importList.PersonCastDirector
-	i.PersonCastProducer = importList.PersonCastProducer
-	i.PersonCastSound = importList.PersonCastSound
-	i.PersonCastWriting = importList.PersonCastWriting
 }
 
-func (r *ImportListTMDBPersonResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_" + importListTMDBPersonResourceName
+func (r *ImportListTMDBPopularResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_" + importListTMDBPopularResourceName
 }
 
-func (r *ImportListTMDBPersonResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *ImportListTMDBPopularResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List TMDB Person resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [TMDB Person](https://wiki.servarr.com/radarr/supported#tmdbpersonimport).",
+		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List TMDB Popular resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [TMDB Popular](https://wiki.servarr.com/radarr/supported#tmdbpopularimport).",
 		Attributes: map[string]schema.Attribute{
 			"enable_auto": schema.BoolAttribute{
 				MarkdownDescription: "Enable automatic add flag.",
@@ -171,48 +175,55 @@ func (r *ImportListTMDBPersonResource) Schema(ctx context.Context, req resource.
 				},
 			},
 			// Field values
-			"cast": schema.BoolAttribute{
-				MarkdownDescription: "Include cast.",
-				Optional:            true,
-				Computed:            true,
-			},
-			"cast_director": schema.BoolAttribute{
-				MarkdownDescription: "Include cast director.",
-				Optional:            true,
-				Computed:            true,
-			},
-			"cast_producer": schema.BoolAttribute{
-				MarkdownDescription: "Include cast producer.",
-				Optional:            true,
-				Computed:            true,
-			},
-			"cast_sound": schema.BoolAttribute{
-				MarkdownDescription: "Include cast sound.",
-				Optional:            true,
-				Computed:            true,
-			},
-			"cast_writing": schema.BoolAttribute{
-				MarkdownDescription: "Include cast writing.",
-				Optional:            true,
-				Computed:            true,
-			},
-			"person_id": schema.StringAttribute{
-				MarkdownDescription: "Person ID.",
+			"tmdb_list_type": schema.Int64Attribute{
+				MarkdownDescription: "TMDB list type. `1` Theaters, `2` Popular, `3` Top, `4` Upcoming,.",
 				Required:            true,
+				Validators: []validator.Int64{
+					int64validator.OneOf(1, 2, 3, 4),
+				},
+			},
+			"language_code": schema.Int64Attribute{
+				MarkdownDescription: "Language code.",
+				Required:            true,
+			},
+			"min_vote_average": schema.StringAttribute{
+				MarkdownDescription: "Min vote average.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"min_votes": schema.StringAttribute{
+				MarkdownDescription: "Min votes.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"tmdb_certification": schema.StringAttribute{
+				MarkdownDescription: "Certification.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"include_genre_ids": schema.StringAttribute{
+				MarkdownDescription: "Include genre IDs.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"exclude_genre_ids": schema.StringAttribute{
+				MarkdownDescription: "Exclude genre IDs.",
+				Optional:            true,
+				Computed:            true,
 			},
 		},
 	}
 }
 
-func (r *ImportListTMDBPersonResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *ImportListTMDBPopularResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
 	}
 }
 
-func (r *ImportListTMDBPersonResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+func (r *ImportListTMDBPopularResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	// Retrieve values from plan
-	var importList *ImportListTMDBPerson
+	var importList *ImportListTMDBPopular
 
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &importList)...)
 
@@ -220,25 +231,25 @@ func (r *ImportListTMDBPersonResource) Create(ctx context.Context, req resource.
 		return
 	}
 
-	// Create new ImportListTMDBPerson
+	// Create new ImportListTMDBPopular
 	request := importList.read(ctx)
 
 	response, _, err := r.client.ImportListApi.CreateImportList(ctx).ImportListResource(*request).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, importListTMDBPersonResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, importListTMDBPopularResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "created "+importListTMDBPersonResourceName+": "+strconv.Itoa(int(response.GetId())))
+	tflog.Trace(ctx, "created "+importListTMDBPopularResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	importList.write(ctx, response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &importList)...)
 }
 
-func (r *ImportListTMDBPersonResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *ImportListTMDBPopularResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	// Get current state
-	var importList *ImportListTMDBPerson
+	var importList *ImportListTMDBPopular
 
 	resp.Diagnostics.Append(req.State.Get(ctx, &importList)...)
 
@@ -246,23 +257,23 @@ func (r *ImportListTMDBPersonResource) Read(ctx context.Context, req resource.Re
 		return
 	}
 
-	// Get ImportListTMDBPerson current value
+	// Get ImportListTMDBPopular current value
 	response, _, err := r.client.ImportListApi.GetImportListById(ctx, int32(importList.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListTMDBPersonResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListTMDBPopularResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "read "+importListTMDBPersonResourceName+": "+strconv.Itoa(int(response.GetId())))
+	tflog.Trace(ctx, "read "+importListTMDBPopularResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Map response body to resource schema attribute
 	importList.write(ctx, response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &importList)...)
 }
 
-func (r *ImportListTMDBPersonResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *ImportListTMDBPopularResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	// Get plan values
-	var importList *ImportListTMDBPerson
+	var importList *ImportListTMDBPopular
 
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &importList)...)
 
@@ -270,24 +281,24 @@ func (r *ImportListTMDBPersonResource) Update(ctx context.Context, req resource.
 		return
 	}
 
-	// Update ImportListTMDBPerson
+	// Update ImportListTMDBPopular
 	request := importList.read(ctx)
 
 	response, _, err := r.client.ImportListApi.UpdateImportList(ctx, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, importListTMDBPersonResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, importListTMDBPopularResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "updated "+importListTMDBPersonResourceName+": "+strconv.Itoa(int(response.GetId())))
+	tflog.Trace(ctx, "updated "+importListTMDBPopularResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	importList.write(ctx, response)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &importList)...)
 }
 
-func (r *ImportListTMDBPersonResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var importList *ImportListTMDBPerson
+func (r *ImportListTMDBPopularResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var importList *ImportListTMDBPopular
 
 	resp.Diagnostics.Append(req.State.Get(ctx, &importList)...)
 
@@ -295,24 +306,24 @@ func (r *ImportListTMDBPersonResource) Delete(ctx context.Context, req resource.
 		return
 	}
 
-	// Delete ImportListTMDBPerson current value
+	// Delete ImportListTMDBPopular current value
 	_, err := r.client.ImportListApi.DeleteImportList(ctx, int32(importList.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListTMDBPersonResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListTMDBPopularResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "deleted "+importListTMDBPersonResourceName+": "+strconv.Itoa(int(importList.ID.ValueInt64())))
+	tflog.Trace(ctx, "deleted "+importListTMDBPopularResourceName+": "+strconv.Itoa(int(importList.ID.ValueInt64())))
 	resp.State.RemoveResource(ctx)
 }
 
-func (r *ImportListTMDBPersonResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+func (r *ImportListTMDBPopularResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	helpers.ImportStatePassthroughIntID(ctx, path.Root("id"), req, resp)
-	tflog.Trace(ctx, "imported "+importListTMDBPersonResourceName+": "+req.ID)
+	tflog.Trace(ctx, "imported "+importListTMDBPopularResourceName+": "+req.ID)
 }
 
-func (i *ImportListTMDBPerson) write(ctx context.Context, importList *radarr.ImportListResource) {
+func (i *ImportListTMDBPopular) write(ctx context.Context, importList *radarr.ImportListResource) {
 	genericImportList := ImportList{
 		Name:                types.StringValue(importList.GetName()),
 		Monitor:             types.StringValue(string(importList.GetMonitor())),
@@ -330,7 +341,7 @@ func (i *ImportListTMDBPerson) write(ctx context.Context, importList *radarr.Imp
 	i.fromImportList(&genericImportList)
 }
 
-func (i *ImportListTMDBPerson) read(ctx context.Context) *radarr.ImportListResource {
+func (i *ImportListTMDBPopular) read(ctx context.Context) *radarr.ImportListResource {
 	tags := make([]*int32, len(i.Tags.Elements()))
 	tfsdk.ValueAs(ctx, i.Tags, &tags)
 
@@ -343,9 +354,9 @@ func (i *ImportListTMDBPerson) read(ctx context.Context) *radarr.ImportListResou
 	list.SetEnableAuto(i.EnableAuto.ValueBool())
 	list.SetEnabled(i.Enabled.ValueBool())
 	list.SetSearchOnAdd(i.SearchOnAdd.ValueBool())
-	list.SetListType(importListTMDBPersonType)
-	list.SetConfigContract(importListTMDBPersonConfigContract)
-	list.SetImplementation(importListTMDBPersonImplementation)
+	list.SetListType(importListTMDBPopularType)
+	list.SetConfigContract(importListTMDBPopularConfigContract)
+	list.SetImplementation(importListTMDBPopularImplementation)
 	list.SetId(int32(i.ID.ValueInt64()))
 	list.SetName(i.Name.ValueString())
 	list.SetTags(tags)

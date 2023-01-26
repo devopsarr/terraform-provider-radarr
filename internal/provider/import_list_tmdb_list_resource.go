@@ -22,7 +22,7 @@ const (
 	importListTMDBListResourceName   = "import_list_tmdb_list"
 	importListTMDBListImplementation = "TMDbListImport"
 	importListTMDBListConfigContract = "TMDbListSettings"
-	importListTMDBListType           = "advanced"
+	importListTMDBListType           = "tmdb"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.

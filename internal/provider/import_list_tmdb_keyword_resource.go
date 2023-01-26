@@ -22,7 +22,7 @@ const (
 	importListTMDBKeywordResourceName   = "import_list_tmdb_keyword"
 	importListTMDBKeywordImplementation = "TMDbKeywordImport"
 	importListTMDBKeywordConfigContract = "TMDbKeywordSettings"
-	importListTMDBKeywordType           = "advanced"
+	importListTMDBKeywordType           = "tmdb"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.

@@ -35,6 +35,10 @@ func getFieldExceptions() []fieldException {
 			tfName:  "seasonPackSeedTime",
 		},
 		{
+			apiName: "filterCriteria.minVoteAverage",
+			tfName:  "minVoteAverage",
+		},
+		{
 			apiName: "filterCriteria.minVotes",
 			tfName:  "minVotes",
 		},
