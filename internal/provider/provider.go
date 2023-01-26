@@ -266,6 +266,9 @@ func (p *RadarrProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewRootFolderDataSource,
 		NewRootFoldersDataSource,
 
+		// Metadata
+		NewMetadataConfigDataSource,
+
 		// Movies
 		NewMovieDataSource,
 		NewMoviesDataSource,
