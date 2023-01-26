@@ -330,8 +330,7 @@ func (n *NotificationPushbullet) write(ctx context.Context, notification *radarr
 }
 
 func (n *NotificationPushbullet) read(ctx context.Context) *radarr.NotificationResource {
-	var tags []*int32
-
+	tags := make([]*int32, len(n.Tags.Elements()))
 	tfsdk.ValueAs(ctx, n.Tags, &tags)
 
 	notification := radarr.NewNotificationResource()

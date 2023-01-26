@@ -422,13 +422,13 @@ func (i *Indexer) writeFields(ctx context.Context, fields []*radarr.Field) {
 			continue
 		}
 
-		if slices.Contains(indexerIntFields, f.GetName()) {
+		if slices.Contains(indexerIntFields, f.GetName()) || f.GetName() == "seedCriteria.seedTime" || f.GetName() == "seedCriteria.seasonPackSeedTime" {
 			helpers.WriteIntField(f, i)
 
 			continue
 		}
 
-		if slices.Contains(indexerFloatFields, f.GetName()) {
+		if slices.Contains(indexerFloatFields, f.GetName()) || f.GetName() == "seedCriteria.seedRatio" {
 			helpers.WriteFloatField(f, i)
 
 			continue
@@ -441,8 +441,7 @@ func (i *Indexer) writeFields(ctx context.Context, fields []*radarr.Field) {
 }
 
 func (i *Indexer) read(ctx context.Context) *radarr.IndexerResource {
-	var tags []*int32
-
+	tags := make([]*int32, len(i.Tags.Elements()))
 	tfsdk.ValueAs(ctx, i.Tags, &tags)
 
 	indexer := radarr.NewIndexerResource()

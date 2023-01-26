@@ -170,6 +170,28 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewIndexerTorznabResource,
 		NewRestrictionResource,
 
+		// Import Lists
+		NewImportListResource,
+		NewImportListCustomResource,
+		NewImportListCouchPotatoResource,
+		NewImportListIMDBResource,
+		NewImportListPlexResource,
+		NewImportListRadarrResource,
+		NewImportListRSSResource,
+		NewImportListStevenluResource,
+		NewImportListStevenlu2Resource,
+		NewImportListTMDBCompanyResource,
+		NewImportListTMDBKeywordResource,
+		NewImportListTMDBListResource,
+		NewImportListTMDBPersonResource,
+		NewImportListTMDBPopularResource,
+		NewImportListTMDBUserResource,
+		NewImportListTraktListResource,
+		NewImportListTraktPopularResource,
+		NewImportListTraktUserResource,
+		NewImportListConfigResource,
+		NewImportListExclusionResource,
+
 		// Media Management
 		NewMediaManagementResource,
 		NewNamingResource,
@@ -230,6 +252,11 @@ func (p *RadarrProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewRestrictionDataSource,
 		NewRestrictionsDataSource,
 
+		// Import Lists
+		NewImportListConfigDataSource,
+		NewImportListExclusionDataSource,
+		NewImportListExclusionsDataSource,
+
 		// Media Management
 		NewMediaManagementDataSource,
 		NewNamingDataSource,
@@ -241,6 +268,8 @@ func (p *RadarrProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewMoviesDataSource,
 
 		// Notifications
+		NewImportListDataSource,
+		NewImportListsDataSource,
 		NewNotificationDataSource,
 		NewNotificationsDataSource,
 

@@ -320,8 +320,7 @@ func (i *IndexerTorrentPotato) write(ctx context.Context, indexer *radarr.Indexe
 }
 
 func (i *IndexerTorrentPotato) read(ctx context.Context) *radarr.IndexerResource {
-	var tags []*int32
-
+	tags := make([]*int32, len(i.Tags.Elements()))
 	tfsdk.ValueAs(ctx, i.Tags, &tags)
 
 	indexer := radarr.NewIndexerResource()

@@ -49,5 +49,7 @@ func testAccIndexerTorrentPotatoResourceConfig(name string, seeders int) string 
 		user = "testUser"
 		passkey = "pass"
 		minimum_seeders = %d
+		seed_time = 10
+		seed_ratio = 0.5
 	}`, name, seeders)
 }
