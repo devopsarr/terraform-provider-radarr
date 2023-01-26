@@ -199,6 +199,7 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 
 		// Metadata
 		NewMetadataEmbyResource,
+		NewMetadataWdtvResource,
 		NewMetadataResource,
 		NewMetadataConfigResource,
 
