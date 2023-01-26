@@ -43,7 +43,7 @@ resource "radarr_import_list_tmdb_popular" "example" {
 - `name` (String) Import List name.
 - `quality_profile_id` (Number) Quality profile ID.
 - `root_folder_path` (String) Root folder path.
-- `tmdb_list_type` (Number) TMDB list type. `1` Theaters, `2` Popular, `3` Top, `4` Upcoming,.
+- `tmdb_list_type` (Number) TMDB list type. `1` Theaters, `2` Popular, `3` Top, `4` Upcoming.
 
 ### Optional
 
