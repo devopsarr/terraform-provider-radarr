@@ -185,6 +185,7 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewImportListTMDBPersonResource,
 		NewImportListTMDBPopularResource,
 		NewImportListTMDBUserResource,
+		NewImportListTraktListResource,
 		NewImportListConfigResource,
 		NewImportListExclusionResource,
 
