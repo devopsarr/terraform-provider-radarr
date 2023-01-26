@@ -198,6 +198,7 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewRootFolderResource,
 
 		// Metadata
+		NewMetadataResource,
 		NewMetadataConfigResource,
 
 		// Movies
