@@ -170,6 +170,9 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewIndexerTorznabResource,
 		NewRestrictionResource,
 
+		// Import Lists
+		NewImportListExclusionResource,
+
 		// Media Management
 		NewMediaManagementResource,
 		NewNamingResource,
