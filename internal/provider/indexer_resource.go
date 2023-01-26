@@ -422,13 +422,13 @@ func (i *Indexer) writeFields(ctx context.Context, fields []*radarr.Field) {
 			continue
 		}
 
-		if slices.Contains(indexerIntFields, f.GetName()) {
+		if slices.Contains(indexerIntFields, f.GetName()) || f.GetName() == "seedCriteria.seedTime" || f.GetName() == "seedCriteria.seasonPackSeedTime" {
 			helpers.WriteIntField(f, i)
 
 			continue
 		}
 
-		if slices.Contains(indexerFloatFields, f.GetName()) {
+		if slices.Contains(indexerFloatFields, f.GetName()) || f.GetName() == "seedCriteria.seedRatio" {
 			helpers.WriteFloatField(f, i)
 
 			continue
