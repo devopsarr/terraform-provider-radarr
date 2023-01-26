@@ -233,6 +233,9 @@ func (p *RadarrProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewRestrictionDataSource,
 		NewRestrictionsDataSource,
 
+		// Import Lists
+		NewImportListExclusionsDataSource,
+
 		// Media Management
 		NewMediaManagementDataSource,
 		NewNamingDataSource,
