@@ -171,6 +171,7 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewRestrictionResource,
 
 		// Import Lists
+		NewImportListResource,
 		NewImportListConfigResource,
 		NewImportListExclusionResource,
 
