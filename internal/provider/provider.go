@@ -238,6 +238,7 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewCustomFormatResource,
 		NewDelayProfileResource,
 		NewQualityProfileResource,
+		NewQualityDefinitionResource,
 
 		// Tags
 		NewTagResource,
