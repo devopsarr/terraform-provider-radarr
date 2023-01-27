@@ -238,6 +238,7 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewCustomFormatResource,
 		NewDelayProfileResource,
 		NewQualityProfileResource,
+		NewQualityDefinitionResource,
 
 		// Tags
 		NewTagResource,
@@ -295,6 +296,8 @@ func (p *RadarrProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewLanguagesDataSource,
 		NewQualityProfileDataSource,
 		NewQualityProfilesDataSource,
+		NewQualityDefinitionDataSource,
+		NewQualityDefinitionsDataSource,
 
 		// System Status
 		NewSystemStatusDataSource,
