@@ -42,7 +42,38 @@ func TestAccQualityProfileResource(t *testing.T) {
 
 func testAccQualityProfileResourceConfig(name string) string {
 	return fmt.Sprintf(`
+	resource "radarr_custom_format" "test" {
+		include_custom_format_when_renaming = false
+		name = "QualityFormatTest"
+		
+		specifications = [
+			{
+				name = "Surround Sound"
+				implementation = "ReleaseTitleSpecification"
+				negate = false
+				required = false
+				value = "DTS.?(HD|ES|X(?!\\D))|TRUEHD|ATMOS|DD(\\+|P).?([5-9])|EAC3.?([5-9])"
+			},
+			{
+				name = "Arabic"
+				implementation = "LanguageSpecification"
+				negate = false
+				required = false
+				value = "31"
+			},
+			{
+				name = "Size"
+				implementation = "SizeSpecification"
+				negate = false
+				required = false
+				min = 0
+				max = 100
+			}
+		]	
+	}
+
 	data "radarr_custom_formats" "test" {
+		depends_on = [radarr_custom_format.test]
 	}
 
 	resource "radarr_quality_profile" "test" {
@@ -70,6 +101,16 @@ func testAccQualityProfileResourceConfig(name string) string {
 						id         = 17
 						name       = "WEBRip-2160p"
 						source     = "webrip"
+						resolution = 2160
+					}
+				]
+			},
+			{
+				qualities = [
+					{
+						id = 19
+						name = "Bluray-2160p"
+						source = "bluray"
 						resolution = 2160
 					}
 				]

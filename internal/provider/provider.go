@@ -197,6 +197,14 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewNamingResource,
 		NewRootFolderResource,
 
+		// Metadata
+		NewMetadataEmbyResource,
+		NewMetadataKodiResource,
+		NewMetadataRoksboxResource,
+		NewMetadataWdtvResource,
+		NewMetadataResource,
+		NewMetadataConfigResource,
+
 		// Movies
 		NewMovieResource,
 
@@ -262,6 +270,11 @@ func (p *RadarrProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewNamingDataSource,
 		NewRootFolderDataSource,
 		NewRootFoldersDataSource,
+
+		// Metadata
+		NewMetadataDataSource,
+		NewMetadataConsumersDataSource,
+		NewMetadataConfigDataSource,
 
 		// Movies
 		NewMovieDataSource,
