@@ -33,7 +33,7 @@ func (d *MetadataDataSource) Metadata(ctx context.Context, req datasource.Metada
 func (d *MetadataDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Metadatas -->Single [Metadata](../resources/metadata).",
+		MarkdownDescription: "<!-- subcategory:Metadata -->Single [Metadata](../resources/metadata).",
 		Attributes: map[string]schema.Attribute{
 			"enable": schema.BoolAttribute{
 				MarkdownDescription: "Enable flag.",
@@ -98,7 +98,7 @@ func (d *MetadataDataSource) Configure(ctx context.Context, req datasource.Confi
 func (d *MetadataDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data *Metadata
 
-	resp.Diagnostics.Append(resp.State.Get(ctx, &data)...)
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
 
 	if resp.Diagnostics.HasError() {
 		return
