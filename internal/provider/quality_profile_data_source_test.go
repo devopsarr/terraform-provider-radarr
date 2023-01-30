@@ -18,46 +18,14 @@ func TestAccQualityProfileDataSource(t *testing.T) {
 				Config: testAccQualityProfileDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.radarr_quality_profile.test", "id"),
-					resource.TestCheckResourceAttr("data.radarr_quality_profile.test", "cutoff", "1003")),
+					resource.TestCheckResourceAttr("data.radarr_quality_profile.test", "language.id", "1")),
 			},
 		},
 	})
 }
 
 const testAccQualityProfileDataSourceConfig = `
-resource "radarr_quality_profile" "test" {
-	name            = "qpdata"
-	upgrade_allowed = true
-	cutoff          = 1003
-
-	language = {
-		id   = 1
-		name = "English"
-	}
-
-	quality_groups = [
-		{
-			id   = 1003
-			name = "WEB 2160p"
-			qualities = [
-				{
-					id         = 18
-					name       = "WEBDL-2160p"
-					source     = "webdl"
-					resolution = 2160
-				},
-				{
-					id         = 17
-					name       = "WEBRip-2160p"
-					source     = "webrip"
-					resolution = 2160
-				}
-			]
-		}
-	]
-}
-
 data "radarr_quality_profile" "test" {
-	name = radarr_quality_profile.test.name
+	name = "Any"
 }
 `
