@@ -401,7 +401,7 @@ func (i *Indexer) write(ctx context.Context, indexer *radarr.IndexerResource) {
 	i.Mediums = types.SetValueMust(types.Int64Type, nil)
 	i.Categories = types.SetValueMust(types.Int64Type, nil)
 	tfsdk.ValueFrom(ctx, indexer.Tags, i.Tags.Type(ctx), &i.Tags)
-	i.writeFields(ctx, indexer.Fields)
+	i.writeFields(ctx, indexer.GetFields())
 }
 
 func (i *Indexer) writeFields(ctx context.Context, fields []*radarr.Field) {

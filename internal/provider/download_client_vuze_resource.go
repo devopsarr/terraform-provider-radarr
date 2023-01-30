@@ -336,7 +336,7 @@ func (d *DownloadClientVuze) write(ctx context.Context, downloadClient *radarr.D
 		Name:                     types.StringValue(downloadClient.GetName()),
 	}
 	genericDownloadClient.Tags, _ = types.SetValueFrom(ctx, types.Int64Type, downloadClient.Tags)
-	genericDownloadClient.writeFields(ctx, downloadClient.Fields)
+	genericDownloadClient.writeFields(ctx, downloadClient.GetFields())
 	d.fromDownloadClient(&genericDownloadClient)
 }
 

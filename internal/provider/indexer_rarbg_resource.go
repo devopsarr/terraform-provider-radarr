@@ -325,7 +325,7 @@ func (i *IndexerRarbg) write(ctx context.Context, indexer *radarr.IndexerResourc
 		Tags:                    types.SetValueMust(types.Int64Type, nil),
 	}
 	tfsdk.ValueFrom(ctx, indexer.Tags, genericIndexer.Tags.Type(ctx), &genericIndexer.Tags)
-	genericIndexer.writeFields(ctx, indexer.Fields)
+	genericIndexer.writeFields(ctx, indexer.GetFields())
 	i.fromIndexer(&genericIndexer)
 }
 

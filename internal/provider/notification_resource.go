@@ -715,7 +715,7 @@ func (n *Notification) write(ctx context.Context, notification *radarr.Notificat
 	n.Cc = types.SetValueMust(types.StringType, nil)
 	n.Bcc = types.SetValueMust(types.StringType, nil)
 	tfsdk.ValueFrom(ctx, notification.Tags, n.Tags.Type(ctx), &n.Tags)
-	n.writeFields(ctx, notification.Fields)
+	n.writeFields(ctx, notification.GetFields())
 }
 
 func (n *Notification) writeFields(ctx context.Context, fields []*radarr.Field) {

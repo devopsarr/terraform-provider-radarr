@@ -253,7 +253,7 @@ func (i *Metadata) write(ctx context.Context, metadata *radarr.MetadataResource)
 	i.Name = types.StringValue(metadata.GetName())
 	i.Tags = types.SetValueMust(types.Int64Type, nil)
 	tfsdk.ValueFrom(ctx, metadata.Tags, i.Tags.Type(ctx), &i.Tags)
-	i.writeFields(metadata.Fields)
+	i.writeFields(metadata.GetFields())
 }
 
 func (i *Metadata) writeFields(fields []*radarr.Field) {
