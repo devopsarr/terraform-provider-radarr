@@ -36,7 +36,7 @@ resource "radarr_custom_format" "example" {
 - `name` (String) Specification name.
 - `negate` (Boolean) Negate flag.
 - `required` (Boolean) Computed flag.
-- `value` (String) ReleaseTitle RegEx.
+- `value` (String) Release title RegEx.
 
 ### Read-Only
 
