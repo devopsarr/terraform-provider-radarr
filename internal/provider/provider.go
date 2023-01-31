@@ -299,6 +299,7 @@ func (p *RadarrProvider) DataSources(ctx context.Context) []func() datasource.Da
 		NewQualityDefinitionDataSource,
 		NewQualityDefinitionsDataSource,
 		NewCustomFormatConditionDataSource,
+		NewCustomFormatConditionLanguageDataSource,
 
 		// System Status
 		NewSystemStatusDataSource,
