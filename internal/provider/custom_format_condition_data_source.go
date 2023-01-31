@@ -28,10 +28,12 @@ func NewCustomFormatConditionDataSource() datasource.DataSource {
 	return &CustomFormatConditionDataSource{}
 }
 
-// CustomFormatConditionDataSource defines the custom_format_condition implementation.
+// CustomFormatConditionDataSource defines the custom format condition implementation.
 type CustomFormatConditionDataSource struct {
 	client *radarr.APIClient
 }
+
+// CustomFormatCondition describes the custom format condition data model.
 type CustomFormatCondition struct {
 	Name           types.String `tfsdk:"name"`
 	Implementation types.String `tfsdk:"implementation"`
@@ -42,6 +44,23 @@ type CustomFormatCondition struct {
 	Required       types.Bool   `tfsdk:"required"`
 }
 
+// CustomFormatValue describes the custom format value data model.
+type CustomFormatConditionValue struct {
+	Name     types.String `tfsdk:"name"`
+	Value    types.String `tfsdk:"value"`
+	Negate   types.Bool   `tfsdk:"negate"`
+	Required types.Bool   `tfsdk:"required"`
+}
+
+// CustomFormatMinMax describes the custom format min max data model.
+type CustomFormatConditionMinMax struct {
+	Name     types.String `tfsdk:"name"`
+	Min      types.Int64  `tfsdk:"min"`
+	Max      types.Int64  `tfsdk:"max"`
+	Negate   types.Bool   `tfsdk:"negate"`
+	Required types.Bool   `tfsdk:"required"`
+}
+
 func (d *CustomFormatConditionDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + customFormatConditionDataSourceName
 }
@@ -49,7 +68,7 @@ func (d *CustomFormatConditionDataSource) Metadata(ctx context.Context, req data
 func (d *CustomFormatConditionDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Profiles --> Generic custom format condition data source. When possible use a specific resource instead.\nFor more information refer to [Custom Format Conditions](https://wiki.servarr.com/radarr/settings#conditions).\n To be used in conjunction with [Custom Format](../resources/custom_format).",
+		MarkdownDescription: "<!-- subcategory:Profiles --> Generic Custom Format Condition data source. When possible use a specific data source instead.\nFor more information refer to [Custom Format Conditions](https://wiki.servarr.com/radarr/settings#conditions).\n To be used in conjunction with [Custom Format](../resources/custom_format).",
 		Attributes: map[string]schema.Attribute{
 			"negate": schema.BoolAttribute{
 				MarkdownDescription: "Negate flag.",

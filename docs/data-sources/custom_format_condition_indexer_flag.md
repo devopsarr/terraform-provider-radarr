@@ -3,12 +3,14 @@
 page_title: "radarr_custom_format_condition_indexer_flag Data Source - terraform-provider-radarr"
 subcategory: "Profiles"
 description: |-
-  Custom format condition indexer flag data source.
+  Custom Format Condition Indexer Flag data source.
+  For more information refer to Custom Format Conditions https://wiki.servarr.com/radarr/settings#conditions and Indexer Flag https://wiki.servarr.com/radarr/settings#indexer-flags.
 ---
 
 # radarr_custom_format_condition_indexer_flag (Data Source)
 
-<!-- subcategory:Profiles --> Custom format condition indexer flag data source.
+<!-- subcategory:Profiles --> Custom Format Condition Indexer Flag data source.
+For more information refer to [Custom Format Conditions](https://wiki.servarr.com/radarr/settings#conditions) and [Indexer Flag](https://wiki.servarr.com/radarr/settings#indexer-flags).
 
 ## Example Usage
 

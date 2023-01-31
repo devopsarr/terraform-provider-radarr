@@ -8,7 +8,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/path"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/mitchellh/hashstructure/v2"
 )
@@ -25,15 +24,9 @@ func NewCustomFormatConditionEditionDataSource() datasource.DataSource {
 	return &CustomFormatConditionEditionDataSource{}
 }
 
-// CustomFormatConditionEditionDataSource defines the custom_format_condition_edition implementation.
+// CustomFormatConditionEditionDataSource defines the custom format condition edition implementation.
 type CustomFormatConditionEditionDataSource struct {
 	client *radarr.APIClient
-}
-type CustomFormatConditionEdition struct {
-	Name     types.String `tfsdk:"name"`
-	Value    types.String `tfsdk:"value"`
-	Negate   types.Bool   `tfsdk:"negate"`
-	Required types.Bool   `tfsdk:"required"`
 }
 
 func (d *CustomFormatConditionEditionDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -43,7 +36,7 @@ func (d *CustomFormatConditionEditionDataSource) Metadata(ctx context.Context, r
 func (d *CustomFormatConditionEditionDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Profiles --> Custom format condition edition data source.",
+		MarkdownDescription: "<!-- subcategory:Profiles --> Custom Format Condition Edition data source.\nFor more information refer to [Custom Format Conditions](https://wiki.servarr.com/radarr/settings#conditions).",
 		Attributes: map[string]schema.Attribute{
 			"negate": schema.BoolAttribute{
 				MarkdownDescription: "Negate flag.",
@@ -82,7 +75,7 @@ func (d *CustomFormatConditionEditionDataSource) Configure(ctx context.Context, 
 }
 
 func (d *CustomFormatConditionEditionDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var data *CustomFormatConditionEdition
+	var data *CustomFormatConditionValue
 
 	hash, err := hashstructure.Hash(&data, hashstructure.FormatV2, nil)
 	if err != nil {

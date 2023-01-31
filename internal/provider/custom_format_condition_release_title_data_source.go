@@ -8,7 +8,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/path"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/mitchellh/hashstructure/v2"
 )
@@ -29,12 +28,6 @@ func NewCustomFormatConditionReleaseTitleDataSource() datasource.DataSource {
 type CustomFormatConditionReleaseTitleDataSource struct {
 	client *radarr.APIClient
 }
-type CustomFormatConditionReleaseTitle struct {
-	Name     types.String `tfsdk:"name"`
-	Value    types.String `tfsdk:"value"`
-	Negate   types.Bool   `tfsdk:"negate"`
-	Required types.Bool   `tfsdk:"required"`
-}
 
 func (d *CustomFormatConditionReleaseTitleDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + customFormatConditionReleaseTitleDataSourceName
@@ -43,7 +36,7 @@ func (d *CustomFormatConditionReleaseTitleDataSource) Metadata(ctx context.Conte
 func (d *CustomFormatConditionReleaseTitleDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Profiles --> Custom format condition release title data source.",
+		MarkdownDescription: "<!-- subcategory:Profiles --> Custom Format Condition Release Title data source.\nFor more information refer to [Custom Format Conditions](https://wiki.servarr.com/radarr/settings#conditions).",
 		Attributes: map[string]schema.Attribute{
 			"negate": schema.BoolAttribute{
 				MarkdownDescription: "Negate flag.",
@@ -82,7 +75,7 @@ func (d *CustomFormatConditionReleaseTitleDataSource) Configure(ctx context.Cont
 }
 
 func (d *CustomFormatConditionReleaseTitleDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var data *CustomFormatConditionReleaseTitle
+	var data *CustomFormatConditionValue
 
 	hash, err := hashstructure.Hash(&data, hashstructure.FormatV2, nil)
 	if err != nil {

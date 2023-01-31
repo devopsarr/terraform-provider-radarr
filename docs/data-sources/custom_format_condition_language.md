@@ -3,12 +3,14 @@
 page_title: "radarr_custom_format_condition_language Data Source - terraform-provider-radarr"
 subcategory: "Profiles"
 description: |-
-  Custom format condition language data source.
+  Custom Format Condition Language data source.
+  For more information refer to Custom Format Conditions https://wiki.servarr.com/radarr/settings#conditions.
 ---
 
 # radarr_custom_format_condition_language (Data Source)
 
-<!-- subcategory:Profiles --> Custom format condition language data source.
+<!-- subcategory:Profiles --> Custom Format Condition Language data source.
+For more information refer to [Custom Format Conditions](https://wiki.servarr.com/radarr/settings#conditions).
 
 ## Example Usage
 
