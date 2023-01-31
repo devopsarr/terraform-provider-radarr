@@ -379,7 +379,7 @@ func (n *NotificationKodi) write(ctx context.Context, notification *radarr.Notif
 		Name:                        types.StringValue(notification.GetName()),
 	}
 	genericNotification.Tags, _ = types.SetValueFrom(ctx, types.Int64Type, notification.Tags)
-	genericNotification.writeFields(ctx, notification.Fields)
+	genericNotification.writeFields(ctx, notification.GetFields())
 	n.fromNotification(&genericNotification)
 }
 

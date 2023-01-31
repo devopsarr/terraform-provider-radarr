@@ -29,12 +29,12 @@ func NewImportListConfigResource() resource.Resource {
 	return &ImportListConfigResource{}
 }
 
-// ImportListConfigResource defines the download client config implementation.
+// ImportListConfigResource defines the import list config implementation.
 type ImportListConfigResource struct {
 	client *radarr.APIClient
 }
 
-// ImportListConfig describes the download client config data model.
+// ImportListConfig describes the import list config data model.
 type ImportListConfig struct {
 	SyncLevel    types.String `tfsdk:"sync_level"`
 	SyncInterval types.Int64  `tfsdk:"sync_interval"`

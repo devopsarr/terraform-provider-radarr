@@ -69,6 +69,6 @@ func testAccCustomFormatResourceConfig(name, enable string) string {
 				min = 0
 				max = 100
 			}
-		]	
+		]
 	}`, enable, name)
 }

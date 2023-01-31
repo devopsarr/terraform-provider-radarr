@@ -254,7 +254,7 @@ func (m *MetadataKodi) write(ctx context.Context, metadata *radarr.MetadataResou
 		Enable: types.BoolValue(metadata.GetEnable()),
 	}
 	genericMetadata.Tags, _ = types.SetValueFrom(ctx, types.Int64Type, metadata.Tags)
-	genericMetadata.writeFields(metadata.Fields)
+	genericMetadata.writeFields(metadata.GetFields())
 	m.fromMetadata(&genericMetadata)
 }
 

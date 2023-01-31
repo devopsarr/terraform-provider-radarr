@@ -19,7 +19,7 @@ func NewImportListConfigDataSource() datasource.DataSource {
 	return &ImportListConfigDataSource{}
 }
 
-// ImportListConfigDataSource defines the download client config implementation.
+// ImportListConfigDataSource defines the import list config implementation.
 type ImportListConfigDataSource struct {
 	client *radarr.APIClient
 }

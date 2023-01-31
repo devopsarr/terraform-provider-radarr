@@ -282,7 +282,6 @@ func (r *DownloadClientFloodResource) Create(ctx context.Context, req resource.C
 	tflog.Trace(ctx, "created "+downloadClientFloodResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
 	client.write(ctx, response)
-	// panic(fmt.Sprint(response.Fields[7], response.Fields[8]))
 	resp.Diagnostics.Append(resp.State.Set(ctx, &client)...)
 }
 
@@ -375,7 +374,7 @@ func (d *DownloadClientFlood) write(ctx context.Context, downloadClient *radarr.
 		PostImportTags:           types.SetValueMust(types.StringType, nil),
 	}
 	genericDownloadClient.Tags, _ = types.SetValueFrom(ctx, types.Int64Type, downloadClient.Tags)
-	genericDownloadClient.writeFields(ctx, downloadClient.Fields)
+	genericDownloadClient.writeFields(ctx, downloadClient.GetFields())
 	d.fromDownloadClient(&genericDownloadClient)
 }
 

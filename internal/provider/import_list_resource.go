@@ -38,12 +38,12 @@ func NewImportListResource() resource.Resource {
 	return &ImportListResource{}
 }
 
-// ImportListResource defines the download client implementation.
+// ImportListResource defines the import list implementation.
 type ImportListResource struct {
 	client *radarr.APIClient
 }
 
-// ImportList describes the download client data model.
+// ImportList describes the import list data model.
 type ImportList struct {
 	ProfileIds                types.Set    `tfsdk:"profile_ids"`
 	TagIds                    types.Set    `tfsdk:"tag_ids"`
@@ -540,7 +540,7 @@ func (i *ImportList) write(ctx context.Context, importList *radarr.ImportListRes
 	i.Name = types.StringValue(importList.GetName())
 	i.ProfileIds = types.SetValueMust(types.Int64Type, nil)
 	i.TagIds = types.SetValueMust(types.Int64Type, nil)
-	i.writeFields(ctx, importList.Fields)
+	i.writeFields(ctx, importList.GetFields())
 }
 
 func (i *ImportList) writeFields(ctx context.Context, fields []*radarr.Field) {

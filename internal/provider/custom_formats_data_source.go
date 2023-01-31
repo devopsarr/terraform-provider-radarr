@@ -22,12 +22,12 @@ func NewCustomFormatsDataSource() datasource.DataSource {
 	return &CustomFormatsDataSource{}
 }
 
-// CustomFormatsDataSource defines the download clients implementation.
+// CustomFormatsDataSource defines the custom formats implementation.
 type CustomFormatsDataSource struct {
 	client *radarr.APIClient
 }
 
-// CustomFormats describes the download clients data model.
+// CustomFormats describes the custom formats data model.
 type CustomFormats struct {
 	CustomFormats types.Set    `tfsdk:"custom_formats"`
 	ID            types.String `tfsdk:"id"`
@@ -116,12 +116,12 @@ func (d *CustomFormatsDataSource) Configure(ctx context.Context, req datasource.
 func (d *CustomFormatsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data *CustomFormats
 
-	resp.Diagnostics.Append(resp.State.Get(ctx, &data)...)
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	// Get download clients current value
+	// Get custom formatss current value
 	response, _, err := d.client.CustomFormatApi.ListCustomFormat(ctx).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.List, customFormatsDataSourceName, err))
