@@ -76,44 +76,40 @@ func testAccQualityProfileResourceConfig(name string) string {
 		depends_on = [radarr_custom_format.test]
 	}
 
+	data "radarr_language" "test" {
+		name = "English"
+	}
+
+	data "radarr_quality" "bluray" {
+		name = "Bluray-2160p"
+	}
+
+	data "radarr_quality" "webdl" {
+		name = "WEBDL-2160p"
+	}
+
+	data "radarr_quality" "webrip" {
+		name = "WEBRip-2160p"
+	}
+
 	resource "radarr_quality_profile" "test" {
 		name            = "%s"
 		upgrade_allowed = true
-		cutoff          = 1003
+		cutoff          = 2000
 
-		language = {
-			id   = 1
-			name = "English"
-		}
+		language = data.radarr_language.test
 
 		quality_groups = [
 			{
-				id   = 1003
+				id   = 2000
 				name = "WEB 2160p"
 				qualities = [
-					{
-						id         = 18
-						name       = "WEBDL-2160p"
-						source     = "webdl"
-						resolution = 2160
-					},
-					{
-						id         = 17
-						name       = "WEBRip-2160p"
-						source     = "webrip"
-						resolution = 2160
-					}
+					data.radarr_quality.webdl,
+					data.radarr_quality.webrip,
 				]
 			},
 			{
-				qualities = [
-					{
-						id = 19
-						name = "Bluray-2160p"
-						source = "bluray"
-						resolution = 2160
-					}
-				]
+				qualities = [data.radarr_quality.bluray]
 			}
 		]
 
