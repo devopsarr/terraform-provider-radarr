@@ -1,5 +1,68 @@
 # Changelog
 
+## [1.8.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v1.7.0...v1.8.0) (2023-02-01)
+
+
+### Features
+
+* add custom format condition data source ([a64393b](https://github.com/devopsarr/terraform-provider-radarr/commit/a64393b98eaaf22f840c9fa792acc2f506eef353))
+* add custom format condition edition data source ([d15dfad](https://github.com/devopsarr/terraform-provider-radarr/commit/d15dfadcc7451fda01946554962bf98f934884b6))
+* add custom format condition indexer flag data source ([7dc14df](https://github.com/devopsarr/terraform-provider-radarr/commit/7dc14dfdb5fb3452de79fce7d7b5fbd2faa6d0ac))
+* add custom format condition language data source ([c48a11f](https://github.com/devopsarr/terraform-provider-radarr/commit/c48a11f5b084528cc6fd8c9da33754c2b075b7f7))
+* add custom format condition quality modifier data source ([b863fb1](https://github.com/devopsarr/terraform-provider-radarr/commit/b863fb19ead54a32e14a850186259b317e18c746))
+* add custom format condition release group data source ([3fecbd8](https://github.com/devopsarr/terraform-provider-radarr/commit/3fecbd8c9c22d298ad98173948d457a33e06d600))
+* add custom format condition release title data source ([1a5eb59](https://github.com/devopsarr/terraform-provider-radarr/commit/1a5eb59786824849defa79ca0a0813cbcc4033e3))
+* add custom format condition resolution data source ([8eddda3](https://github.com/devopsarr/terraform-provider-radarr/commit/8eddda383bf99fd4b27d9f249e66b0b39e1612c5))
+* add custom format condition size data source ([7672dfd](https://github.com/devopsarr/terraform-provider-radarr/commit/7672dfdbf22aeced76141df71b4e197860f2d7fc))
+* add custom format condition source data source ([5f33092](https://github.com/devopsarr/terraform-provider-radarr/commit/5f33092e153bc1739f0ac6ba36863638e1e4dc14))
+* add import list config data source ([31134a7](https://github.com/devopsarr/terraform-provider-radarr/commit/31134a7c73c6c24c3d58b2509cf06b6033445bfe))
+* add import list config resource ([fd4d71f](https://github.com/devopsarr/terraform-provider-radarr/commit/fd4d71f5a014ca20725ffa432996f72abcc51117))
+* add import list couch potato resource ([f777653](https://github.com/devopsarr/terraform-provider-radarr/commit/f7776534d6303ed000897b29c7119c418d484e85))
+* add import list custom resource ([27c4eb9](https://github.com/devopsarr/terraform-provider-radarr/commit/27c4eb997c1ccc11d77e67d8e467c257088018c9))
+* add import list data source ([3cc3cf1](https://github.com/devopsarr/terraform-provider-radarr/commit/3cc3cf1a8d2390b0010d1c899f34367c5ff1241f))
+* add import list exclusion data source ([09157b0](https://github.com/devopsarr/terraform-provider-radarr/commit/09157b0dc8254644517dc7a66231aa77d9f9ef25))
+* add import list exclusion resource ([9b5c0c9](https://github.com/devopsarr/terraform-provider-radarr/commit/9b5c0c9224e9b8e918b273d47a7abc6b1009cc2b))
+* add import list exclusions data source ([b525e09](https://github.com/devopsarr/terraform-provider-radarr/commit/b525e090901ff5539cf7544ac0215381653bc230))
+* add import list imdb resource ([8ac9c1b](https://github.com/devopsarr/terraform-provider-radarr/commit/8ac9c1b6a59ffb952c18e47e088348362eceba73))
+* add import list plex resource ([f53606e](https://github.com/devopsarr/terraform-provider-radarr/commit/f53606e947412587aefab5e24161788d5357bd5a))
+* add import list radarr resource ([c138d40](https://github.com/devopsarr/terraform-provider-radarr/commit/c138d40f8ddbbd5f170d696feaf4d0a4ad534907))
+* add import list resource ([a25d60e](https://github.com/devopsarr/terraform-provider-radarr/commit/a25d60e7acac6bfca35bf1b5b701c8b9878fe9b7))
+* add import list rss resource ([4547336](https://github.com/devopsarr/terraform-provider-radarr/commit/45473362f3e6d48f22cb36f32d31b6579d5df557))
+* add import list stevenlu resource ([36f0ad0](https://github.com/devopsarr/terraform-provider-radarr/commit/36f0ad087c3a2709d529c3d42d40e0024d688cb7))
+* add import list stevenlu2 resource ([ec71afa](https://github.com/devopsarr/terraform-provider-radarr/commit/ec71afa8d699dc9939e488e1c8178d086b6ad43b))
+* add import list tmdb company resource ([f2005df](https://github.com/devopsarr/terraform-provider-radarr/commit/f2005dfccb7ab29c2274d4c942883b405db6b094))
+* add import list tmdb keyword resource ([0383fef](https://github.com/devopsarr/terraform-provider-radarr/commit/0383fef874b173383297e3672cdfe9c65f5acd69))
+* add import list tmdb list resource ([2393836](https://github.com/devopsarr/terraform-provider-radarr/commit/2393836e18b5e633bf3b61b43ced6ee3f3ae4e06))
+* add import list tmdb person resource ([c6b4cff](https://github.com/devopsarr/terraform-provider-radarr/commit/c6b4cfffa009a26c9a0cd009d680d862bdea0074))
+* add import list tmdb popular resource ([8852e45](https://github.com/devopsarr/terraform-provider-radarr/commit/8852e45caacdbeb02f3fd5f2a0537ba5e9da6bc4))
+* add import list tmdb user resource ([0b62c81](https://github.com/devopsarr/terraform-provider-radarr/commit/0b62c81e30e38100f2d50ea71e7df57b6c989bf5))
+* add import list trakt list resource ([7effe92](https://github.com/devopsarr/terraform-provider-radarr/commit/7effe922b471801608d3a6386779751ad5dab647))
+* add import list trakt popular resource ([a64e56b](https://github.com/devopsarr/terraform-provider-radarr/commit/a64e56b47c99e6a400a803c9e0157b13a0e017ae))
+* add import list trakt user resource ([fba8af7](https://github.com/devopsarr/terraform-provider-radarr/commit/fba8af756f2e380df4e225b5104384df0f10aa6a))
+* add import lists data source ([67ed715](https://github.com/devopsarr/terraform-provider-radarr/commit/67ed715972bf737fc487a6f4b0aa7733a8258af5))
+* add metadata config data source ([3711ba3](https://github.com/devopsarr/terraform-provider-radarr/commit/3711ba32ff1421a19c8a8f1d8cd1f4d0ee27d59b))
+* add metadata config resource ([ab8a9f8](https://github.com/devopsarr/terraform-provider-radarr/commit/ab8a9f8fe3bd0578f98ab59865681c6fb4e4088f))
+* add metadata consumers datasource ([6605bc9](https://github.com/devopsarr/terraform-provider-radarr/commit/6605bc9510876fb38e4bf257d0e49028cde450e2))
+* add metadata datasource ([d6d701b](https://github.com/devopsarr/terraform-provider-radarr/commit/d6d701bea1ac8fa8f3784a88d9c230eab764c534))
+* add metadata emby resource ([c2f0927](https://github.com/devopsarr/terraform-provider-radarr/commit/c2f0927ba1d0b4d240bbde88ef1710a8554cf4b7))
+* add metadata kodi resource ([3dc6ceb](https://github.com/devopsarr/terraform-provider-radarr/commit/3dc6cebadc62107e77caa82fcc27bf7ac34df493))
+* add metadata resource ([146745d](https://github.com/devopsarr/terraform-provider-radarr/commit/146745d8340b1df0da4a85eebc9e48a1adc17b2e))
+* add metadata roksbox resource ([b0c06a0](https://github.com/devopsarr/terraform-provider-radarr/commit/b0c06a03a770d2a1901d384d534a90c51d8e8079))
+* add metadata wdtv resource ([a83c1a7](https://github.com/devopsarr/terraform-provider-radarr/commit/a83c1a769f5488aabc5e36869536c00ea9ee18b6))
+* add quality data source ([766c53d](https://github.com/devopsarr/terraform-provider-radarr/commit/766c53d9ba4a321216910880056bb4014129c8dc))
+* add quality definition data source ([5a31c83](https://github.com/devopsarr/terraform-provider-radarr/commit/5a31c838320f3830506c0c6066a02f61cc5a2308))
+* add quality definition resource ([5094681](https://github.com/devopsarr/terraform-provider-radarr/commit/5094681c88905ea7d7dbcdd78a678a499efa3bb4))
+* add quality definitions data source ([846ef00](https://github.com/devopsarr/terraform-provider-radarr/commit/846ef0070543d3dc7ac71ec3c626b71d4593a06b))
+* improve slice init ([4a20f86](https://github.com/devopsarr/terraform-provider-radarr/commit/4a20f867976a6849b053724ab4822facff5791d9))
+
+
+### Bug Fixes
+
+* indexer seedcriteria fields not written ([d74a6f0](https://github.com/devopsarr/terraform-provider-radarr/commit/d74a6f0690f073f3f29e9877660aff4297168085))
+* quality profile with single item group ([a2a1137](https://github.com/devopsarr/terraform-provider-radarr/commit/a2a1137b5419a82f144de7fefe70600baed3eee4))
+* read data source from request ([fc36939](https://github.com/devopsarr/terraform-provider-radarr/commit/fc36939d46bcae2f5e0781c30087a20a93a75796))
+* use get function for sdk fields ([478d6c8](https://github.com/devopsarr/terraform-provider-radarr/commit/478d6c8d466f6bf5c21b39b4d9051a2f60c3dbb3))
+
 ## [1.7.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v1.6.0...v1.7.0) (2023-01-23)
 
 
