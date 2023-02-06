@@ -258,10 +258,6 @@ func (i *Metadata) write(ctx context.Context, metadata *radarr.MetadataResource)
 
 func (i *Metadata) writeFields(fields []*radarr.Field) {
 	for _, f := range fields {
-		if f.Value == nil {
-			continue
-		}
-
 		if slices.Contains(metadataBoolFields, f.GetName()) {
 			helpers.WriteBoolField(f, i)
 
