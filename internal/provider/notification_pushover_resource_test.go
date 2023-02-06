@@ -57,6 +57,7 @@ func testAccNotificationPushoverResourceConfig(name string, priority int) string
 		name                    = "%s"
 	  
 		api_key = "Key"
+		user_key = "Test"
 		priority = %d
 	}`, name, priority)
 }

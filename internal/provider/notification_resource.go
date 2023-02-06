@@ -720,10 +720,6 @@ func (n *Notification) write(ctx context.Context, notification *radarr.Notificat
 
 func (n *Notification) writeFields(ctx context.Context, fields []*radarr.Field) {
 	for _, f := range fields {
-		if f.Value == nil {
-			continue
-		}
-
 		if slices.Contains(notificationStringFields, f.GetName()) {
 			helpers.WriteStringField(f, n)
 
