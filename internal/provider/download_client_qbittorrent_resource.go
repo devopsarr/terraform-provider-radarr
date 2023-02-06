@@ -13,7 +13,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -52,7 +51,6 @@ type DownloadClientQbittorrent struct {
 	Username                 types.String `tfsdk:"username"`
 	Password                 types.String `tfsdk:"password"`
 	MovieCategory            types.String `tfsdk:"movie_category"`
-	MovieDirectory           types.String `tfsdk:"movie_directory"`
 	RecentMoviePriority      types.Int64  `tfsdk:"recent_movie_priority"`
 	Priority                 types.Int64  `tfsdk:"priority"`
 	Port                     types.Int64  `tfsdk:"port"`
@@ -76,7 +74,6 @@ func (d DownloadClientQbittorrent) toDownloadClient() *DownloadClient {
 		Username:                 d.Username,
 		Password:                 d.Password,
 		MovieCategory:            d.MovieCategory,
-		MovieDirectory:           d.MovieDirectory,
 		RecentMoviePriority:      d.RecentMoviePriority,
 		OlderMoviePriority:       d.OlderMoviePriority,
 		Priority:                 d.Priority,
@@ -90,6 +87,9 @@ func (d DownloadClientQbittorrent) toDownloadClient() *DownloadClient {
 		RemoveCompletedDownloads: d.RemoveCompletedDownloads,
 		FirstAndLast:             d.FirstAndLast,
 		SequentialOrder:          d.SequentialOrder,
+		Implementation:           types.StringValue(downloadClientQbittorrentImplementation),
+		ConfigContract:           types.StringValue(downloadClientQbittorrentConfigContract),
+		Protocol:                 types.StringValue(downloadClientQbittorrentProtocol),
 	}
 }
 
@@ -101,7 +101,6 @@ func (d *DownloadClientQbittorrent) fromDownloadClient(client *DownloadClient) {
 	d.Username = client.Username
 	d.Password = client.Password
 	d.MovieCategory = client.MovieCategory
-	d.MovieDirectory = client.MovieDirectory
 	d.RecentMoviePriority = client.RecentMoviePriority
 	d.OlderMoviePriority = client.OlderMoviePriority
 	d.Priority = client.Priority
@@ -238,11 +237,6 @@ func (r *DownloadClientQbittorrentResource) Schema(ctx context.Context, req reso
 				Optional:            true,
 				Computed:            true,
 			},
-			"movie_directory": schema.StringAttribute{
-				MarkdownDescription: "Movie directory.",
-				Optional:            true,
-				Computed:            true,
-			},
 		},
 	}
 }
@@ -356,35 +350,11 @@ func (r *DownloadClientQbittorrentResource) ImportState(ctx context.Context, req
 }
 
 func (d *DownloadClientQbittorrent) write(ctx context.Context, downloadClient *radarr.DownloadClientResource) {
-	genericDownloadClient := DownloadClient{
-		Enable:                   types.BoolValue(downloadClient.GetEnable()),
-		RemoveCompletedDownloads: types.BoolValue(downloadClient.GetRemoveCompletedDownloads()),
-		RemoveFailedDownloads:    types.BoolValue(downloadClient.GetRemoveFailedDownloads()),
-		Priority:                 types.Int64Value(int64(downloadClient.GetPriority())),
-		ID:                       types.Int64Value(int64(downloadClient.GetId())),
-		Name:                     types.StringValue(downloadClient.GetName()),
-	}
-	genericDownloadClient.Tags, _ = types.SetValueFrom(ctx, types.Int64Type, downloadClient.Tags)
-	genericDownloadClient.writeFields(ctx, downloadClient.GetFields())
-	d.fromDownloadClient(&genericDownloadClient)
+	genericDownloadClient := d.toDownloadClient()
+	genericDownloadClient.write(ctx, downloadClient)
+	d.fromDownloadClient(genericDownloadClient)
 }
 
 func (d *DownloadClientQbittorrent) read(ctx context.Context) *radarr.DownloadClientResource {
-	tags := make([]*int32, len(d.Tags.Elements()))
-	tfsdk.ValueAs(ctx, d.Tags, &tags)
-
-	client := radarr.NewDownloadClientResource()
-	client.SetEnable(d.Enable.ValueBool())
-	client.SetRemoveCompletedDownloads(d.RemoveCompletedDownloads.ValueBool())
-	client.SetRemoveFailedDownloads(d.RemoveFailedDownloads.ValueBool())
-	client.SetPriority(int32(d.Priority.ValueInt64()))
-	client.SetId(int32(d.ID.ValueInt64()))
-	client.SetConfigContract(downloadClientQbittorrentConfigContract)
-	client.SetImplementation(downloadClientQbittorrentImplementation)
-	client.SetName(d.Name.ValueString())
-	client.SetProtocol(downloadClientQbittorrentProtocol)
-	client.SetTags(tags)
-	client.SetFields(d.toDownloadClient().readFields(ctx))
-
-	return client
+	return d.toDownloadClient().read(ctx)
 }

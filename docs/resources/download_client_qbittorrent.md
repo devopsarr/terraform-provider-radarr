@@ -41,7 +41,6 @@ resource "radarr_download_client_qbittorrent" "example" {
 - `host` (String) host.
 - `initial_state` (Number) Initial state, with Stop support. `0` Start, `1` ForceStart, `2` Pause.
 - `movie_category` (String) Movie category.
-- `movie_directory` (String) Movie directory.
 - `movie_imported_category` (String) Movie imported category.
 - `older_movie_priority` (Number) Older Movie priority. `0` Last, `1` First.
 - `password` (String, Sensitive) Password.

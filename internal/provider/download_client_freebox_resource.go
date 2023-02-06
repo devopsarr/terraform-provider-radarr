@@ -13,7 +13,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -82,6 +81,9 @@ func (d DownloadClientFreebox) toDownloadClient() *DownloadClient {
 		Enable:                   d.Enable,
 		RemoveFailedDownloads:    d.RemoveFailedDownloads,
 		RemoveCompletedDownloads: d.RemoveCompletedDownloads,
+		Implementation:           types.StringValue(downloadClientFreeboxImplementation),
+		ConfigContract:           types.StringValue(downloadClientFreeboxConfigContract),
+		Protocol:                 types.StringValue(downloadClientFreeboxProtocol),
 	}
 }
 
@@ -322,36 +324,11 @@ func (r *DownloadClientFreeboxResource) ImportState(ctx context.Context, req res
 }
 
 func (d *DownloadClientFreebox) write(ctx context.Context, downloadClient *radarr.DownloadClientResource) {
-	genericDownloadClient := DownloadClient{
-		Enable:                   types.BoolValue(downloadClient.GetEnable()),
-		RemoveCompletedDownloads: types.BoolValue(downloadClient.GetRemoveCompletedDownloads()),
-		RemoveFailedDownloads:    types.BoolValue(downloadClient.GetRemoveFailedDownloads()),
-		Priority:                 types.Int64Value(int64(downloadClient.GetPriority())),
-		ID:                       types.Int64Value(int64(downloadClient.GetId())),
-		Name:                     types.StringValue(downloadClient.GetName()),
-		Tags:                     types.SetValueMust(types.Int64Type, nil),
-	}
-	tfsdk.ValueFrom(ctx, downloadClient.Tags, genericDownloadClient.Tags.Type(ctx), &genericDownloadClient.Tags)
-	genericDownloadClient.writeFields(ctx, downloadClient.GetFields())
-	d.fromDownloadClient(&genericDownloadClient)
+	genericDownloadClient := d.toDownloadClient()
+	genericDownloadClient.write(ctx, downloadClient)
+	d.fromDownloadClient(genericDownloadClient)
 }
 
 func (d *DownloadClientFreebox) read(ctx context.Context) *radarr.DownloadClientResource {
-	tags := make([]*int32, len(d.Tags.Elements()))
-	tfsdk.ValueAs(ctx, d.Tags, &tags)
-
-	client := radarr.NewDownloadClientResource()
-	client.SetEnable(d.Enable.ValueBool())
-	client.SetRemoveCompletedDownloads(d.RemoveCompletedDownloads.ValueBool())
-	client.SetRemoveFailedDownloads(d.RemoveFailedDownloads.ValueBool())
-	client.SetPriority(int32(d.Priority.ValueInt64()))
-	client.SetId(int32(d.ID.ValueInt64()))
-	client.SetConfigContract(downloadClientFreeboxConfigContract)
-	client.SetImplementation(downloadClientFreeboxImplementation)
-	client.SetName(d.Name.ValueString())
-	client.SetProtocol(downloadClientFreeboxProtocol)
-	client.SetTags(tags)
-	client.SetFields(d.toDownloadClient().readFields(ctx))
-
-	return client
+	return d.toDownloadClient().read(ctx)
 }
