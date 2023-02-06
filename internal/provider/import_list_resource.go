@@ -29,7 +29,7 @@ var (
 
 var (
 	importListBoolFields     = []string{"onlyActive", "personCast", "personCastDirector", "personCastProducer", "personCastSound", "personCastWriting"}
-	importListIntFields      = []string{"port", "source", "minScore", "tMDbListType", "listType", "limit", "traktListType", "languageCode"}
+	importListIntFields      = []string{"port", "source", "minScore", "tMDbListType", "limit", "traktListType", "languageCode", "userListType"}
 	importListStringFields   = []string{"baseUrl", "urlBase", "link", "apiKey", "url", "accessToken", "refreshToken", "expires", "companyId", "keywordId", "listId", "personId", "accountId", "authUser", "username", "listname", "traktAdditionalParameters", "tmdbCertification", "genres", "years", "rating", "minVoteAverage", "minVotes", "certification", "includeGenreIds", "excludeGenreIds"}
 	importListIntSliceFields = []string{"profileIds", "tagIds"}
 )
@@ -545,10 +545,6 @@ func (i *ImportList) write(ctx context.Context, importList *radarr.ImportListRes
 
 func (i *ImportList) writeFields(ctx context.Context, fields []*radarr.Field) {
 	for _, f := range fields {
-		if f.Value == nil {
-			continue
-		}
-
 		if slices.Contains(importListBoolFields, f.GetName()) {
 			helpers.WriteBoolField(f, i)
 
@@ -561,7 +557,7 @@ func (i *ImportList) writeFields(ctx context.Context, fields []*radarr.Field) {
 			continue
 		}
 
-		if slices.Contains(importListIntFields, f.GetName()) || f.GetName() == "filterCriteria.languageCode" {
+		if slices.Contains(importListIntFields, f.GetName()) || f.GetName() == "filterCriteria.languageCode" || f.GetName() == "listType" {
 			helpers.WriteIntField(f, i)
 
 			continue
