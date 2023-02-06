@@ -406,10 +406,6 @@ func (i *Indexer) write(ctx context.Context, indexer *radarr.IndexerResource) {
 
 func (i *Indexer) writeFields(ctx context.Context, fields []*radarr.Field) {
 	for _, f := range fields {
-		if f.Value == nil {
-			continue
-		}
-
 		if slices.Contains(indexerStringFields, f.GetName()) {
 			helpers.WriteStringField(f, i)
 
