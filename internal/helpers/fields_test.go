@@ -22,19 +22,23 @@ type Test struct {
 func TestWriteStringField(t *testing.T) {
 	t.Parallel()
 
-	field := radarr.NewField()
-	field.SetName("str")
-	field.SetValue("string")
+	value := "string"
 
 	tests := map[string]struct {
 		fieldOutput radarr.Field
+		value       *string
 		written     Test
 		expected    Test
 	}{
 		"working": {
-			fieldOutput: *field,
-			written:     Test{},
-			expected:    Test{Str: types.StringValue("string")},
+			value:    &value,
+			written:  Test{},
+			expected: Test{Str: types.StringValue(value)},
+		},
+		"nil": {
+			value:    nil,
+			written:  Test{},
+			expected: Test{Str: types.StringNull()},
 		},
 	}
 	for name, test := range tests {
@@ -42,7 +46,12 @@ func TestWriteStringField(t *testing.T) {
 
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			WriteStringField(&test.fieldOutput, &test.written)
+			field := radarr.NewField()
+			field.SetName("str")
+			if test.value != nil {
+				field.SetValue(*test.value)
+			}
+			WriteStringField(field, &test.written)
 			assert.Equal(t, test.expected, test.written)
 		})
 	}
@@ -51,19 +60,22 @@ func TestWriteStringField(t *testing.T) {
 func TestWriteBoolField(t *testing.T) {
 	t.Parallel()
 
-	field := radarr.NewField()
-	field.SetName("boo")
-	field.SetValue(true)
+	value := true
 
 	tests := map[string]struct {
-		fieldOutput radarr.Field
-		written     Test
-		expected    Test
+		value    *bool
+		written  Test
+		expected Test
 	}{
 		"working": {
-			fieldOutput: *field,
-			written:     Test{},
-			expected:    Test{Boo: types.BoolValue(true)},
+			value:    &value,
+			written:  Test{},
+			expected: Test{Boo: types.BoolValue(value)},
+		},
+		"nil": {
+			value:    nil,
+			written:  Test{},
+			expected: Test{Boo: types.BoolNull()},
 		},
 	}
 	for name, test := range tests {
@@ -71,7 +83,12 @@ func TestWriteBoolField(t *testing.T) {
 
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			WriteBoolField(&test.fieldOutput, &test.written)
+			field := radarr.NewField()
+			field.SetName("boo")
+			if test.value != nil {
+				field.SetValue(*test.value)
+			}
+			WriteBoolField(field, &test.written)
 			assert.Equal(t, test.expected, test.written)
 		})
 	}
@@ -80,34 +97,44 @@ func TestWriteBoolField(t *testing.T) {
 func TestWriteIntField(t *testing.T) {
 	t.Parallel()
 
+	value := float64(50)
+
 	tests := map[string]struct {
+		// use float to simulate unmarshal response
+		value    *float64
 		name     string
 		written  Test
 		expected Test
-		// use float to simulate unmarshal response
-		value float64
 	}{
 		"working": {
 			name:     "in",
-			value:    float64(50),
+			value:    &value,
 			written:  Test{},
 			expected: Test{In: types.Int64Value(50)},
 		},
 		"seedtime": {
 			name:     "seedCriteria.seedTime",
-			value:    float64(50),
+			value:    &value,
 			written:  Test{},
 			expected: Test{SeedTime: types.Int64Value(50)},
+		},
+		"nil": {
+			name:     "in",
+			value:    nil,
+			written:  Test{},
+			expected: Test{In: types.Int64Null()},
 		},
 	}
 	for name, test := range tests {
 		test := test
 
-		field := radarr.NewField()
-		field.SetName(test.name)
-		field.SetValue(test.value)
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
+			field := radarr.NewField()
+			field.SetName(test.name)
+			if test.value != nil {
+				field.SetValue(*test.value)
+			}
 			WriteIntField(field, &test.written)
 			assert.Equal(t, test.expected, test.written)
 		})
@@ -117,27 +144,31 @@ func TestWriteIntField(t *testing.T) {
 func TestWriteFloatField(t *testing.T) {
 	t.Parallel()
 
-	field := radarr.NewField()
-	field.SetName("fl")
-	field.SetValue(float64(3.5))
+	value := float64(3.5)
 
 	tests := map[string]struct {
-		fieldOutput radarr.Field
-		written     Test
-		expected    Test
+		value    *float64
+		written  Test
+		expected Test
 	}{
 		"working": {
-			fieldOutput: *field,
-			written:     Test{},
-			expected:    Test{Fl: types.Float64Value(3.5)},
+			value:    &value,
+			written:  Test{},
+			expected: Test{Fl: types.Float64Value(value)},
 		},
+		"nil": {},
 	}
 	for name, test := range tests {
 		test := test
 
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			WriteFloatField(&test.fieldOutput, &test.written)
+			field := radarr.NewField()
+			field.SetName("fl")
+			if test.value != nil {
+				field.SetValue(*test.value)
+			}
+			WriteFloatField(field, &test.written)
 			assert.Equal(t, test.expected, test.written)
 		})
 	}

@@ -116,28 +116,48 @@ func setField(name string, value interface{}) *radarr.Field {
 // WriteStringField writes a radarr string field into struct field.
 func WriteStringField(fieldOutput *radarr.Field, fieldCase interface{}) {
 	stringValue := fmt.Sprint(fieldOutput.GetValue())
+
 	v := reflect.ValueOf(types.StringValue(stringValue))
+	if fieldOutput.GetValue() == nil {
+		v = reflect.ValueOf(types.StringNull())
+	}
+
 	selectWriteField(fieldOutput, fieldCase).Set(v)
 }
 
 // WriteBoolField writes a radarr bool field into struct field.
 func WriteBoolField(fieldOutput *radarr.Field, fieldCase interface{}) {
 	boolValue, _ := fieldOutput.GetValue().(bool)
+
 	v := reflect.ValueOf(types.BoolValue(boolValue))
+	if fieldOutput.GetValue() == nil {
+		v = reflect.ValueOf(types.BoolNull())
+	}
+
 	selectWriteField(fieldOutput, fieldCase).Set(v)
 }
 
 // WriteIntField writes a radarr int field into struct field.
 func WriteIntField(fieldOutput *radarr.Field, fieldCase interface{}) {
 	intValue, _ := fieldOutput.GetValue().(float64)
+
 	v := reflect.ValueOf(types.Int64Value(int64(intValue)))
+	if fieldOutput.GetValue() == nil {
+		v = reflect.ValueOf(types.Int64Null())
+	}
+
 	selectWriteField(fieldOutput, fieldCase).Set(v)
 }
 
 // WriteFloatField writes a radarr float field into struct field.
 func WriteFloatField(fieldOutput *radarr.Field, fieldCase interface{}) {
 	floatValue, _ := fieldOutput.GetValue().(float64)
+
 	v := reflect.ValueOf(types.Float64Value(floatValue))
+	if fieldOutput.GetValue() == nil {
+		v = reflect.ValueOf(types.Float64Null())
+	}
+
 	selectWriteField(fieldOutput, fieldCase).Set(v)
 }
 
