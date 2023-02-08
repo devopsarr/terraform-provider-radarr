@@ -15,17 +15,22 @@ func TestAccRestrictionDataSource(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
-			// Read testing
+			// Unauthorized
 			{
-				Config: testAccRestrictionDataSourceConfig("radarr_restriction.test.id"),
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrSet("data.radarr_restriction.test", "id"),
-					resource.TestCheckResourceAttr("data.radarr_restriction.test", "ignored", "datatest1")),
+				Config:      testAccRestrictionDataSourceConfig("999") + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("Client Error"),
 			},
 			// Not found testing
 			{
 				Config:      testAccRestrictionDataSourceConfig("999"),
 				ExpectError: regexp.MustCompile("Unable to find restriction"),
+			},
+			// Read testing
+			{
+				Config: testAccRestrictionResourceConfig("datatest1", "datatest2") + testAccRestrictionDataSourceConfig("radarr_restriction.test.id"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet("data.radarr_restriction.test", "id"),
+					resource.TestCheckResourceAttr("data.radarr_restriction.test", "ignored", "datatest1")),
 			},
 		},
 	})
@@ -33,11 +38,6 @@ func TestAccRestrictionDataSource(t *testing.T) {
 
 func testAccRestrictionDataSourceConfig(id string) string {
 	return fmt.Sprintf(`
-	resource "radarr_restriction" "test" {
-		ignored = "datatest1"
-		required = "datatest2"
-	}
-	
 	data "radarr_restriction" "test" {
 		id = %s
 	}

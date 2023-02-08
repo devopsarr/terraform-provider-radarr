@@ -15,18 +15,27 @@ func TestAccTagDataSource(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
+			// Unauthorized
+			{
+				Config:      testAccTagDataSourceConfig("error") + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("Client Error"),
+			},
+			// Not found testing
+			{
+				Config:      testAccTagDataSourceConfig("error"),
+				ExpectError: regexp.MustCompile("Unable to find tag"),
+			},
+			// Create a resource be read
+			{
+				Config: testAccTagResourceConfig("test", "tag_datasource"),
+			},
 			// Read testing
 			{
-				Config: testAccTagDataSourceConfig("radarr_tag.test.label"),
+				Config: testAccTagResourceConfig("test", "tag_datasource") + testAccTagDataSourceConfig("tag_datasource"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.radarr_tag.test", "id"),
 					resource.TestCheckResourceAttr("data.radarr_tag.test", "label", "tag_datasource"),
 				),
-			},
-			// Not found testing
-			{
-				Config:      testAccTagDataSourceConfig("\"error\""),
-				ExpectError: regexp.MustCompile("Unable to find tag"),
 			},
 		},
 	})
@@ -34,12 +43,8 @@ func TestAccTagDataSource(t *testing.T) {
 
 func testAccTagDataSourceConfig(label string) string {
 	return fmt.Sprintf(`
-	resource "radarr_tag" "test" {
-		label = "tag_datasource"
-	}
-	
 	data "radarr_tag" "test" {
-		label = %s
+		label = "%s"
 	}
 	`, label)
 }

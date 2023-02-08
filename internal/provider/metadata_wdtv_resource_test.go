@@ -2,6 +2,7 @@ package provider
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -14,6 +15,11 @@ func TestAccMetadataWdtvResource(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
+			// Unauthorized Create
+			{
+				Config:      testAccMetadataWdtvResourceConfig("error", "false") + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("Client Error"),
+			},
 			// Create and Read testing
 			{
 				Config: testAccMetadataWdtvResourceConfig("wdtvResourceTest", "false"),
@@ -21,6 +27,11 @@ func TestAccMetadataWdtvResource(t *testing.T) {
 					resource.TestCheckResourceAttr("radarr_metadata_wdtv.test", "movie_metadata", "false"),
 					resource.TestCheckResourceAttrSet("radarr_metadata_wdtv.test", "id"),
 				),
+			},
+			// Unauthorized Read
+			{
+				Config:      testAccMetadataWdtvResourceConfig("error", "false") + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("Client Error"),
 			},
 			// Update and Read testing
 			{

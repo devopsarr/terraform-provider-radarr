@@ -15,17 +15,22 @@ func TestAccIndexerDataSource(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
-			// Read testing
+			// Unauthorized
 			{
-				Config: testAccIndexerDataSourceConfig("radarr_indexer.test.name"),
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrSet("data.radarr_indexer.test", "id"),
-					resource.TestCheckResourceAttr("data.radarr_indexer.test", "protocol", "usenet")),
+				Config:      testAccIndexerDataSourceConfig("\"Error\"") + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("Client Error"),
 			},
 			// Not found testing
 			{
 				Config:      testAccIndexerDataSourceConfig("\"Error\""),
 				ExpectError: regexp.MustCompile("Unable to find indexer"),
+			},
+			// Read testing
+			{
+				Config: testAccIndexerResourceConfig("indexerdata", "30") + testAccIndexerDataSourceConfig("radarr_indexer.test.name"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet("data.radarr_indexer.test", "id"),
+					resource.TestCheckResourceAttr("data.radarr_indexer.test", "protocol", "usenet")),
 			},
 		},
 	})
@@ -33,17 +38,6 @@ func TestAccIndexerDataSource(t *testing.T) {
 
 func testAccIndexerDataSourceConfig(name string) string {
 	return fmt.Sprintf(`
-	resource "radarr_indexer" "test" {
-		enable_automatic_search = false
-		name = "indexerdata"
-		implementation = "Newznab"
-		protocol = "usenet"
-		config_contract = "NewznabSettings"
-		base_url = "https://lolo.sickbeard.com"
-		api_path = "/api"
-		categories = [5030, 5040]
-	}
-	
 	data "radarr_indexer" "test" {
 		name = %s
 	}

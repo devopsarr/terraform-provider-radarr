@@ -15,17 +15,22 @@ func TestAccQualityProfileDataSource(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
+			// Unauthorized
+			{
+				Config:      testAccQualityProfileDataSourceConfig("Error") + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("Client Error"),
+			},
+			// Not found testing
+			{
+				Config:      testAccQualityProfileDataSourceConfig("Error"),
+				ExpectError: regexp.MustCompile("Unable to find quality_profile"),
+			},
 			// Read testing
 			{
 				Config: testAccQualityProfileDataSourceConfig("Any"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.radarr_quality_profile.test", "id"),
 					resource.TestCheckResourceAttr("data.radarr_quality_profile.test", "language.id", "1")),
-			},
-			// Not found testing
-			{
-				Config:      testAccQualityProfileDataSourceConfig("Error"),
-				ExpectError: regexp.MustCompile("Unable to find quality_profile"),
 			},
 		},
 	})

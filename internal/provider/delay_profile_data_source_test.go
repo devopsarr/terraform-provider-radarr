@@ -15,17 +15,22 @@ func TestAccDelayProfileDataSource(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
+			// Unauthorized
+			{
+				Config:      testAccDelayProfileDataSourceConfig(999) + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("Client Error"),
+			},
+			// Not found testing
+			{
+				Config:      testAccDelayProfileDataSourceConfig(999),
+				ExpectError: regexp.MustCompile("Unable to find delay_profile"),
+			},
 			// Read testing
 			{
 				Config: testAccDelayProfileDataSourceConfig(1),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.radarr_delay_profile.test", "id"),
 					resource.TestCheckResourceAttr("data.radarr_delay_profile.test", "enable_usenet", "true")),
-			},
-			// Not found testing
-			{
-				Config:      testAccDelayProfileDataSourceConfig(999),
-				ExpectError: regexp.MustCompile("Unable to find delay_profile"),
 			},
 		},
 	})

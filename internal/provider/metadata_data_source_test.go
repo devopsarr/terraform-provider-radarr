@@ -15,17 +15,22 @@ func TestAccMetadataDataSource(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
-			// Read testing
+			// Unauthorized
 			{
-				Config: testAccMetadataDataSourceConfig("radarr_metadata.test.name"),
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrSet("data.radarr_metadata.test", "id"),
-					resource.TestCheckResourceAttr("data.radarr_metadata.test", "movie_metadata", "false")),
+				Config:      testAccMetadataDataSourceConfig("\"Error\"") + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("Client Error"),
 			},
 			// Not found testing
 			{
 				Config:      testAccMetadataDataSourceConfig("\"Error\""),
 				ExpectError: regexp.MustCompile("Unable to find metadata"),
+			},
+			// Read testing
+			{
+				Config: testAccMetadataResourceConfig("metadataData", "false") + testAccMetadataDataSourceConfig("radarr_metadata.test.name"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet("data.radarr_metadata.test", "id"),
+					resource.TestCheckResourceAttr("data.radarr_metadata.test", "movie_metadata", "false")),
 			},
 		},
 	})
@@ -33,14 +38,6 @@ func TestAccMetadataDataSource(t *testing.T) {
 
 func testAccMetadataDataSourceConfig(name string) string {
 	return fmt.Sprintf(`
-	resource "radarr_metadata" "test" {
-		enable = true
-		name = "metadataData"
-		implementation = "MediaBrowserMetadata"
-		config_contract = "MediaBrowserMetadataSettings"
-		movie_metadata = false
-	}
-	
 	data "radarr_metadata" "test" {
 		name = %s
 	}

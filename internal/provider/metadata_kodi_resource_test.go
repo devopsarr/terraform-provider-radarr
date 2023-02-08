@@ -2,6 +2,7 @@ package provider
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -14,6 +15,11 @@ func TestAccMetadataKodiResource(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
+			// Unauthorized Create
+			{
+				Config:      testAccMetadataKodiResourceConfig("error", "false") + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("Client Error"),
+			},
 			// Create and Read testing
 			{
 				Config: testAccMetadataKodiResourceConfig("kodiResourceTest", "false"),
@@ -21,6 +27,11 @@ func TestAccMetadataKodiResource(t *testing.T) {
 					resource.TestCheckResourceAttr("radarr_metadata_kodi.test", "movie_metadata", "false"),
 					resource.TestCheckResourceAttrSet("radarr_metadata_kodi.test", "id"),
 				),
+			},
+			// Unauthorized Read
+			{
+				Config:      testAccMetadataKodiResourceConfig("error", "false") + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("Client Error"),
 			},
 			// Update and Read testing
 			{

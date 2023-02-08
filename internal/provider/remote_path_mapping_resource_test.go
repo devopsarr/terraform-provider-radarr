@@ -2,6 +2,7 @@ package provider
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -14,9 +15,10 @@ func TestAccRemotePathMappingResource(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
-			// Create a DownloadClient to have a value to check
+			// Unauthorized Create
 			{
-				Config: testAccDownloadClientResourceConfig("remotemapResourceTest", "false"),
+				Config:      testAccRemotePathMappingResourceConfig("remotemapResourceTest", "/error/") + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("Client Error"),
 			},
 			// Create and Read testing
 			{
@@ -25,6 +27,11 @@ func TestAccRemotePathMappingResource(t *testing.T) {
 					resource.TestCheckResourceAttr("radarr_remote_path_mapping.test", "remote_path", "/test1/"),
 					resource.TestCheckResourceAttrSet("radarr_remote_path_mapping.test", "id"),
 				),
+			},
+			// Unauthorized Read
+			{
+				Config:      testAccRemotePathMappingResourceConfig("remotemapResourceTest", "/error/") + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("Client Error"),
 			},
 			// Update and Read testing
 			{

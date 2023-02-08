@@ -36,3 +36,10 @@ func testAccAPIClient() *radarr.APIClient {
 
 	return radarr.NewAPIClient(config)
 }
+
+const testUnauthorizedProvider = `
+provider "radarr" {
+	url = "http://localhost:7878"
+	api_key = "ErrorAPIKey"
+  }
+`

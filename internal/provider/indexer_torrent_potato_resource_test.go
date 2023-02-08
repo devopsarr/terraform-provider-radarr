@@ -2,6 +2,7 @@ package provider
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -14,6 +15,11 @@ func TestAccIndexerTorrentPotatoResource(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
+			// Unauthorized Create
+			{
+				Config:      testAccIndexerTorrentPotatoResourceConfig("error", 1) + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("Client Error"),
+			},
 			// Create and Read testing
 			{
 				Config: testAccIndexerTorrentPotatoResourceConfig("torrentPotatoResourceTest", 1),
@@ -21,6 +27,11 @@ func TestAccIndexerTorrentPotatoResource(t *testing.T) {
 					resource.TestCheckResourceAttr("radarr_indexer_torrent_potato.test", "minimum_seeders", "1"),
 					resource.TestCheckResourceAttrSet("radarr_indexer_torrent_potato.test", "id"),
 				),
+			},
+			// Unauthorized Read
+			{
+				Config:      testAccIndexerTorrentPotatoResourceConfig("error", 1) + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("Client Error"),
 			},
 			// Update and Read testing
 			{
