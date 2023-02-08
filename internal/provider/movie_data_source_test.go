@@ -1,6 +1,8 @@
 package provider
 
 import (
+	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -14,26 +16,33 @@ func TestAccMovieDataSource(t *testing.T) {
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccMovieDataSourceConfig,
+				Config: testAccMovieDataSourceConfig("radarr_movie.test.tmdb_id"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.radarr_movie.test", "id"),
 					resource.TestCheckResourceAttr("data.radarr_movie.test", "title", "Pulp Fiction"),
 				),
 			},
+			// Not found testing
+			{
+				Config:      testAccMovieDataSourceConfig("999"),
+				ExpectError: regexp.MustCompile("Unable to find movie"),
+			},
 		},
 	})
 }
 
-const testAccMovieDataSourceConfig = `
-resource "radarr_movie" "test" {
-	monitored = false
-	title = "Pulp Fiction"
-	path = "/config/Pulp_Fiction_2994"
-	quality_profile_id = 1
-	tmdb_id = 680
+func testAccMovieDataSourceConfig(id string) string {
+	return fmt.Sprintf(`
+	resource "radarr_movie" "test" {
+		monitored = false
+		title = "Pulp Fiction"
+		path = "/config/Pulp_Fiction_2994"
+		quality_profile_id = 1
+		tmdb_id = 680
+	}
+	
+	data "radarr_movie" "test" {
+		tmdb_id = %s
+	}
+	`, id)
 }
-
-data "radarr_movie" "test" {
-	tmdb_id = radarr_movie.test.tmdb_id
-}
-`

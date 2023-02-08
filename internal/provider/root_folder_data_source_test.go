@@ -2,6 +2,8 @@ package provider
 
 import (
 	"context"
+	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/devopsarr/radarr-go/radarr"
@@ -18,20 +20,27 @@ func TestAccRootFolderDataSource(t *testing.T) {
 			// Read testing
 			{
 				PreConfig: rootFolderDSInit,
-				Config:    testAccRootFolderDataSourceConfig,
+				Config:    testAccRootFolderDataSourceConfig("/config"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.radarr_root_folder.test", "id"),
 					resource.TestCheckResourceAttr("data.radarr_root_folder.test", "path", "/config")),
+			},
+			// Not found testing
+			{
+				Config:      testAccRootFolderDataSourceConfig("/error"),
+				ExpectError: regexp.MustCompile("Unable to find root_folder"),
 			},
 		},
 	})
 }
 
-const testAccRootFolderDataSourceConfig = `
-data "radarr_root_folder" "test" {
-	path = "/config"
+func testAccRootFolderDataSourceConfig(path string) string {
+	return fmt.Sprintf(`
+	data "radarr_root_folder" "test" {
+  			path = "%s"
+		}
+	`, path)
 }
-`
 
 func rootFolderDSInit() {
 	// ensure a /config root path is configured

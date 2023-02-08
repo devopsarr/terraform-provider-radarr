@@ -1,6 +1,8 @@
 package provider
 
 import (
+	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -15,17 +17,24 @@ func TestAccQualityDefinitionDataSource(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Read testing
 			{
-				Config: testAccQualityDefinitionDataSourceConfig,
+				Config: testAccQualityDefinitionDataSourceConfig(21),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.radarr_quality_definition.test", "title"),
 					resource.TestCheckResourceAttr("data.radarr_quality_definition.test", "id", "21")),
+			},
+			// Not found testing
+			{
+				Config:      testAccQualityDefinitionDataSourceConfig(999),
+				ExpectError: regexp.MustCompile("Unable to find quality_definition"),
 			},
 		},
 	})
 }
 
-const testAccQualityDefinitionDataSourceConfig = `
-data "radarr_quality_definition" "test" {
-	id = 21
+func testAccQualityDefinitionDataSourceConfig(id int) string {
+	return fmt.Sprintf(`
+	data "radarr_quality_definition" "test" {
+		id = %d
+	}
+	`, id)
 }
-`

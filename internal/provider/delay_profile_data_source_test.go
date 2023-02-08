@@ -1,6 +1,8 @@
 package provider
 
 import (
+	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -15,17 +17,24 @@ func TestAccDelayProfileDataSource(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Read testing
 			{
-				Config: testAccDelayProfileDataSourceConfig,
+				Config: testAccDelayProfileDataSourceConfig(1),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.radarr_delay_profile.test", "id"),
 					resource.TestCheckResourceAttr("data.radarr_delay_profile.test", "enable_usenet", "true")),
+			},
+			// Not found testing
+			{
+				Config:      testAccDelayProfileDataSourceConfig(999),
+				ExpectError: regexp.MustCompile("Unable to find delay_profile"),
 			},
 		},
 	})
 }
 
-const testAccDelayProfileDataSourceConfig = `
-data "radarr_delay_profile" "test" {
-	id = 1
+func testAccDelayProfileDataSourceConfig(id int) string {
+	return fmt.Sprintf(`
+	data "radarr_delay_profile" "test" {
+		id = %d
+	}
+	`, id)
 }
-`
