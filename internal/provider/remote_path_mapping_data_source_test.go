@@ -1,6 +1,8 @@
 package provider
 
 import (
+	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -15,35 +17,30 @@ func TestAccRemotePathMappingDataSource(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Read testing
 			{
-				Config: testAccRemotePathMappingDataSourceConfig,
+				Config: testAccRemotePathMappingDataSourceConfig("radarr_remote_path_mapping.test.id"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.radarr_remote_path_mapping.test", "id"),
 					resource.TestCheckResourceAttr("data.radarr_remote_path_mapping.test", "host", "transmission")),
+			},
+			// Not found testing
+			{
+				Config:      testAccRemotePathMappingDataSourceConfig("999"),
+				ExpectError: regexp.MustCompile("Unable to find remote_path_mapping"),
 			},
 		},
 	})
 }
 
-const testAccRemotePathMappingDataSourceConfig = `
-resource "radarr_download_client" "test" {
-	enable = false
-	priority = 1
-	name = "remotepatdstest"
-	implementation = "Transmission"
-	protocol = "torrent"
-	config_contract = "TransmissionSettings"
-	host = "transmission"
-	url_base = "/transmission/"
-	port = 9091
+func testAccRemotePathMappingDataSourceConfig(id string) string {
+	return fmt.Sprintf(`
+	resource "radarr_remote_path_mapping" "test" {
+		host = "transmission"
+		remote_path = "/datatest/"
+		local_path = "/config/"
+	}
+	
+	data "radarr_remote_path_mapping" "test" {
+		id = %s
+	}
+	`, id)
 }
-
-resource "radarr_remote_path_mapping" "test" {
-	host = "transmission"
-	remote_path = "/datatest/"
-	local_path = "/config/"
-}
-
-data "radarr_remote_path_mapping" "test" {
-	id = radarr_remote_path_mapping.test.id
-}
-`

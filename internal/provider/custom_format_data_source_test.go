@@ -1,6 +1,8 @@
 package provider
 
 import (
+	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -15,39 +17,46 @@ func TestAccCustomFormatDataSource(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Read testing
 			{
-				Config: testAccCustomFormatDataSourceConfig,
+				Config: testAccCustomFormatDataSourceConfig("radarr_custom_format.test.name"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.radarr_custom_format.test", "id"),
 					resource.TestCheckResourceAttr("data.radarr_custom_format.test", "include_custom_format_when_renaming", "false")),
+			},
+			// Not found testing
+			{
+				Config:      testAccCustomFormatDataSourceConfig("\"Error\""),
+				ExpectError: regexp.MustCompile("Unable to find custom_format"),
 			},
 		},
 	})
 }
 
-const testAccCustomFormatDataSourceConfig = `
-resource "radarr_custom_format" "test" {
-	include_custom_format_when_renaming = false
-	name = "dataTest"
+func testAccCustomFormatDataSourceConfig(name string) string {
+	return fmt.Sprintf(`
+	resource "radarr_custom_format" "test" {
+		include_custom_format_when_renaming = false
+		name = "dataTest"
+		
+		specifications = [
+			{
+				name = "Surround Sound"
+				implementation = "ReleaseTitleSpecification"
+				negate = false
+				required = false
+				value = "DTS.?(HD|ES|X(?!\\D))|TRUEHD|ATMOS|DD(\\+|P).?([5-9])|EAC3.?([5-9])"
+			},
+			{
+				name = "Arabic"
+				implementation = "LanguageSpecification"
+				negate = false
+				required = false
+				value = "31"
+			}
+		]	
+	}
 	
-	specifications = [
-		{
-			name = "Surround Sound"
-			implementation = "ReleaseTitleSpecification"
-			negate = false
-			required = false
-			value = "DTS.?(HD|ES|X(?!\\D))|TRUEHD|ATMOS|DD(\\+|P).?([5-9])|EAC3.?([5-9])"
-		},
-		{
-			name = "Arabic"
-			implementation = "LanguageSpecification"
-			negate = false
-			required = false
-			value = "31"
-		}
-	]	
+	data "radarr_custom_format" "test" {
+		name = %s
+	}
+	`, name)
 }
-
-data "radarr_custom_format" "test" {
-	name = radarr_custom_format.test.name
-}
-`
