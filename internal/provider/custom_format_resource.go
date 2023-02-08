@@ -244,7 +244,7 @@ func (c *CustomFormat) write(ctx context.Context, customFormat *radarr.CustomFor
 
 	specs := make([]CustomFormatCondition, len(customFormat.Specifications))
 	for n, s := range customFormat.Specifications {
-		specs[n].write(s)
+		specs[n].write(ctx, s)
 	}
 
 	tfsdk.ValueFrom(ctx, specs, c.Specifications.Type(ctx), &c.Specifications)
@@ -256,7 +256,7 @@ func (c *CustomFormat) read(ctx context.Context) *radarr.CustomFormatResource {
 	specs := make([]*radarr.CustomFormatSpecificationSchema, len(specifications))
 
 	for n, s := range specifications {
-		specs[n] = s.read()
+		specs[n] = s.read(ctx)
 	}
 
 	format := radarr.NewCustomFormatResource()
