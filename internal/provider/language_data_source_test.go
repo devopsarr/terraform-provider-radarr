@@ -15,17 +15,23 @@ func TestAccLanguageDataSource(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
+			// Unauthorized
+			{
+				Config:      testAccLanguageDataSourceConfig("Error") + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("Client Error"),
+			},
+			// Not found testing
+			{
+				Config:      testAccLanguageDataSourceConfig("Error"),
+				ExpectError: regexp.MustCompile("Unable to find language"),
+			},
+			// Read testing
 			{
 				Config: testAccLanguageDataSourceConfig("English"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.radarr_language.test", "id"),
 					resource.TestCheckResourceAttr("data.radarr_language.test", "name_lower", "english"),
 				),
-			},
-			// Not found testing
-			{
-				Config:      testAccLanguageDataSourceConfig("Error"),
-				ExpectError: regexp.MustCompile("Unable to find language"),
 			},
 		},
 	})

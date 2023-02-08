@@ -17,6 +17,16 @@ func TestAccRootFolderDataSource(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
+			// Unauthorized
+			{
+				Config:      testAccRootFolderDataSourceConfig("/error") + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("Client Error"),
+			},
+			// Not found testing
+			{
+				Config:      testAccRootFolderDataSourceConfig("/error"),
+				ExpectError: regexp.MustCompile("Unable to find root_folder"),
+			},
 			// Read testing
 			{
 				PreConfig: rootFolderDSInit,
@@ -24,11 +34,6 @@ func TestAccRootFolderDataSource(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.radarr_root_folder.test", "id"),
 					resource.TestCheckResourceAttr("data.radarr_root_folder.test", "path", "/config")),
-			},
-			// Not found testing
-			{
-				Config:      testAccRootFolderDataSourceConfig("/error"),
-				ExpectError: regexp.MustCompile("Unable to find root_folder"),
 			},
 		},
 	})

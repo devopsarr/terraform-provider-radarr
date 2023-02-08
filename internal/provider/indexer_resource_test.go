@@ -2,6 +2,7 @@ package provider
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -14,6 +15,11 @@ func TestAccIndexerResource(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
+			// Unauthorized Create
+			{
+				Config:      testAccIndexerResourceConfig("error", "25") + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("Client Error"),
+			},
 			// Create and Read testing
 			{
 				Config: testAccIndexerResourceConfig("resourceTest", "25"),
@@ -22,6 +28,11 @@ func TestAccIndexerResource(t *testing.T) {
 					resource.TestCheckResourceAttr("radarr_indexer.test", "base_url", "https://lolo.sickbeard.com"),
 					resource.TestCheckResourceAttrSet("radarr_indexer.test", "id"),
 				),
+			},
+			// Unauthorized Read
+			{
+				Config:      testAccIndexerResourceConfig("error", "25") + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("Client Error"),
 			},
 			// Update and Read testing
 			{

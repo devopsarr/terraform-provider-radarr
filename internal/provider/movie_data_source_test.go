@@ -15,17 +15,23 @@ func TestAccMovieDataSource(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
+			// Unauthorized
 			{
-				Config: testAccMovieDataSourceConfig("radarr_movie.test.tmdb_id"),
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrSet("data.radarr_movie.test", "id"),
-					resource.TestCheckResourceAttr("data.radarr_movie.test", "title", "Pulp Fiction"),
-				),
+				Config:      testAccMovieDataSourceConfig("999") + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("Client Error"),
 			},
 			// Not found testing
 			{
 				Config:      testAccMovieDataSourceConfig("999"),
 				ExpectError: regexp.MustCompile("Unable to find movie"),
+			},
+			// Read testing
+			{
+				Config: testAccMovieResourceConfig("Pulp Fiction", "Pulp_Fiction_1994", 680) + testAccMovieDataSourceConfig("radarr_movie.test.tmdb_id"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet("data.radarr_movie.test", "id"),
+					resource.TestCheckResourceAttr("data.radarr_movie.test", "title", "Pulp Fiction"),
+				),
 			},
 		},
 	})
@@ -33,14 +39,6 @@ func TestAccMovieDataSource(t *testing.T) {
 
 func testAccMovieDataSourceConfig(id string) string {
 	return fmt.Sprintf(`
-	resource "radarr_movie" "test" {
-		monitored = false
-		title = "Pulp Fiction"
-		path = "/config/Pulp_Fiction_2994"
-		quality_profile_id = 1
-		tmdb_id = 680
-	}
-	
 	data "radarr_movie" "test" {
 		tmdb_id = %s
 	}
