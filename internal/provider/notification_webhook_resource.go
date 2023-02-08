@@ -13,7 +13,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -81,6 +80,8 @@ func (n NotificationWebhook) toNotification() *Notification {
 		OnRename:                    n.OnRename,
 		OnUpgrade:                   n.OnUpgrade,
 		OnDownload:                  n.OnDownload,
+		ConfigContract:              types.StringValue(notificationWebhookConfigContract),
+		Implementation:              types.StringValue(notificationWebhookImplementation),
 	}
 }
 
@@ -319,49 +320,11 @@ func (r *NotificationWebhookResource) ImportState(ctx context.Context, req resou
 }
 
 func (n *NotificationWebhook) write(ctx context.Context, notification *radarr.NotificationResource) {
-	genericNotification := Notification{
-		OnGrab:                      types.BoolValue(notification.GetOnGrab()),
-		OnDownload:                  types.BoolValue(notification.GetOnDownload()),
-		OnUpgrade:                   types.BoolValue(notification.GetOnUpgrade()),
-		OnRename:                    types.BoolValue(notification.GetOnRename()),
-		OnMovieAdded:                types.BoolValue(notification.GetOnMovieAdded()),
-		OnMovieDelete:               types.BoolValue(notification.GetOnMovieDelete()),
-		OnMovieFileDelete:           types.BoolValue(notification.GetOnMovieFileDelete()),
-		OnMovieFileDeleteForUpgrade: types.BoolValue(notification.GetOnMovieFileDeleteForUpgrade()),
-		OnHealthIssue:               types.BoolValue(notification.GetOnHealthIssue()),
-		OnApplicationUpdate:         types.BoolValue(notification.GetOnApplicationUpdate()),
-		IncludeHealthWarnings:       types.BoolValue(notification.GetIncludeHealthWarnings()),
-		ID:                          types.Int64Value(int64(notification.GetId())),
-		Name:                        types.StringValue(notification.GetName()),
-		Tags:                        types.SetValueMust(types.Int64Type, nil),
-	}
-	tfsdk.ValueFrom(ctx, notification.Tags, genericNotification.Tags.Type(ctx), &genericNotification.Tags)
-	genericNotification.writeFields(ctx, notification.GetFields())
-	n.fromNotification(&genericNotification)
+	genericNotification := n.toNotification()
+	genericNotification.write(ctx, notification)
+	n.fromNotification(genericNotification)
 }
 
 func (n *NotificationWebhook) read(ctx context.Context) *radarr.NotificationResource {
-	tags := make([]*int32, len(n.Tags.Elements()))
-	tfsdk.ValueAs(ctx, n.Tags, &tags)
-
-	notification := radarr.NewNotificationResource()
-	notification.SetOnGrab(n.OnGrab.ValueBool())
-	notification.SetOnDownload(n.OnDownload.ValueBool())
-	notification.SetOnUpgrade(n.OnUpgrade.ValueBool())
-	notification.SetOnRename(n.OnRename.ValueBool())
-	notification.SetOnMovieAdded(n.OnMovieAdded.ValueBool())
-	notification.SetOnMovieDelete(n.OnMovieDelete.ValueBool())
-	notification.SetOnMovieFileDelete(n.OnMovieFileDelete.ValueBool())
-	notification.SetOnMovieFileDeleteForUpgrade(n.OnMovieFileDeleteForUpgrade.ValueBool())
-	notification.SetOnHealthIssue(n.OnHealthIssue.ValueBool())
-	notification.SetOnApplicationUpdate(n.OnApplicationUpdate.ValueBool())
-	notification.SetIncludeHealthWarnings(n.IncludeHealthWarnings.ValueBool())
-	notification.SetConfigContract(notificationWebhookConfigContract)
-	notification.SetImplementation(notificationWebhookImplementation)
-	notification.SetId(int32(n.ID.ValueInt64()))
-	notification.SetName(n.Name.ValueString())
-	notification.SetTags(tags)
-	notification.SetFields(n.toNotification().readFields(ctx))
-
-	return notification
+	return n.toNotification().read(ctx)
 }

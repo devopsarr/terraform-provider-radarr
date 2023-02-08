@@ -16,7 +16,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"golang.org/x/exp/slices"
 )
 
 const indexerResourceName = "indexer"
@@ -27,13 +26,15 @@ var (
 	_ resource.ResourceWithImportState = &IndexerResource{}
 )
 
-var (
-	indexerIntSliceFields = []string{"categories", "multiLanguages", "requiredFlags", "codecs", "mediums"}
-	indexerBoolFields     = []string{"allowZeroSize", "removeYear", "rankedOnly"}
-	indexerIntFields      = []string{"delay", "minimumSeeders", "seedTime"}
-	indexerStringFields   = []string{"additionalParameters", "apiKey", "apiPath", "baseUrl", "captchaToken", "cookie", "passkey", "username", "user", "aPIUser", "aPIKey"}
-	indexerFloatFields    = []string{"seedRatio"}
-)
+var indexerFields = helpers.Fields{
+	Bools:            []string{"allowZeroSize", "removeYear", "rankedOnly"},
+	Ints:             []string{"delay", "minimumSeeders", "seedTime"},
+	IntsExceptions:   []string{"seedCriteria.seedTime", "seedCriteria.seasonPackSeedTime"},
+	Strings:          []string{"additionalParameters", "apiKey", "apiPath", "baseUrl", "captchaToken", "cookie", "passkey", "username", "user", "aPIUser", "aPIKey"},
+	Floats:           []string{"seedRatio"},
+	FloatsExceptions: []string{"seedCriteria.seedRatio"},
+	IntSlices:        []string{"categories", "multiLanguages", "requiredFlags", "codecs", "mediums"},
+}
 
 func NewIndexerResource() resource.Resource {
 	return &IndexerResource{}
@@ -401,43 +402,7 @@ func (i *Indexer) write(ctx context.Context, indexer *radarr.IndexerResource) {
 	i.Mediums = types.SetValueMust(types.Int64Type, nil)
 	i.Categories = types.SetValueMust(types.Int64Type, nil)
 	tfsdk.ValueFrom(ctx, indexer.Tags, i.Tags.Type(ctx), &i.Tags)
-	i.writeFields(ctx, indexer.GetFields())
-}
-
-func (i *Indexer) writeFields(ctx context.Context, fields []*radarr.Field) {
-	for _, f := range fields {
-		if f.Value == nil {
-			continue
-		}
-
-		if slices.Contains(indexerStringFields, f.GetName()) {
-			helpers.WriteStringField(f, i)
-
-			continue
-		}
-
-		if slices.Contains(indexerBoolFields, f.GetName()) {
-			helpers.WriteBoolField(f, i)
-
-			continue
-		}
-
-		if slices.Contains(indexerIntFields, f.GetName()) || f.GetName() == "seedCriteria.seedTime" || f.GetName() == "seedCriteria.seasonPackSeedTime" {
-			helpers.WriteIntField(f, i)
-
-			continue
-		}
-
-		if slices.Contains(indexerFloatFields, f.GetName()) || f.GetName() == "seedCriteria.seedRatio" {
-			helpers.WriteFloatField(f, i)
-
-			continue
-		}
-
-		if slices.Contains(indexerIntSliceFields, f.GetName()) {
-			helpers.WriteIntSliceField(ctx, f, i)
-		}
-	}
+	helpers.WriteFields(ctx, i, indexer.GetFields(), indexerFields)
 }
 
 func (i *Indexer) read(ctx context.Context) *radarr.IndexerResource {
@@ -456,43 +421,7 @@ func (i *Indexer) read(ctx context.Context) *radarr.IndexerResource {
 	indexer.SetName(i.Name.ValueString())
 	indexer.SetProtocol(radarr.DownloadProtocol(i.Protocol.ValueString()))
 	indexer.SetTags(tags)
-	indexer.SetFields(i.readFields(ctx))
+	indexer.SetFields(helpers.ReadFields(ctx, i, indexerFields))
 
 	return indexer
-}
-
-func (i *Indexer) readFields(ctx context.Context) []*radarr.Field {
-	var output []*radarr.Field
-
-	for _, b := range indexerBoolFields {
-		if field := helpers.ReadBoolField(b, i); field != nil {
-			output = append(output, field)
-		}
-	}
-
-	for _, n := range indexerIntFields {
-		if field := helpers.ReadIntField(n, i); field != nil {
-			output = append(output, field)
-		}
-	}
-
-	for _, f := range indexerFloatFields {
-		if field := helpers.ReadFloatField(f, i); field != nil {
-			output = append(output, field)
-		}
-	}
-
-	for _, s := range indexerStringFields {
-		if field := helpers.ReadStringField(s, i); field != nil {
-			output = append(output, field)
-		}
-	}
-
-	for _, s := range indexerIntSliceFields {
-		if field := helpers.ReadIntSliceField(ctx, s, i); field != nil {
-			output = append(output, field)
-		}
-	}
-
-	return output
 }

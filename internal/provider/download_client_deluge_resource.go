@@ -13,7 +13,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -46,10 +45,8 @@ type DownloadClientDeluge struct {
 	Name                     types.String `tfsdk:"name"`
 	Host                     types.String `tfsdk:"host"`
 	URLBase                  types.String `tfsdk:"url_base"`
-	Username                 types.String `tfsdk:"username"`
 	Password                 types.String `tfsdk:"password"`
 	MovieCategory            types.String `tfsdk:"movie_category"`
-	MovieDirectory           types.String `tfsdk:"movie_directory"`
 	MovieImportedCategory    types.String `tfsdk:"movie_imported_category"`
 	RecentMoviePriority      types.Int64  `tfsdk:"recent_movie_priority"`
 	OlderMoviePriority       types.Int64  `tfsdk:"older_movie_priority"`
@@ -69,10 +66,8 @@ func (d DownloadClientDeluge) toDownloadClient() *DownloadClient {
 		Name:                     d.Name,
 		Host:                     d.Host,
 		URLBase:                  d.URLBase,
-		Username:                 d.Username,
 		Password:                 d.Password,
 		MovieCategory:            d.MovieCategory,
-		MovieDirectory:           d.MovieDirectory,
 		MovieImportedCategory:    d.MovieImportedCategory,
 		RecentMoviePriority:      d.RecentMoviePriority,
 		OlderMoviePriority:       d.OlderMoviePriority,
@@ -84,6 +79,9 @@ func (d DownloadClientDeluge) toDownloadClient() *DownloadClient {
 		Enable:                   d.Enable,
 		RemoveFailedDownloads:    d.RemoveFailedDownloads,
 		RemoveCompletedDownloads: d.RemoveCompletedDownloads,
+		Implementation:           types.StringValue(downloadClientDelugeImplementation),
+		ConfigContract:           types.StringValue(downloadClientDelugeConfigContract),
+		Protocol:                 types.StringValue(downloadClientDelugeProtocol),
 	}
 }
 
@@ -92,10 +90,8 @@ func (d *DownloadClientDeluge) fromDownloadClient(client *DownloadClient) {
 	d.Name = client.Name
 	d.Host = client.Host
 	d.URLBase = client.URLBase
-	d.Username = client.Username
 	d.Password = client.Password
 	d.MovieCategory = client.MovieCategory
-	d.MovieDirectory = client.MovieDirectory
 	d.MovieImportedCategory = client.MovieImportedCategory
 	d.RecentMoviePriority = client.RecentMoviePriority
 	d.OlderMoviePriority = client.OlderMoviePriority
@@ -196,11 +192,6 @@ func (r *DownloadClientDelugeResource) Schema(ctx context.Context, req resource.
 				Optional:            true,
 				Computed:            true,
 			},
-			"username": schema.StringAttribute{
-				MarkdownDescription: "Username.",
-				Optional:            true,
-				Computed:            true,
-			},
 			"password": schema.StringAttribute{
 				MarkdownDescription: "Password.",
 				Optional:            true,
@@ -209,11 +200,6 @@ func (r *DownloadClientDelugeResource) Schema(ctx context.Context, req resource.
 			},
 			"movie_category": schema.StringAttribute{
 				MarkdownDescription: "Movie category.",
-				Optional:            true,
-				Computed:            true,
-			},
-			"movie_directory": schema.StringAttribute{
-				MarkdownDescription: "Movie directory.",
 				Optional:            true,
 				Computed:            true,
 			},
@@ -335,35 +321,11 @@ func (r *DownloadClientDelugeResource) ImportState(ctx context.Context, req reso
 }
 
 func (d *DownloadClientDeluge) write(ctx context.Context, downloadClient *radarr.DownloadClientResource) {
-	genericDownloadClient := DownloadClient{
-		Enable:                   types.BoolValue(downloadClient.GetEnable()),
-		RemoveCompletedDownloads: types.BoolValue(downloadClient.GetRemoveCompletedDownloads()),
-		RemoveFailedDownloads:    types.BoolValue(downloadClient.GetRemoveFailedDownloads()),
-		Priority:                 types.Int64Value(int64(downloadClient.GetPriority())),
-		ID:                       types.Int64Value(int64(downloadClient.GetId())),
-		Name:                     types.StringValue(downloadClient.GetName()),
-	}
-	genericDownloadClient.Tags, _ = types.SetValueFrom(ctx, types.Int64Type, downloadClient.Tags)
-	genericDownloadClient.writeFields(ctx, downloadClient.GetFields())
-	d.fromDownloadClient(&genericDownloadClient)
+	genericDownloadClient := d.toDownloadClient()
+	genericDownloadClient.write(ctx, downloadClient)
+	d.fromDownloadClient(genericDownloadClient)
 }
 
 func (d *DownloadClientDeluge) read(ctx context.Context) *radarr.DownloadClientResource {
-	tags := make([]*int32, len(d.Tags.Elements()))
-	tfsdk.ValueAs(ctx, d.Tags, &tags)
-
-	client := radarr.NewDownloadClientResource()
-	client.SetEnable(d.Enable.ValueBool())
-	client.SetRemoveCompletedDownloads(d.RemoveCompletedDownloads.ValueBool())
-	client.SetRemoveFailedDownloads(d.RemoveFailedDownloads.ValueBool())
-	client.SetPriority(int32(d.Priority.ValueInt64()))
-	client.SetId(int32(d.ID.ValueInt64()))
-	client.SetConfigContract(downloadClientDelugeConfigContract)
-	client.SetImplementation(downloadClientDelugeImplementation)
-	client.SetName(d.Name.ValueString())
-	client.SetProtocol(downloadClientDelugeProtocol)
-	client.SetTags(tags)
-	client.SetFields(d.toDownloadClient().readFields(ctx))
-
-	return client
+	return d.toDownloadClient().read(ctx)
 }

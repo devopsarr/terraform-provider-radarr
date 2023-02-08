@@ -9,6 +9,7 @@ import (
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"golang.org/x/exp/slices"
 )
 
 type fieldException struct {
@@ -16,6 +17,7 @@ type fieldException struct {
 	tfName  string
 }
 
+// getFieldExceptions identifies the fields resources in which TF and API name differs.
 func getFieldExceptions() []fieldException {
 	return []fieldException{
 		{
@@ -65,6 +67,7 @@ func getFieldExceptions() []fieldException {
 	}
 }
 
+// selectTFName identifies the TF name starting from API name.
 func selectTFName(name string) string {
 	for _, f := range getFieldExceptions() {
 		if f.apiName == name {
@@ -75,6 +78,7 @@ func selectTFName(name string) string {
 	return name
 }
 
+// selectAPIName identifies the API name starting from TF name.
 func selectAPIName(name string) string {
 	for _, f := range getFieldExceptions() {
 		if f.tfName == name {
@@ -85,181 +89,264 @@ func selectAPIName(name string) string {
 	return name
 }
 
-func WriteStringField(fieldOutput *radarr.Field, fieldCase interface{}) {
+// selectWriteField identifies which struct field should be written.
+func selectWriteField(fieldOutput *radarr.Field, fieldCase interface{}) reflect.Value {
 	fieldName := selectTFName(fieldOutput.GetName())
+	value := reflect.ValueOf(fieldCase).Elem()
+
+	return value.FieldByNameFunc(func(n string) bool { return strings.EqualFold(n, fieldName) })
+}
+
+// selectReadField identifies which struct field should be read.
+func selectReadField(name string, fieldCase interface{}) reflect.Value {
+	value := reflect.ValueOf(fieldCase)
+	value = value.Elem()
+
+	return value.FieldByNameFunc(func(n string) bool { return strings.EqualFold(n, name) })
+}
+
+// setField sets the radarr field value.
+func setField(name string, value interface{}) *radarr.Field {
+	field := radarr.NewField()
+	field.SetName(name)
+	field.SetValue(value)
+
+	return field
+}
+
+// writeStringField writes a radarr string field into struct field.
+func writeStringField(fieldOutput *radarr.Field, fieldCase interface{}) {
 	stringValue := fmt.Sprint(fieldOutput.GetValue())
-	value := reflect.ValueOf(fieldCase)
-	value = value.Elem()
-	field := value.FieldByNameFunc(func(n string) bool { return strings.EqualFold(n, fieldName) })
+
 	v := reflect.ValueOf(types.StringValue(stringValue))
-	field.Set(v)
+	if fieldOutput.GetValue() == nil {
+		v = reflect.ValueOf(types.StringNull())
+	}
+
+	selectWriteField(fieldOutput, fieldCase).Set(v)
 }
 
-func WriteBoolField(fieldOutput *radarr.Field, fieldCase interface{}) {
-	fieldName := selectTFName(fieldOutput.GetName())
+// writeBoolField writes a radarr bool field into struct field.
+func writeBoolField(fieldOutput *radarr.Field, fieldCase interface{}) {
 	boolValue, _ := fieldOutput.GetValue().(bool)
-	value := reflect.ValueOf(fieldCase)
-	value = value.Elem()
-	field := value.FieldByNameFunc(func(n string) bool { return strings.EqualFold(n, fieldName) })
+
 	v := reflect.ValueOf(types.BoolValue(boolValue))
-	field.Set(v)
+	if fieldOutput.GetValue() == nil {
+		v = reflect.ValueOf(types.BoolNull())
+	}
+
+	selectWriteField(fieldOutput, fieldCase).Set(v)
 }
 
-func WriteIntField(fieldOutput *radarr.Field, fieldCase interface{}) {
-	fieldName := selectTFName(fieldOutput.GetName())
+// writeIntField writes a radarr int field into struct field.
+func writeIntField(fieldOutput *radarr.Field, fieldCase interface{}) {
 	intValue, _ := fieldOutput.GetValue().(float64)
-	value := reflect.ValueOf(fieldCase)
-	value = value.Elem()
-	field := value.FieldByNameFunc(func(n string) bool { return strings.EqualFold(n, fieldName) })
+
 	v := reflect.ValueOf(types.Int64Value(int64(intValue)))
-	field.Set(v)
+	if fieldOutput.GetValue() == nil {
+		v = reflect.ValueOf(types.Int64Null())
+	}
+
+	selectWriteField(fieldOutput, fieldCase).Set(v)
 }
 
-func WriteFloatField(fieldOutput *radarr.Field, fieldCase interface{}) {
-	fieldName := selectTFName(fieldOutput.GetName())
+// writeFloatField writes a radarr float field into struct field.
+func writeFloatField(fieldOutput *radarr.Field, fieldCase interface{}) {
 	floatValue, _ := fieldOutput.GetValue().(float64)
-	value := reflect.ValueOf(fieldCase)
-	value = value.Elem()
-	field := value.FieldByNameFunc(func(n string) bool { return strings.EqualFold(n, fieldName) })
+
 	v := reflect.ValueOf(types.Float64Value(floatValue))
-	field.Set(v)
+	if fieldOutput.GetValue() == nil {
+		v = reflect.ValueOf(types.Float64Null())
+	}
+
+	selectWriteField(fieldOutput, fieldCase).Set(v)
 }
 
-func WriteStringSliceField(ctx context.Context, fieldOutput *radarr.Field, fieldCase interface{}) {
-	fieldName := selectTFName(fieldOutput.GetName())
+// writeStringSliceField writes a radarr string slice field into struct field.
+func writeStringSliceField(ctx context.Context, fieldOutput *radarr.Field, fieldCase interface{}) {
 	sliceValue, _ := fieldOutput.GetValue().([]interface{})
-	value := reflect.ValueOf(fieldCase)
-	value = value.Elem()
 	setValue := types.SetValueMust(types.StringType, nil)
 	tfsdk.ValueFrom(ctx, sliceValue, setValue.Type(ctx), &setValue)
-
-	field := value.FieldByNameFunc(func(n string) bool { return strings.EqualFold(n, fieldName) })
 	v := reflect.ValueOf(setValue)
-	field.Set(v)
+	selectWriteField(fieldOutput, fieldCase).Set(v)
 }
 
-func WriteIntSliceField(ctx context.Context, fieldOutput *radarr.Field, fieldCase interface{}) {
+// writeIntSliceField writes a radarr int slice field into struct field.
+func writeIntSliceField(ctx context.Context, fieldOutput *radarr.Field, fieldCase interface{}) {
 	sliceValue, _ := fieldOutput.GetValue().([]interface{})
-	value := reflect.ValueOf(fieldCase)
-	value = value.Elem()
 	setValue := types.SetValueMust(types.Int64Type, nil)
 	tfsdk.ValueFrom(ctx, sliceValue, setValue.Type(ctx), &setValue)
-
-	field := value.FieldByNameFunc(func(n string) bool { return strings.EqualFold(n, fieldOutput.GetName()) })
 	v := reflect.ValueOf(setValue)
-	field.Set(v)
+	selectWriteField(fieldOutput, fieldCase).Set(v)
 }
 
-func ReadStringField(name string, fieldCase interface{}) *radarr.Field {
+// readStringField reads from a string struct field and return a radarr field.
+func readStringField(name string, fieldCase interface{}) *radarr.Field {
 	fieldName := selectAPIName(name)
-	value := reflect.ValueOf(fieldCase)
-	value = value.Elem()
-	field := value.FieldByNameFunc(func(n string) bool { return strings.EqualFold(n, name) })
-	stringField := (*types.String)(field.Addr().UnsafePointer())
+	stringField := (*types.String)(selectReadField(name, fieldCase).Addr().UnsafePointer())
 
 	if !stringField.IsNull() && !stringField.IsUnknown() {
-		field := radarr.NewField()
-		field.SetName(fieldName)
-		field.SetValue(stringField.ValueString())
-
-		return field
+		return setField(fieldName, stringField.ValueString())
 	}
 
 	return nil
 }
 
-func ReadBoolField(name string, fieldCase interface{}) *radarr.Field {
+// readBoolField reads from a bool struct field and return a radarr field.
+func readBoolField(name string, fieldCase interface{}) *radarr.Field {
 	fieldName := selectAPIName(name)
-	value := reflect.ValueOf(fieldCase)
-	value = value.Elem()
-	field := value.FieldByNameFunc(func(n string) bool { return strings.EqualFold(n, name) })
-	boolField := (*types.Bool)(field.Addr().UnsafePointer())
+	boolField := (*types.Bool)(selectReadField(name, fieldCase).Addr().UnsafePointer())
 
 	if !boolField.IsNull() && !boolField.IsUnknown() {
-		field := radarr.NewField()
-		field.SetName(fieldName)
-		field.SetValue(boolField.ValueBool())
-
-		return field
+		return setField(fieldName, boolField.ValueBool())
 	}
 
 	return nil
 }
 
-func ReadIntField(name string, fieldCase interface{}) *radarr.Field {
+// readIntField reads from a int struct field and return a radarr field.
+func readIntField(name string, fieldCase interface{}) *radarr.Field {
 	fieldName := selectAPIName(name)
-	value := reflect.ValueOf(fieldCase)
-	value = value.Elem()
-	field := value.FieldByNameFunc(func(n string) bool { return strings.EqualFold(n, name) })
-	intField := (*types.Int64)(field.Addr().UnsafePointer())
+	intField := (*types.Int64)(selectReadField(name, fieldCase).Addr().UnsafePointer())
 
 	if !intField.IsNull() && !intField.IsUnknown() {
-		field := radarr.NewField()
-		field.SetName(fieldName)
-		field.SetValue(intField.ValueInt64())
-
-		return field
+		return setField(fieldName, intField.ValueInt64())
 	}
 
 	return nil
 }
 
-func ReadFloatField(name string, fieldCase interface{}) *radarr.Field {
+// readFloatField reads from a float struct field and return a radarr field.
+func readFloatField(name string, fieldCase interface{}) *radarr.Field {
 	fieldName := selectAPIName(name)
-	value := reflect.ValueOf(fieldCase)
-	value = value.Elem()
-	field := value.FieldByNameFunc(func(n string) bool { return strings.EqualFold(n, name) })
-	floatField := (*types.Float64)(field.Addr().UnsafePointer())
+	floatField := (*types.Float64)(selectReadField(name, fieldCase).Addr().UnsafePointer())
 
 	if !floatField.IsNull() && !floatField.IsUnknown() {
-		field := radarr.NewField()
-		field.SetName(fieldName)
-		field.SetValue(floatField.ValueFloat64())
-
-		return field
+		return setField(fieldName, floatField.ValueFloat64())
 	}
 
 	return nil
 }
 
-func ReadStringSliceField(ctx context.Context, name string, fieldCase interface{}) *radarr.Field {
+// readStringSliceField reads from a string slice struct field and return a radarr field.
+func readStringSliceField(ctx context.Context, name string, fieldCase interface{}) *radarr.Field {
 	fieldName := selectAPIName(name)
-	value := reflect.ValueOf(fieldCase)
-	value = value.Elem()
-	field := value.FieldByNameFunc(func(n string) bool { return strings.EqualFold(n, name) })
-	sliceField := (*types.Set)(field.Addr().UnsafePointer())
+	sliceField := (*types.Set)(selectReadField(name, fieldCase).Addr().UnsafePointer())
 
 	if len(sliceField.Elements()) != 0 {
 		slice := make([]string, len(sliceField.Elements()))
 		tfsdk.ValueAs(ctx, sliceField, &slice)
 
-		field := radarr.NewField()
-		field.SetName(fieldName)
-		field.SetValue(slice)
-
-		return field
+		return setField(fieldName, slice)
 	}
 
 	return nil
 }
 
-func ReadIntSliceField(ctx context.Context, name string, fieldCase interface{}) *radarr.Field {
+// readIntSliceField reads from a int slice struct field and return a radarr field.
+func readIntSliceField(ctx context.Context, name string, fieldCase interface{}) *radarr.Field {
 	fieldName := selectAPIName(name)
-	value := reflect.ValueOf(fieldCase)
-	value = value.Elem()
-	field := value.FieldByNameFunc(func(n string) bool { return strings.EqualFold(n, name) })
-	sliceField := (*types.Set)(field.Addr().UnsafePointer())
+	sliceField := (*types.Set)(selectReadField(name, fieldCase).Addr().UnsafePointer())
 
 	if len(sliceField.Elements()) != 0 {
 		slice := make([]int64, len(sliceField.Elements()))
 		tfsdk.ValueAs(ctx, sliceField, &slice)
 
-		field := radarr.NewField()
-		field.SetName(fieldName)
-		field.SetValue(slice)
-
-		return field
+		return setField(fieldName, slice)
 	}
 
 	return nil
+}
+
+// Fields contains all the field lists of a specific resource per type.
+type Fields struct {
+	Bools                  []string
+	BoolsExceptions        []string
+	Ints                   []string
+	IntsExceptions         []string
+	Strings                []string
+	StringsExceptions      []string
+	Floats                 []string
+	FloatsExceptions       []string
+	IntSlices              []string
+	IntSlicesExceptions    []string
+	StringSlices           []string
+	StringSlicesExceptions []string
+}
+
+// getList return a specific list of fields.
+func (f Fields) getList(list string) []string {
+	r := reflect.ValueOf(f)
+	output, _ := reflect.Indirect(r).FieldByName(list).Interface().([]string)
+
+	return output
+}
+
+// ReadFields takes in input a field container and populates a radarr.Field slice.
+func ReadFields(ctx context.Context, fieldContainer interface{}, fieldLists Fields) []*radarr.Field {
+	var output []*radarr.Field
+
+	// Map each list to its read function.
+	readFuncs := map[string]func(string, interface{}) *radarr.Field{
+		"Bools":   readBoolField,
+		"Ints":    readIntField,
+		"Floats":  readFloatField,
+		"Strings": readStringField,
+		"StringSlices": func(name string, fieldContainer interface{}) *radarr.Field {
+			return readStringSliceField(ctx, name, fieldContainer)
+		},
+		"IntSlices": func(name string, fieldContainer interface{}) *radarr.Field {
+			return readIntSliceField(ctx, name, fieldContainer)
+		},
+	}
+
+	// Loop over the map to populate the radarr.Field slice.
+	for fieldType, readFunc := range readFuncs {
+		for _, f := range fieldLists.getList(fieldType) {
+			if field := readFunc(f, fieldContainer); field != nil {
+				output = append(output, field)
+			}
+		}
+	}
+
+	return output
+}
+
+// WriteFields takes in input a radarr.Field slice and populate the relevant container fields.
+func WriteFields(ctx context.Context, fieldContainer interface{}, fields []*radarr.Field, fieldLists Fields) {
+	// Map each list to its write function.
+	writeFuncs := map[string]func(*radarr.Field, interface{}){
+		"Bools":             writeBoolField,
+		"BoolsExceptions":   writeBoolField,
+		"Ints":              writeIntField,
+		"IntsExceptions":    writeIntField,
+		"Strings":           writeStringField,
+		"StringsExceptions": writeStringField,
+		"Floats":            writeFloatField,
+		"FloatsExceptions":  writeFloatField,
+		"IntSlices": func(fieldOutput *radarr.Field, fieldContainer interface{}) {
+			writeIntSliceField(ctx, fieldOutput, fieldContainer)
+		},
+		"IntSlicesExceptions": func(fieldOutput *radarr.Field, fieldContainer interface{}) {
+			writeIntSliceField(ctx, fieldOutput, fieldContainer)
+		},
+		"StringSlices": func(fieldOutput *radarr.Field, fieldContainer interface{}) {
+			writeStringSliceField(ctx, fieldOutput, fieldContainer)
+		},
+		"StringSlicesExceptions": func(fieldOutput *radarr.Field, fieldContainer interface{}) {
+			writeStringSliceField(ctx, fieldOutput, fieldContainer)
+		},
+	}
+
+	// Loop over each field and populate the related container field with the corresponding write function.
+	for _, f := range fields {
+		fieldName := f.GetName()
+		for listName, writeFunc := range writeFuncs {
+			if slices.Contains(fieldLists.getList(listName), fieldName) {
+				writeFunc(f, fieldContainer)
+
+				break
+			}
+		}
+	}
 }

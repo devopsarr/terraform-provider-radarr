@@ -11,7 +11,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -45,8 +44,6 @@ type DownloadClientTorrentDownloadStation struct {
 	Host                     types.String `tfsdk:"host"`
 	Username                 types.String `tfsdk:"username"`
 	Password                 types.String `tfsdk:"password"`
-	MovieCategory            types.String `tfsdk:"movie_category"`
-	MovieDirectory           types.String `tfsdk:"movie_directory"`
 	Priority                 types.Int64  `tfsdk:"priority"`
 	Port                     types.Int64  `tfsdk:"port"`
 	ID                       types.Int64  `tfsdk:"id"`
@@ -63,8 +60,6 @@ func (d DownloadClientTorrentDownloadStation) toDownloadClient() *DownloadClient
 		Host:                     d.Host,
 		Username:                 d.Username,
 		Password:                 d.Password,
-		MovieCategory:            d.MovieCategory,
-		MovieDirectory:           d.MovieDirectory,
 		Priority:                 d.Priority,
 		Port:                     d.Port,
 		ID:                       d.ID,
@@ -72,6 +67,9 @@ func (d DownloadClientTorrentDownloadStation) toDownloadClient() *DownloadClient
 		Enable:                   d.Enable,
 		RemoveFailedDownloads:    d.RemoveFailedDownloads,
 		RemoveCompletedDownloads: d.RemoveCompletedDownloads,
+		Implementation:           types.StringValue(downloadClientTorrentDownloadStationImplementation),
+		ConfigContract:           types.StringValue(downloadClientTorrentDownloadStationConfigContract),
+		Protocol:                 types.StringValue(downloadClientTorrentDownloadStationProtocol),
 	}
 }
 
@@ -81,8 +79,6 @@ func (d *DownloadClientTorrentDownloadStation) fromDownloadClient(client *Downlo
 	d.Host = client.Host
 	d.Username = client.Username
 	d.Password = client.Password
-	d.MovieCategory = client.MovieCategory
-	d.MovieDirectory = client.MovieDirectory
 	d.Priority = client.Priority
 	d.Port = client.Port
 	d.ID = client.ID
@@ -163,16 +159,6 @@ func (r *DownloadClientTorrentDownloadStationResource) Schema(ctx context.Contex
 				Optional:            true,
 				Computed:            true,
 				Sensitive:           true,
-			},
-			"movie_category": schema.StringAttribute{
-				MarkdownDescription: "Movie category.",
-				Optional:            true,
-				Computed:            true,
-			},
-			"movie_directory": schema.StringAttribute{
-				MarkdownDescription: "Movie directory.",
-				Optional:            true,
-				Computed:            true,
 			},
 		},
 	}
@@ -287,35 +273,11 @@ func (r *DownloadClientTorrentDownloadStationResource) ImportState(ctx context.C
 }
 
 func (d *DownloadClientTorrentDownloadStation) write(ctx context.Context, downloadClient *radarr.DownloadClientResource) {
-	genericDownloadClient := DownloadClient{
-		Enable:                   types.BoolValue(downloadClient.GetEnable()),
-		RemoveCompletedDownloads: types.BoolValue(downloadClient.GetRemoveCompletedDownloads()),
-		RemoveFailedDownloads:    types.BoolValue(downloadClient.GetRemoveFailedDownloads()),
-		Priority:                 types.Int64Value(int64(downloadClient.GetPriority())),
-		ID:                       types.Int64Value(int64(downloadClient.GetId())),
-		Name:                     types.StringValue(downloadClient.GetName()),
-	}
-	genericDownloadClient.Tags, _ = types.SetValueFrom(ctx, types.Int64Type, downloadClient.Tags)
-	genericDownloadClient.writeFields(ctx, downloadClient.GetFields())
-	d.fromDownloadClient(&genericDownloadClient)
+	genericDownloadClient := d.toDownloadClient()
+	genericDownloadClient.write(ctx, downloadClient)
+	d.fromDownloadClient(genericDownloadClient)
 }
 
 func (d *DownloadClientTorrentDownloadStation) read(ctx context.Context) *radarr.DownloadClientResource {
-	tags := make([]*int32, len(d.Tags.Elements()))
-	tfsdk.ValueAs(ctx, d.Tags, &tags)
-
-	client := radarr.NewDownloadClientResource()
-	client.SetEnable(d.Enable.ValueBool())
-	client.SetRemoveCompletedDownloads(d.RemoveCompletedDownloads.ValueBool())
-	client.SetRemoveFailedDownloads(d.RemoveFailedDownloads.ValueBool())
-	client.SetPriority(int32(d.Priority.ValueInt64()))
-	client.SetId(int32(d.ID.ValueInt64()))
-	client.SetConfigContract(downloadClientTorrentDownloadStationConfigContract)
-	client.SetImplementation(downloadClientTorrentDownloadStationImplementation)
-	client.SetName(d.Name.ValueString())
-	client.SetProtocol(downloadClientTorrentDownloadStationProtocol)
-	client.SetTags(tags)
-	client.SetFields(d.toDownloadClient().readFields(ctx))
-
-	return client
+	return d.toDownloadClient().read(ctx)
 }

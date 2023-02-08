@@ -14,7 +14,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -75,6 +74,9 @@ func (i ImportListTMDBUser) toImportList() *ImportList {
 		Enabled:             i.Enabled,
 		EnableAuto:          i.EnableAuto,
 		SearchOnAdd:         i.SearchOnAdd,
+		Implementation:      types.StringValue(importListTMDBUserImplementation),
+		ConfigContract:      types.StringValue(importListTMDBUserConfigContract),
+		ListType:            types.StringValue(importListTMDBUserType),
 	}
 }
 
@@ -292,43 +294,11 @@ func (r *ImportListTMDBUserResource) ImportState(ctx context.Context, req resour
 }
 
 func (i *ImportListTMDBUser) write(ctx context.Context, importList *radarr.ImportListResource) {
-	genericImportList := ImportList{
-		Name:                types.StringValue(importList.GetName()),
-		Monitor:             types.StringValue(string(importList.GetMonitor())),
-		MinimumAvailability: types.StringValue(string(importList.GetMinimumAvailability())),
-		RootFolderPath:      types.StringValue(importList.GetRootFolderPath()),
-		ListOrder:           types.Int64Value(int64(importList.GetListOrder())),
-		ID:                  types.Int64Value(int64(importList.GetId())),
-		QualityProfileID:    types.Int64Value(int64(importList.GetQualityProfileId())),
-		Enabled:             types.BoolValue(importList.GetEnabled()),
-		EnableAuto:          types.BoolValue(importList.GetEnableAuto()),
-		SearchOnAdd:         types.BoolValue(importList.GetSearchOnAdd()),
-	}
-	genericImportList.Tags, _ = types.SetValueFrom(ctx, types.Int64Type, importList.Tags)
-	genericImportList.writeFields(ctx, importList.GetFields())
-	i.fromImportList(&genericImportList)
+	genericImportList := i.toImportList()
+	genericImportList.write(ctx, importList)
+	i.fromImportList(genericImportList)
 }
 
 func (i *ImportListTMDBUser) read(ctx context.Context) *radarr.ImportListResource {
-	tags := make([]*int32, len(i.Tags.Elements()))
-	tfsdk.ValueAs(ctx, i.Tags, &tags)
-
-	list := radarr.NewImportListResource()
-	list.SetMonitor(radarr.MonitorTypes(i.Monitor.ValueString()))
-	list.SetMinimumAvailability(radarr.MovieStatusType(i.MinimumAvailability.ValueString()))
-	list.SetRootFolderPath(i.RootFolderPath.ValueString())
-	list.SetQualityProfileId(int32(i.QualityProfileID.ValueInt64()))
-	list.SetListOrder(int32(i.ListOrder.ValueInt64()))
-	list.SetEnableAuto(i.EnableAuto.ValueBool())
-	list.SetEnabled(i.Enabled.ValueBool())
-	list.SetSearchOnAdd(i.SearchOnAdd.ValueBool())
-	list.SetListType(importListTMDBUserType)
-	list.SetConfigContract(importListTMDBUserConfigContract)
-	list.SetImplementation(importListTMDBUserImplementation)
-	list.SetId(int32(i.ID.ValueInt64()))
-	list.SetName(i.Name.ValueString())
-	list.SetTags(tags)
-	list.SetFields(i.toImportList().readFields(ctx))
-
-	return list
+	return i.toImportList().read(ctx)
 }
