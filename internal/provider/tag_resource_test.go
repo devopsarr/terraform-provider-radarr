@@ -32,6 +32,7 @@ func TestAccTagResource(t *testing.T) {
 			{
 				Config:      testAccTagResourceConfig("test", "error") + testUnauthorizedProvider,
 				ExpectError: regexp.MustCompile("Client Error"),
+				Destroy:     true,
 			},
 			// Update and Read testing
 			{
