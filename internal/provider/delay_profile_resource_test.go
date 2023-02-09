@@ -17,12 +17,12 @@ func TestAccDelayProfileResource(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Unauthorized Create
 			{
-				Config:      testAccDelayProfileResourceConfig("usenet") + testUnauthorizedProvider,
+				Config:      testAccDelayProfileResourceConfig("usenet", "0") + testUnauthorizedProvider,
 				ExpectError: regexp.MustCompile("Client Error"),
 			},
 			// Create and Read testing
 			{
-				Config: testAccDelayProfileResourceConfig("usenet"),
+				Config: testAccTagResourceConfig("test", "delay_profile_resource") + testAccDelayProfileResourceConfig("usenet", "radarr_tag.test.id"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("radarr_delay_profile.test", "preferred_protocol", "usenet"),
 					resource.TestCheckResourceAttrSet("radarr_delay_profile.test", "id"),
@@ -30,12 +30,12 @@ func TestAccDelayProfileResource(t *testing.T) {
 			},
 			// Unauthorized Read
 			{
-				Config:      testAccDelayProfileResourceConfig("usenet") + testUnauthorizedProvider,
+				Config:      testAccDelayProfileResourceConfig("usenet", "0") + testUnauthorizedProvider,
 				ExpectError: regexp.MustCompile("Client Error"),
 			},
 			// Update and Read testing
 			{
-				Config: testAccDelayProfileResourceConfig("torrent"),
+				Config: testAccTagResourceConfig("test", "delay_profile_resource") + testAccDelayProfileResourceConfig("torrent", "radarr_tag.test.id"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("radarr_delay_profile.test", "preferred_protocol", "torrent"),
 				),
@@ -51,12 +51,8 @@ func TestAccDelayProfileResource(t *testing.T) {
 	})
 }
 
-func testAccDelayProfileResourceConfig(protocol string) string {
+func testAccDelayProfileResourceConfig(protocol, tag string) string {
 	return fmt.Sprintf(`
-	resource "radarr_tag" "test" {
-		label = "delay_profile_resource"
-	}
-
 	resource "radarr_delay_profile" "test" {
 		enable_usenet = true
 		enable_torrent = true
@@ -65,6 +61,6 @@ func testAccDelayProfileResourceConfig(protocol string) string {
 		usenet_delay = 0
 		torrent_delay = 0
 		preferred_protocol= "%s"
-		tags = [radarr_tag.test.id]
-	}`, protocol)
+		tags = [%s]
+	}`, protocol, tag)
 }

@@ -28,6 +28,11 @@ func TestAccNotificationPushbulletResource(t *testing.T) {
 					resource.TestCheckResourceAttrSet("radarr_notification_pushbullet.test", "id"),
 				),
 			},
+			// Unauthorized Read
+			{
+				Config:      testAccNotificationPushbulletResourceConfig("error", "key1") + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("Client Error"),
+			},
 			// Update and Read testing
 			{
 				Config: testAccNotificationPushbulletResourceConfig("resourcePushbulletTest", "key2"),

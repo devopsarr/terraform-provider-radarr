@@ -16,8 +16,8 @@ func TestAccQualityProfileResource(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Unauthorized Create
 			{
-				Config:      testAccQualityProfileResourceConfig("error") + testUnauthorizedProvider,
-				ExpectError: regexp.MustCompile("Client Error"),
+				Config:      testAccQualityProfileResourceError + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("401 Unauthorized"),
 			},
 			// Create and Read testing
 			{
@@ -29,8 +29,8 @@ func TestAccQualityProfileResource(t *testing.T) {
 			},
 			// Unauthorized Read
 			{
-				Config:      testAccQualityProfileResourceConfig("error") + testUnauthorizedProvider,
-				ExpectError: regexp.MustCompile("Client Error"),
+				Config:      testAccQualityProfileResourceError + testUnauthorizedProvider,
+				ExpectError: regexp.MustCompile("401 Unauthorized"),
 			},
 			// Update and Read testing
 			{
@@ -49,6 +49,18 @@ func TestAccQualityProfileResource(t *testing.T) {
 		},
 	})
 }
+
+const testAccQualityProfileResourceError = `
+resource "radarr_quality_profile" "test" {
+	name            = "Error"
+	upgrade_allowed = true
+	cutoff          = 2000
+	quality_groups = []
+	language = {
+		id = 0
+	}
+}
+`
 
 func testAccQualityProfileResourceConfig(name string) string {
 	return fmt.Sprintf(`
