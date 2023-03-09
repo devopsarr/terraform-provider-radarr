@@ -33,7 +33,7 @@ data "radarr_metadata" "example" {
 - `id` (Number) Metadata ID.
 - `implementation` (String) Metadata implementation name.
 - `movie_images` (Boolean) Movie images flag.
-- `movie_metadata` (Boolean) Movie metafata flag.
+- `movie_metadata` (Boolean) Movie metadata flag.
 - `movie_metadata_language` (Number) Movie metadata language.
 - `movie_metadata_url` (Boolean) Movie metadata URL flag.
 - `tags` (Set of Number) List of associated tags.

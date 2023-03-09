@@ -74,7 +74,7 @@ func (d *MetadataDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 				Computed:            true,
 			},
 			"movie_metadata": schema.BoolAttribute{
-				MarkdownDescription: "Movie metafata flag.",
+				MarkdownDescription: "Movie metadata flag.",
 				Computed:            true,
 			},
 			"movie_metadata_url": schema.BoolAttribute{

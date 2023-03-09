@@ -125,7 +125,7 @@ func (r *MetadataKodiResource) Schema(ctx context.Context, req resource.SchemaRe
 				Required:            true,
 			},
 			"movie_metadata": schema.BoolAttribute{
-				MarkdownDescription: "Movie metafata flag.",
+				MarkdownDescription: "Movie metadata flag.",
 				Required:            true,
 			},
 			"movie_metadata_url": schema.BoolAttribute{

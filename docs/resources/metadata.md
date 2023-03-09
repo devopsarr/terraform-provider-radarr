@@ -39,7 +39,7 @@ resource "radarr_metadata" "example" {
 - `add_collection_name` (Boolean) Add collection name flag.
 - `enable` (Boolean) Enable flag.
 - `movie_images` (Boolean) Movie images flag.
-- `movie_metadata` (Boolean) Movie metafata flag.
+- `movie_metadata` (Boolean) Movie metadata flag.
 - `movie_metadata_language` (Number) Movie metadata language.
 - `movie_metadata_url` (Boolean) Movie metadata URL flag.
 - `tags` (Set of Number) List of associated tags.
