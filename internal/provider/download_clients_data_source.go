@@ -289,7 +289,7 @@ func (d *DownloadClientsDataSource) Read(ctx context.Context, req datasource.Rea
 		profiles[i].write(ctx, p)
 	}
 
-	tfsdk.ValueFrom(ctx, profiles, data.DownloadClients.Type(context.Background()), &data.DownloadClients)
+	tfsdk.ValueFrom(ctx, profiles, data.DownloadClients.Type(ctx), &data.DownloadClients)
 	// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 	data.ID = types.StringValue(strconv.Itoa(len(response)))
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

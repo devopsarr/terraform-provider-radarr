@@ -104,7 +104,7 @@ func (d *RestrictionsDataSource) Read(ctx context.Context, req datasource.ReadRe
 		restrictions[i].write(ctx, p)
 	}
 
-	tfsdk.ValueFrom(ctx, restrictions, data.Restrictions.Type(context.Background()), &data.Restrictions)
+	tfsdk.ValueFrom(ctx, restrictions, data.Restrictions.Type(ctx), &data.Restrictions)
 	// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 	data.ID = types.StringValue(strconv.Itoa(len(response)))
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

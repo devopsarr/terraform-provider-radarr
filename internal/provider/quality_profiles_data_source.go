@@ -181,7 +181,7 @@ func (d *QualityProfilesDataSource) Read(ctx context.Context, req datasource.Rea
 	tflog.Trace(ctx, "read "+qualityProfilesDataSourceName)
 	// Map response body to resource schema attribute
 	profiles := *writeQualitiyprofiles(ctx, response)
-	tfsdk.ValueFrom(ctx, profiles, data.QualityProfiles.Type(context.Background()), &data.QualityProfiles)
+	tfsdk.ValueFrom(ctx, profiles, data.QualityProfiles.Type(ctx), &data.QualityProfiles)
 
 	// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 	data.ID = types.StringValue(strconv.Itoa(len(response)))

@@ -385,6 +385,7 @@ func (r *IndexerResource) ImportState(ctx context.Context, req resource.ImportSt
 }
 
 func (i *Indexer) write(ctx context.Context, indexer *radarr.IndexerResource) {
+	i.Tags, _ = types.SetValueFrom(ctx, types.Int64Type, indexer.GetTags())
 	i.EnableAutomaticSearch = types.BoolValue(indexer.GetEnableAutomaticSearch())
 	i.EnableInteractiveSearch = types.BoolValue(indexer.GetEnableInteractiveSearch())
 	i.EnableRss = types.BoolValue(indexer.GetEnableRss())
@@ -395,13 +396,11 @@ func (i *Indexer) write(ctx context.Context, indexer *radarr.IndexerResource) {
 	i.Implementation = types.StringValue(indexer.GetImplementation())
 	i.Name = types.StringValue(indexer.GetName())
 	i.Protocol = types.StringValue(string(indexer.GetProtocol()))
-	i.Tags = types.SetValueMust(types.Int64Type, nil)
 	i.MultiLanguages = types.SetValueMust(types.Int64Type, nil)
 	i.RequiredFlags = types.SetValueMust(types.Int64Type, nil)
 	i.Codecs = types.SetValueMust(types.Int64Type, nil)
 	i.Mediums = types.SetValueMust(types.Int64Type, nil)
 	i.Categories = types.SetValueMust(types.Int64Type, nil)
-	tfsdk.ValueFrom(ctx, indexer.Tags, i.Tags.Type(ctx), &i.Tags)
 	helpers.WriteFields(ctx, i, indexer.GetFields(), indexerFields)
 }
 

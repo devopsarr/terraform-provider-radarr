@@ -245,13 +245,12 @@ func (r *MetadataResource) ImportState(ctx context.Context, req resource.ImportS
 }
 
 func (m *Metadata) write(ctx context.Context, metadata *radarr.MetadataResource) {
+	m.Tags, _ = types.SetValueFrom(ctx, types.Int64Type, metadata.GetTags())
 	m.Enable = types.BoolValue(metadata.GetEnable())
 	m.ID = types.Int64Value(int64(metadata.GetId()))
 	m.ConfigContract = types.StringValue(metadata.GetConfigContract())
 	m.Implementation = types.StringValue(metadata.GetImplementation())
 	m.Name = types.StringValue(metadata.GetName())
-	m.Tags = types.SetValueMust(types.Int64Type, nil)
-	tfsdk.ValueFrom(ctx, metadata.Tags, m.Tags.Type(ctx), &m.Tags)
 	helpers.WriteFields(ctx, m, metadata.GetFields(), metadataFields)
 }
 

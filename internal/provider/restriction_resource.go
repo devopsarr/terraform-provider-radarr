@@ -186,11 +186,10 @@ func (r *RestrictionResource) ImportState(ctx context.Context, req resource.Impo
 }
 
 func (r *Restriction) write(ctx context.Context, restriction *radarr.RestrictionResource) {
+	r.Tags, _ = types.SetValueFrom(ctx, types.Int64Type, restriction.GetTags())
 	r.ID = types.Int64Value(int64(restriction.GetId()))
 	r.Ignored = types.StringValue(restriction.GetIgnored())
 	r.Required = types.StringValue(restriction.GetRequired())
-	r.Tags = types.SetValueMust(types.Int64Type, nil)
-	tfsdk.ValueFrom(ctx, restriction.Tags, r.Tags.Type(ctx), &r.Tags)
 }
 
 func (r *Restriction) read(ctx context.Context) *radarr.RestrictionResource {

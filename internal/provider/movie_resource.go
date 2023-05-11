@@ -286,6 +286,7 @@ func (r *MovieResource) ImportState(ctx context.Context, req resource.ImportStat
 }
 
 func (m *Movie) write(ctx context.Context, movie *radarr.MovieResource) {
+	m.Tags, _ = types.SetValueFrom(ctx, types.Int64Type, movie.GetTags())
 	m.Monitored = types.BoolValue(movie.GetMonitored())
 	m.ID = types.Int64Value(int64(movie.GetId()))
 	m.Title = types.StringValue(movie.GetTitle())
@@ -293,8 +294,6 @@ func (m *Movie) write(ctx context.Context, movie *radarr.MovieResource) {
 	m.QualityProfileID = types.Int64Value(int64(movie.GetQualityProfileId()))
 	m.TMDBID = types.Int64Value(int64(movie.GetTmdbId()))
 	m.MinimumAvailability = types.StringValue(string(movie.GetMinimumAvailability()))
-	m.Tags = types.SetValueMust(types.Int64Type, nil)
-	tfsdk.ValueFrom(ctx, movie.Tags, m.Tags.Type(ctx), &m.Tags)
 	// Read only values
 	m.IsAvailable = types.BoolValue(movie.GetIsAvailable())
 	m.OriginalTitle = types.StringValue(movie.GetOriginalTitle())
