@@ -226,7 +226,7 @@ func (d *IndexersDataSource) Read(ctx context.Context, req datasource.ReadReques
 		profiles[i].write(ctx, p)
 	}
 
-	tfsdk.ValueFrom(ctx, profiles, data.Indexers.Type(context.Background()), &data.Indexers)
+	tfsdk.ValueFrom(ctx, profiles, data.Indexers.Type(ctx), &data.Indexers)
 	// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 	data.ID = types.StringValue(strconv.Itoa(len(response)))
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
