@@ -59,7 +59,7 @@ func (r *MetadataConfigResource) Schema(ctx context.Context, req resource.Schema
 				MarkdownDescription: "Certification Country.",
 				Required:            true,
 				Validators: []validator.String{
-					stringvalidator.OneOf("au", "br", "ca", "fr", "de", "gb", "it", "es", "us", "nz"),
+					stringvalidator.OneOf("au", "br", "ca", "fr", "de", "gb", "it", "es", "us", "nz", "ie"),
 				},
 			},
 		},
