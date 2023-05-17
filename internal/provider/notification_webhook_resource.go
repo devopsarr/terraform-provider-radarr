@@ -56,6 +56,8 @@ type NotificationWebhook struct {
 	OnMovieFileDelete           types.Bool   `tfsdk:"on_movie_file_delete"`
 	OnMovieFileDeleteForUpgrade types.Bool   `tfsdk:"on_movie_file_delete_for_upgrade"`
 	OnHealthIssue               types.Bool   `tfsdk:"on_health_issue"`
+	OnHealthRestored            types.Bool   `tfsdk:"on_health_restored"`
+	OnManualInteractionRequired types.Bool   `tfsdk:"on_manual_interaction_required"`
 	OnApplicationUpdate         types.Bool   `tfsdk:"on_application_update"`
 	IncludeHealthWarnings       types.Bool   `tfsdk:"include_health_warnings"`
 }
@@ -76,6 +78,8 @@ func (n NotificationWebhook) toNotification() *Notification {
 		IncludeHealthWarnings:       n.IncludeHealthWarnings,
 		OnApplicationUpdate:         n.OnApplicationUpdate,
 		OnHealthIssue:               n.OnHealthIssue,
+		OnHealthRestored:            n.OnHealthRestored,
+		OnManualInteractionRequired: n.OnManualInteractionRequired,
 		OnMovieFileDeleteForUpgrade: n.OnMovieFileDeleteForUpgrade,
 		OnRename:                    n.OnRename,
 		OnUpgrade:                   n.OnUpgrade,
@@ -99,6 +103,8 @@ func (n *NotificationWebhook) fromNotification(notification *Notification) {
 	n.IncludeHealthWarnings = notification.IncludeHealthWarnings
 	n.OnApplicationUpdate = notification.OnApplicationUpdate
 	n.OnHealthIssue = notification.OnHealthIssue
+	n.OnHealthRestored = notification.OnHealthRestored
+	n.OnManualInteractionRequired = notification.OnManualInteractionRequired
 	n.OnMovieAdded = notification.OnMovieAdded
 	n.OnMovieDelete = notification.OnMovieDelete
 	n.OnRename = notification.OnRename
@@ -155,6 +161,16 @@ func (r *NotificationWebhookResource) Schema(ctx context.Context, req resource.S
 			},
 			"on_health_issue": schema.BoolAttribute{
 				MarkdownDescription: "On health issue flag.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"on_health_restored": schema.BoolAttribute{
+				MarkdownDescription: "On health restored flag.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"on_manual_interaction_required": schema.BoolAttribute{
+				MarkdownDescription: "On manual interaction required flag.",
 				Optional:            true,
 				Computed:            true,
 			},

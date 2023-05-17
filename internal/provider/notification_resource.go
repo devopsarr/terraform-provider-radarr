@@ -28,8 +28,8 @@ var (
 
 var notificationFields = helpers.Fields{
 	Bools:                  []string{"alwaysUpdate", "cleanLibrary", "directMessage", "notify", "requireEncryption", "sendSilently", "useSsl", "updateLibrary", "useEuEndpoint"},
-	Strings:                []string{"accessToken", "accessTokenSecret", "apiKey", "aPIKey", "appToken", "arguments", "author", "authToken", "authUser", "avatar", "botToken", "channel", "chatId", "consumerKey", "consumerSecret", "deviceNames", "expires", "from", "host", "icon", "mention", "password", "path", "refreshToken", "senderDomain", "senderId", "server", "signIn", "sound", "token", "url", "userKey", "username", "webHookUrl", "serverUrl", "userName", "clickUrl", "mapFrom", "mapTo", "key", "event"},
-	Ints:                   []string{"displayTime", "port", "priority", "retry", "expire", "method"},
+	Strings:                []string{"accessToken", "accessTokenSecret", "apiKey", "aPIKey", "appToken", "arguments", "author", "authToken", "authUser", "avatar", "botToken", "channel", "chatId", "consumerKey", "consumerSecret", "deviceNames", "expires", "from", "host", "icon", "mention", "password", "path", "refreshToken", "senderDomain", "senderId", "server", "signIn", "sound", "token", "url", "userKey", "username", "webHookUrl", "serverUrl", "userName", "clickUrl", "mapFrom", "mapTo", "key", "event", "topicId", "configurationKey", "authUsername", "authPassword", "statelessUrls"},
+	Ints:                   []string{"displayTime", "port", "priority", "retry", "expire", "method", "notificationType"},
 	StringSlices:           []string{"recipients", "to", "cC", "bcc", "topics", "deviceIds", "fieldTags", "channelTags", "devices"},
 	StringSlicesExceptions: []string{"tags"},
 	IntSlices:              []string{"grabFields", "importFields"},
@@ -71,6 +71,7 @@ type Notification struct {
 	Arguments                   types.String `tfsdk:"arguments"`
 	ConsumerKey                 types.String `tfsdk:"consumer_key"`
 	ChatID                      types.String `tfsdk:"chat_id"`
+	TopicID                     types.String `tfsdk:"topic_id"`
 	From                        types.String `tfsdk:"from"`
 	Icon                        types.String `tfsdk:"icon"`
 	Password                    types.String `tfsdk:"password"`
@@ -101,6 +102,11 @@ type Notification struct {
 	Author                      types.String `tfsdk:"author"`
 	AuthToken                   types.String `tfsdk:"auth_token"`
 	AuthUser                    types.String `tfsdk:"auth_user"`
+	StatelessURLs               types.String `tfsdk:"stateless_urls"`
+	AuthUsername                types.String `tfsdk:"auth_username"`
+	AuthPassword                types.String `tfsdk:"auth_password"`
+	ConfigurationKey            types.String `tfsdk:"configuration_key"`
+	NotificationType            types.Int64  `tfsdk:"notification_type"`
 	DisplayTime                 types.Int64  `tfsdk:"display_time"`
 	Priority                    types.Int64  `tfsdk:"priority"`
 	Port                        types.Int64  `tfsdk:"port"`
@@ -128,6 +134,8 @@ type Notification struct {
 	OnRename                    types.Bool   `tfsdk:"on_rename"`
 	OnUpgrade                   types.Bool   `tfsdk:"on_upgrade"`
 	OnDownload                  types.Bool   `tfsdk:"on_download"`
+	OnHealthRestored            types.Bool   `tfsdk:"on_health_restored"`
+	OnManualInteractionRequired types.Bool   `tfsdk:"on_manual_interaction_required"`
 }
 
 func (r *NotificationResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -179,6 +187,16 @@ func (r *NotificationResource) Schema(ctx context.Context, req resource.SchemaRe
 			},
 			"on_health_issue": schema.BoolAttribute{
 				MarkdownDescription: "On health issue flag.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"on_health_restored": schema.BoolAttribute{
+				MarkdownDescription: "On health restored flag.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"on_manual_interaction_required": schema.BoolAttribute{
+				MarkdownDescription: "On manual interaction required flag.",
 				Optional:            true,
 				Computed:            true,
 			},
@@ -289,6 +307,14 @@ func (r *NotificationResource) Schema(ctx context.Context, req resource.SchemaRe
 					int64validator.OneOf(-2, -1, 0, 1, 2, 3, 4, 5, 7, 8),
 				},
 			},
+			"notification_type": schema.Int64Attribute{
+				MarkdownDescription: "Notification type. `0` Info, `1` Success, `2` Warning, `3` Failure.",
+				Optional:            true,
+				Computed:            true,
+				Validators: []validator.Int64{
+					int64validator.OneOf(0, 1, 2, 3),
+				},
+			},
 			"retry": schema.Int64Attribute{
 				MarkdownDescription: "Retry.",
 				Optional:            true,
@@ -361,6 +387,11 @@ func (r *NotificationResource) Schema(ctx context.Context, req resource.SchemaRe
 			},
 			"chat_id": schema.StringAttribute{
 				MarkdownDescription: "Chat ID.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"topic_id": schema.StringAttribute{
+				MarkdownDescription: "Topic ID.",
 				Optional:            true,
 				Computed:            true,
 			},
@@ -498,6 +529,28 @@ func (r *NotificationResource) Schema(ctx context.Context, req resource.SchemaRe
 				MarkdownDescription: "Event.",
 				Optional:            true,
 				Computed:            true,
+			},
+			"stateless_urls": schema.StringAttribute{
+				MarkdownDescription: "Stateless URLs.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"configuration_key": schema.StringAttribute{
+				MarkdownDescription: "Configuration key.",
+				Optional:            true,
+				Computed:            true,
+				Sensitive:           true,
+			},
+			"auth_username": schema.StringAttribute{
+				MarkdownDescription: "Username.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"auth_password": schema.StringAttribute{
+				MarkdownDescription: "Password.",
+				Optional:            true,
+				Computed:            true,
+				Sensitive:           true,
 			},
 			"device_ids": schema.SetAttribute{
 				MarkdownDescription: "Device IDs.",
@@ -697,6 +750,8 @@ func (n *Notification) write(ctx context.Context, notification *radarr.Notificat
 	n.OnMovieFileDelete = types.BoolValue(notification.GetOnMovieFileDelete())
 	n.OnMovieFileDeleteForUpgrade = types.BoolValue(notification.GetOnMovieFileDeleteForUpgrade())
 	n.OnHealthIssue = types.BoolValue(notification.GetOnHealthIssue())
+	n.OnHealthRestored = types.BoolValue(notification.GetOnHealthRestored())
+	n.OnManualInteractionRequired = types.BoolValue(notification.GetOnManualInteractionRequired())
 	n.OnApplicationUpdate = types.BoolValue(notification.GetOnApplicationUpdate())
 	n.IncludeHealthWarnings = types.BoolValue(notification.GetIncludeHealthWarnings())
 	n.ID = types.Int64Value(int64(notification.GetId()))
@@ -731,6 +786,8 @@ func (n *Notification) read(ctx context.Context) *radarr.NotificationResource {
 	notification.SetOnMovieFileDelete(n.OnMovieFileDelete.ValueBool())
 	notification.SetOnMovieFileDeleteForUpgrade(n.OnMovieFileDeleteForUpgrade.ValueBool())
 	notification.SetOnHealthIssue(n.OnHealthIssue.ValueBool())
+	notification.SetOnHealthRestored(n.OnHealthRestored.ValueBool())
+	notification.SetOnManualInteractionRequired(n.OnManualInteractionRequired.ValueBool())
 	notification.SetOnApplicationUpdate(n.OnApplicationUpdate.ValueBool())
 	notification.SetIncludeHealthWarnings(n.IncludeHealthWarnings.ValueBool())
 	notification.SetId(int32(n.ID.ValueInt64()))

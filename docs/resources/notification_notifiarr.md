@@ -49,6 +49,8 @@ resource "radarr_notification_notifiarr" "example" {
 - `on_download` (Boolean) On download flag.
 - `on_grab` (Boolean) On grab flag.
 - `on_health_issue` (Boolean) On health issue flag.
+- `on_health_restored` (Boolean) On health restored flag.
+- `on_manual_interaction_required` (Boolean) On manual interaction required flag.
 - `on_movie_added` (Boolean) On movie added flag.
 - `on_movie_file_delete` (Boolean) On movie file delete flag.
 - `on_movie_file_delete_for_upgrade` (Boolean) On movie file delete for upgrade flag.

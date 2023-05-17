@@ -71,6 +71,14 @@ func (d *NotificationDataSource) Schema(ctx context.Context, req datasource.Sche
 				MarkdownDescription: "On health issue flag.",
 				Computed:            true,
 			},
+			"on_health_restored": schema.BoolAttribute{
+				MarkdownDescription: "On health restored flag.",
+				Computed:            true,
+			},
+			"on_manual_interaction_required": schema.BoolAttribute{
+				MarkdownDescription: "On manual interaction required flag.",
+				Computed:            true,
+			},
 			"on_application_update": schema.BoolAttribute{
 				MarkdownDescription: "On application update flag.",
 				Computed:            true,
@@ -137,7 +145,6 @@ func (d *NotificationDataSource) Schema(ctx context.Context, req datasource.Sche
 				MarkdownDescription: "Use SSL flag.",
 				Computed:            true,
 			},
-
 			"display_time": schema.Int64Attribute{
 				MarkdownDescription: "Display time.",
 				Computed:            true,
@@ -152,6 +159,10 @@ func (d *NotificationDataSource) Schema(ctx context.Context, req datasource.Sche
 			},
 			"priority": schema.Int64Attribute{
 				MarkdownDescription: "Priority.", // TODO: add values in description
+				Computed:            true,
+			},
+			"notification_type": schema.Int64Attribute{
+				MarkdownDescription: "Notification type. `0` Info, `1` Success, `2` Warning, `3` Failure.",
 				Computed:            true,
 			},
 			"retry": schema.Int64Attribute{
@@ -212,6 +223,10 @@ func (d *NotificationDataSource) Schema(ctx context.Context, req datasource.Sche
 			},
 			"chat_id": schema.StringAttribute{
 				MarkdownDescription: "Chat ID.",
+				Computed:            true,
+			},
+			"topic_id": schema.StringAttribute{
+				MarkdownDescription: "Topic ID.",
 				Computed:            true,
 			},
 			"consumer_key": schema.StringAttribute{
@@ -321,6 +336,24 @@ func (d *NotificationDataSource) Schema(ctx context.Context, req datasource.Sche
 			"event": schema.StringAttribute{
 				MarkdownDescription: "Event.",
 				Computed:            true,
+			},
+			"stateless_urls": schema.StringAttribute{
+				MarkdownDescription: "Stateless URLs.",
+				Computed:            true,
+			},
+			"configuration_key": schema.StringAttribute{
+				MarkdownDescription: "Configuration key.",
+				Computed:            true,
+				Sensitive:           true,
+			},
+			"auth_username": schema.StringAttribute{
+				MarkdownDescription: "Username.",
+				Computed:            true,
+			},
+			"auth_password": schema.StringAttribute{
+				MarkdownDescription: "Password.",
+				Computed:            true,
+				Sensitive:           true,
 			},
 			"device_ids": schema.SetAttribute{
 				MarkdownDescription: "Device IDs.",
