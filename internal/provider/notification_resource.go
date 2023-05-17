@@ -129,6 +129,8 @@ type Notification struct {
 	OnRename                    types.Bool   `tfsdk:"on_rename"`
 	OnUpgrade                   types.Bool   `tfsdk:"on_upgrade"`
 	OnDownload                  types.Bool   `tfsdk:"on_download"`
+	OnHealthRestored            types.Bool   `tfsdk:"on_health_restored"`
+	OnManualInteractionRequired types.Bool   `tfsdk:"on_manual_interaction_required"`
 }
 
 func (r *NotificationResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -180,6 +182,16 @@ func (r *NotificationResource) Schema(ctx context.Context, req resource.SchemaRe
 			},
 			"on_health_issue": schema.BoolAttribute{
 				MarkdownDescription: "On health issue flag.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"on_health_restored": schema.BoolAttribute{
+				MarkdownDescription: "On health restored flag.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"on_manual_interaction_required": schema.BoolAttribute{
+				MarkdownDescription: "On manual interaction required flag.",
 				Optional:            true,
 				Computed:            true,
 			},
@@ -703,6 +715,8 @@ func (n *Notification) write(ctx context.Context, notification *radarr.Notificat
 	n.OnMovieFileDelete = types.BoolValue(notification.GetOnMovieFileDelete())
 	n.OnMovieFileDeleteForUpgrade = types.BoolValue(notification.GetOnMovieFileDeleteForUpgrade())
 	n.OnHealthIssue = types.BoolValue(notification.GetOnHealthIssue())
+	n.OnHealthRestored = types.BoolValue(notification.GetOnHealthRestored())
+	n.OnManualInteractionRequired = types.BoolValue(notification.GetOnManualInteractionRequired())
 	n.OnApplicationUpdate = types.BoolValue(notification.GetOnApplicationUpdate())
 	n.IncludeHealthWarnings = types.BoolValue(notification.GetIncludeHealthWarnings())
 	n.ID = types.Int64Value(int64(notification.GetId()))
@@ -737,6 +751,8 @@ func (n *Notification) read(ctx context.Context) *radarr.NotificationResource {
 	notification.SetOnMovieFileDelete(n.OnMovieFileDelete.ValueBool())
 	notification.SetOnMovieFileDeleteForUpgrade(n.OnMovieFileDeleteForUpgrade.ValueBool())
 	notification.SetOnHealthIssue(n.OnHealthIssue.ValueBool())
+	notification.SetOnHealthRestored(n.OnHealthRestored.ValueBool())
+	notification.SetOnManualInteractionRequired(n.OnManualInteractionRequired.ValueBool())
 	notification.SetOnApplicationUpdate(n.OnApplicationUpdate.ValueBool())
 	notification.SetIncludeHealthWarnings(n.IncludeHealthWarnings.ValueBool())
 	notification.SetId(int32(n.ID.ValueInt64()))
