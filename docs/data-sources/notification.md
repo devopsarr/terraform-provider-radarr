@@ -100,6 +100,7 @@ data "radarr_notification" "example" {
 - `tags` (Set of Number) List of associated tags.
 - `to` (Set of String) To.
 - `token` (String) Token.
+- `topic_id` (String) Topic ID.
 - `topics` (Set of String) Topics.
 - `update_library` (Boolean) Update library flag.
 - `url` (String) URL.

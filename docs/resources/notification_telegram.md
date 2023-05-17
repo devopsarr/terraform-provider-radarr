@@ -57,6 +57,7 @@ resource "radarr_notification_telegram" "example" {
 - `on_upgrade` (Boolean) On upgrade flag.
 - `send_silently` (Boolean) Send silently flag.
 - `tags` (Set of Number) List of associated tags.
+- `topic_id` (String) Topic ID.
 
 ### Read-Only
 

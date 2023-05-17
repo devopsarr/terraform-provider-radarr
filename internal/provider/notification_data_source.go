@@ -137,7 +137,6 @@ func (d *NotificationDataSource) Schema(ctx context.Context, req datasource.Sche
 				MarkdownDescription: "Use SSL flag.",
 				Computed:            true,
 			},
-
 			"display_time": schema.Int64Attribute{
 				MarkdownDescription: "Display time.",
 				Computed:            true,
@@ -212,6 +211,10 @@ func (d *NotificationDataSource) Schema(ctx context.Context, req datasource.Sche
 			},
 			"chat_id": schema.StringAttribute{
 				MarkdownDescription: "Chat ID.",
+				Computed:            true,
+			},
+			"topic_id": schema.StringAttribute{
+				MarkdownDescription: "Topic ID.",
 				Computed:            true,
 			},
 			"consumer_key": schema.StringAttribute{

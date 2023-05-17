@@ -229,6 +229,10 @@ func (d *NotificationsDataSource) Schema(ctx context.Context, req datasource.Sch
 							MarkdownDescription: "Chat ID.",
 							Computed:            true,
 						},
+						"topic_id": schema.StringAttribute{
+							MarkdownDescription: "Topic ID.",
+							Computed:            true,
+						},
 						"consumer_key": schema.StringAttribute{
 							MarkdownDescription: "Consumer key.",
 							Computed:            true,

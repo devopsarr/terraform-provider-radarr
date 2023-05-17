@@ -28,7 +28,7 @@ var (
 
 var notificationFields = helpers.Fields{
 	Bools:                  []string{"alwaysUpdate", "cleanLibrary", "directMessage", "notify", "requireEncryption", "sendSilently", "useSsl", "updateLibrary", "useEuEndpoint"},
-	Strings:                []string{"accessToken", "accessTokenSecret", "apiKey", "aPIKey", "appToken", "arguments", "author", "authToken", "authUser", "avatar", "botToken", "channel", "chatId", "consumerKey", "consumerSecret", "deviceNames", "expires", "from", "host", "icon", "mention", "password", "path", "refreshToken", "senderDomain", "senderId", "server", "signIn", "sound", "token", "url", "userKey", "username", "webHookUrl", "serverUrl", "userName", "clickUrl", "mapFrom", "mapTo", "key", "event"},
+	Strings:                []string{"accessToken", "accessTokenSecret", "apiKey", "aPIKey", "appToken", "arguments", "author", "authToken", "authUser", "avatar", "botToken", "channel", "chatId", "consumerKey", "consumerSecret", "deviceNames", "expires", "from", "host", "icon", "mention", "password", "path", "refreshToken", "senderDomain", "senderId", "server", "signIn", "sound", "token", "url", "userKey", "username", "webHookUrl", "serverUrl", "userName", "clickUrl", "mapFrom", "mapTo", "key", "event", "topicId"},
 	Ints:                   []string{"displayTime", "port", "priority", "retry", "expire", "method"},
 	StringSlices:           []string{"recipients", "to", "cC", "bcc", "topics", "deviceIds", "fieldTags", "channelTags", "devices"},
 	StringSlicesExceptions: []string{"tags"},
@@ -71,6 +71,7 @@ type Notification struct {
 	Arguments                   types.String `tfsdk:"arguments"`
 	ConsumerKey                 types.String `tfsdk:"consumer_key"`
 	ChatID                      types.String `tfsdk:"chat_id"`
+	TopicID                     types.String `tfsdk:"topic_id"`
 	From                        types.String `tfsdk:"from"`
 	Icon                        types.String `tfsdk:"icon"`
 	Password                    types.String `tfsdk:"password"`
@@ -361,6 +362,11 @@ func (r *NotificationResource) Schema(ctx context.Context, req resource.SchemaRe
 			},
 			"chat_id": schema.StringAttribute{
 				MarkdownDescription: "Chat ID.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"topic_id": schema.StringAttribute{
+				MarkdownDescription: "Topic ID.",
 				Optional:            true,
 				Computed:            true,
 			},
