@@ -36,8 +36,10 @@ Read-Only:
 - `api_key` (String) API key.
 - `app_token` (String) App token.
 - `arguments` (String) Arguments.
+- `auth_password` (String, Sensitive) Password.
 - `auth_token` (String) Auth token.
 - `auth_user` (String) Auth user.
+- `auth_username` (String) Username.
 - `author` (String) Author.
 - `avatar` (String) Avatar.
 - `bcc` (Set of String) Bcc.
@@ -49,6 +51,7 @@ Read-Only:
 - `clean_library` (Boolean) Clean library flag.
 - `click_url` (String) Click URL.
 - `config_contract` (String) Notification configuration template.
+- `configuration_key` (String, Sensitive) Configuration key.
 - `consumer_key` (String) Consumer key.
 - `consumer_secret` (String) Consumer secret.
 - `device_ids` (Set of String) Device IDs.
@@ -75,6 +78,7 @@ Read-Only:
 - `mention` (String) Mention.
 - `method` (Number) Method. `1` POST, `2` PUT.
 - `name` (String) Notification name.
+- `notification_type` (Number) Notification type. `0` Info, `1` Success, `2` Warning, `3` Failure.
 - `notify` (Boolean) Notify flag.
 - `on_application_update` (Boolean) On application update flag.
 - `on_download` (Boolean) On download flag.
@@ -103,6 +107,7 @@ Read-Only:
 - `server_url` (String) Server url.
 - `sign_in` (String) Sign in.
 - `sound` (String) Sound.
+- `stateless_urls` (String) Stateless URLs.
 - `tags` (Set of Number) List of associated tags.
 - `to` (Set of String) To.
 - `token` (String) Token.
