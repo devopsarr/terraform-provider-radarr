@@ -163,7 +163,6 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 		NewIndexerNewznabResource,
 		NewIndexerNyaaResource,
 		NewIndexerPassThePopcornResource,
-		NewIndexerRarbgResource,
 		NewIndexerTorrentPotatoResource,
 		NewIndexerTorrentRssResource,
 		NewIndexerTorznabResource,
