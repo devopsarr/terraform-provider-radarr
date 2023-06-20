@@ -223,7 +223,8 @@ func (d *IndexersDataSource) Read(ctx context.Context, req datasource.ReadReques
 	// Map response body to resource schema attribute
 	profiles := make([]Indexer, len(response))
 	for i, p := range response {
-		profiles[i].write(ctx, p)
+		profiles[i].write(ctx, p, &resp.Diagnostics)
+
 	}
 
 	tfsdk.ValueFrom(ctx, profiles, data.Indexers.Type(ctx), &data.Indexers)

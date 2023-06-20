@@ -7,6 +7,7 @@ import (
 
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -215,7 +216,7 @@ func (r *IndexerTorrentPotatoResource) Create(ctx context.Context, req resource.
 	}
 
 	// Create new IndexerTorrentPotato
-	request := indexer.read(ctx)
+	request := indexer.read(ctx, &resp.Diagnostics)
 
 	response, _, err := r.client.IndexerApi.CreateIndexer(ctx).IndexerResource(*request).Execute()
 	if err != nil {
@@ -226,7 +227,7 @@ func (r *IndexerTorrentPotatoResource) Create(ctx context.Context, req resource.
 
 	tflog.Trace(ctx, "created "+indexerTorrentPotatoResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
-	indexer.write(ctx, response)
+	indexer.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &indexer)...)
 }
 
@@ -250,7 +251,7 @@ func (r *IndexerTorrentPotatoResource) Read(ctx context.Context, req resource.Re
 
 	tflog.Trace(ctx, "read "+indexerTorrentPotatoResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Map response body to resource schema attribute
-	indexer.write(ctx, response)
+	indexer.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &indexer)...)
 }
 
@@ -265,7 +266,7 @@ func (r *IndexerTorrentPotatoResource) Update(ctx context.Context, req resource.
 	}
 
 	// Update IndexerTorrentPotato
-	request := indexer.read(ctx)
+	request := indexer.read(ctx, &resp.Diagnostics)
 
 	response, _, err := r.client.IndexerApi.UpdateIndexer(ctx, strconv.Itoa(int(request.GetId()))).IndexerResource(*request).Execute()
 	if err != nil {
@@ -276,7 +277,7 @@ func (r *IndexerTorrentPotatoResource) Update(ctx context.Context, req resource.
 
 	tflog.Trace(ctx, "updated "+indexerTorrentPotatoResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
-	indexer.write(ctx, response)
+	indexer.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &indexer)...)
 }
 
@@ -306,12 +307,12 @@ func (r *IndexerTorrentPotatoResource) ImportState(ctx context.Context, req reso
 	tflog.Trace(ctx, "imported "+indexerTorrentPotatoResourceName+": "+req.ID)
 }
 
-func (i *IndexerTorrentPotato) write(ctx context.Context, indexer *radarr.IndexerResource) {
+func (i *IndexerTorrentPotato) write(ctx context.Context, indexer *radarr.IndexerResource, diags *diag.Diagnostics) {
 	genericIndexer := i.toIndexer()
-	genericIndexer.write(ctx, indexer)
+	genericIndexer.write(ctx, indexer, diags)
 	i.fromIndexer(genericIndexer)
 }
 
-func (i *IndexerTorrentPotato) read(ctx context.Context) *radarr.IndexerResource {
-	return i.toIndexer().read(ctx)
+func (i *IndexerTorrentPotato) read(ctx context.Context, diags *diag.Diagnostics) *radarr.IndexerResource {
+	return i.toIndexer().read(ctx, diags)
 }

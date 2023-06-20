@@ -271,7 +271,7 @@ func (d *DownloadClientDataSource) Read(ctx context.Context, req datasource.Read
 	}
 
 	tflog.Trace(ctx, "read "+downloadClientDataSourceName)
-	data.write(ctx, downloadClient)
+	data.write(ctx, downloadClient, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 

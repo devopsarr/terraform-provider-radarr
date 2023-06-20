@@ -7,6 +7,7 @@ import (
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -232,7 +233,7 @@ func (r *DownloadClientFreeboxResource) Create(ctx context.Context, req resource
 	}
 
 	// Create new DownloadClientFreebox
-	request := client.read(ctx)
+	request := client.read(ctx, &resp.Diagnostics)
 
 	response, _, err := r.client.DownloadClientApi.CreateDownloadClient(ctx).DownloadClientResource(*request).Execute()
 	if err != nil {
@@ -243,7 +244,7 @@ func (r *DownloadClientFreeboxResource) Create(ctx context.Context, req resource
 
 	tflog.Trace(ctx, "created "+downloadClientFreeboxResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
-	client.write(ctx, response)
+	client.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &client)...)
 }
 
@@ -267,7 +268,7 @@ func (r *DownloadClientFreeboxResource) Read(ctx context.Context, req resource.R
 
 	tflog.Trace(ctx, "read "+downloadClientFreeboxResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Map response body to resource schema attribute
-	client.write(ctx, response)
+	client.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &client)...)
 }
 
@@ -282,7 +283,7 @@ func (r *DownloadClientFreeboxResource) Update(ctx context.Context, req resource
 	}
 
 	// Update DownloadClientFreebox
-	request := client.read(ctx)
+	request := client.read(ctx, &resp.Diagnostics)
 
 	response, _, err := r.client.DownloadClientApi.UpdateDownloadClient(ctx, strconv.Itoa(int(request.GetId()))).DownloadClientResource(*request).Execute()
 	if err != nil {
@@ -293,7 +294,7 @@ func (r *DownloadClientFreeboxResource) Update(ctx context.Context, req resource
 
 	tflog.Trace(ctx, "updated "+downloadClientFreeboxResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
-	client.write(ctx, response)
+	client.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &client)...)
 }
 
@@ -323,12 +324,12 @@ func (r *DownloadClientFreeboxResource) ImportState(ctx context.Context, req res
 	tflog.Trace(ctx, "imported "+downloadClientFreeboxResourceName+": "+req.ID)
 }
 
-func (d *DownloadClientFreebox) write(ctx context.Context, downloadClient *radarr.DownloadClientResource) {
+func (d *DownloadClientFreebox) write(ctx context.Context, downloadClient *radarr.DownloadClientResource, diags *diag.Diagnostics) {
 	genericDownloadClient := d.toDownloadClient()
-	genericDownloadClient.write(ctx, downloadClient)
+	genericDownloadClient.write(ctx, downloadClient, diags)
 	d.fromDownloadClient(genericDownloadClient)
 }
 
-func (d *DownloadClientFreebox) read(ctx context.Context) *radarr.DownloadClientResource {
-	return d.toDownloadClient().read(ctx)
+func (d *DownloadClientFreebox) read(ctx context.Context, diags *diag.Diagnostics) *radarr.DownloadClientResource {
+	return d.toDownloadClient().read(ctx, diags)
 }

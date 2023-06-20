@@ -7,6 +7,7 @@ import (
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -183,7 +184,7 @@ func (r *ImportListRSSResource) Create(ctx context.Context, req resource.CreateR
 	}
 
 	// Create new ImportListRSS
-	request := importList.read(ctx)
+	request := importList.read(ctx, &resp.Diagnostics)
 
 	response, _, err := r.client.ImportListApi.CreateImportList(ctx).ImportListResource(*request).Execute()
 	if err != nil {
@@ -194,7 +195,7 @@ func (r *ImportListRSSResource) Create(ctx context.Context, req resource.CreateR
 
 	tflog.Trace(ctx, "created "+importListRSSResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
-	importList.write(ctx, response)
+	importList.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &importList)...)
 }
 
@@ -218,7 +219,7 @@ func (r *ImportListRSSResource) Read(ctx context.Context, req resource.ReadReque
 
 	tflog.Trace(ctx, "read "+importListRSSResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Map response body to resource schema attribute
-	importList.write(ctx, response)
+	importList.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &importList)...)
 }
 
@@ -233,7 +234,7 @@ func (r *ImportListRSSResource) Update(ctx context.Context, req resource.UpdateR
 	}
 
 	// Update ImportListRSS
-	request := importList.read(ctx)
+	request := importList.read(ctx, &resp.Diagnostics)
 
 	response, _, err := r.client.ImportListApi.UpdateImportList(ctx, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
 	if err != nil {
@@ -244,7 +245,7 @@ func (r *ImportListRSSResource) Update(ctx context.Context, req resource.UpdateR
 
 	tflog.Trace(ctx, "updated "+importListRSSResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
-	importList.write(ctx, response)
+	importList.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &importList)...)
 }
 
@@ -274,12 +275,12 @@ func (r *ImportListRSSResource) ImportState(ctx context.Context, req resource.Im
 	tflog.Trace(ctx, "imported "+importListRSSResourceName+": "+req.ID)
 }
 
-func (i *ImportListRSS) write(ctx context.Context, importList *radarr.ImportListResource) {
+func (i *ImportListRSS) write(ctx context.Context, importList *radarr.ImportListResource, diags *diag.Diagnostics) {
 	genericImportList := i.toImportList()
-	genericImportList.write(ctx, importList)
+	genericImportList.write(ctx, importList, diags)
 	i.fromImportList(genericImportList)
 }
 
-func (i *ImportListRSS) read(ctx context.Context) *radarr.ImportListResource {
-	return i.toImportList().read(ctx)
+func (i *ImportListRSS) read(ctx context.Context, diags *diag.Diagnostics) *radarr.ImportListResource {
+	return i.toImportList().read(ctx, diags)
 }

@@ -28,6 +28,10 @@ func ErrDataNotFoundError(kind, field, search string) error {
 	return fmt.Errorf("%w: no %s with %s '%s'", ErrDataNotFound, kind, field, search)
 }
 
+func ParseNotFoundError(kind, field, search string) string {
+	return fmt.Sprintf("Unable to find %s, got error: data source not found: no %s with %s '%s'", kind, kind, field, search)
+}
+
 func ParseClientError(action, name string, err error) string {
 	if e, ok := err.(*radarr.GenericOpenAPIError); ok {
 		return fmt.Sprintf("Unable to %s %s, got error: %s\nDetails:\n%s", action, name, err, string(e.Body()))
