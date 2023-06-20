@@ -260,23 +260,23 @@ func (r *MovieResource) Update(ctx context.Context, req resource.UpdateRequest, 
 }
 
 func (r *MovieResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var movie *Movie
+	var ID int64
 
-	resp.Diagnostics.Append(req.State.Get(ctx, &movie)...)
+	resp.Diagnostics.Append(req.State.GetAttribute(ctx, path.Root("id"), &ID)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Delete movie current value
-	_, err := r.client.MovieApi.DeleteMovie(ctx, int32(movie.ID.ValueInt64())).Execute()
+	_, err := r.client.MovieApi.DeleteMovie(ctx, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, movieResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "deleted "+movieResourceName+": "+strconv.Itoa(int(movie.ID.ValueInt64())))
+	tflog.Trace(ctx, "deleted "+movieResourceName+": "+strconv.Itoa(int(ID)))
 	resp.State.RemoveResource(ctx)
 }
 

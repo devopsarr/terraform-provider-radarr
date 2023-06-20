@@ -159,24 +159,23 @@ func (r *RestrictionResource) Update(ctx context.Context, req resource.UpdateReq
 }
 
 func (r *RestrictionResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state *Restriction
+	var ID int64
 
-	diags := req.State.Get(ctx, &state)
-	resp.Diagnostics.Append(diags...)
+	resp.Diagnostics.Append(req.State.GetAttribute(ctx, path.Root("id"), &ID)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Delete restriction current value
-	_, err := r.client.RestrictionApi.DeleteRestriction(ctx, int32(state.ID.ValueInt64())).Execute()
+	_, err := r.client.RestrictionApi.DeleteRestriction(ctx, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, restrictionName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "deleted "+restrictionName+": "+strconv.Itoa(int(state.ID.ValueInt64())))
+	tflog.Trace(ctx, "deleted "+restrictionName+": "+strconv.Itoa(int(ID)))
 	resp.State.RemoveResource(ctx)
 }
 

@@ -188,23 +188,23 @@ func (r *MetadataEmbyResource) Update(ctx context.Context, req resource.UpdateRe
 }
 
 func (r *MetadataEmbyResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var metadata *MetadataEmby
+	var ID int64
 
-	resp.Diagnostics.Append(req.State.Get(ctx, &metadata)...)
+	resp.Diagnostics.Append(req.State.GetAttribute(ctx, path.Root("id"), &ID)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Delete MetadataEmby current value
-	_, err := r.client.MetadataApi.DeleteMetadata(ctx, int32(metadata.ID.ValueInt64())).Execute()
+	_, err := r.client.MetadataApi.DeleteMetadata(ctx, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, metadataEmbyResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "deleted "+metadataEmbyResourceName+": "+strconv.Itoa(int(metadata.ID.ValueInt64())))
+	tflog.Trace(ctx, "deleted "+metadataEmbyResourceName+": "+strconv.Itoa(int(ID)))
 	resp.State.RemoveResource(ctx)
 }
 
