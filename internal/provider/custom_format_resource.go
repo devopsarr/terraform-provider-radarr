@@ -222,7 +222,7 @@ func (r *CustomFormatResource) Delete(ctx context.Context, req resource.DeleteRe
 	// Delete CustomFormat current value
 	_, err := r.client.CustomFormatApi.DeleteCustomFormat(ctx, int32(client.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, customFormatResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, customFormatResourceName, err))
 
 		return
 	}

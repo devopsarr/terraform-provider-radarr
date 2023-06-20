@@ -336,7 +336,7 @@ func (r *QualityProfileResource) Delete(ctx context.Context, req resource.Delete
 	// Delete qualityprofile current value
 	_, err := r.client.QualityProfileApi.DeleteQualityProfile(ctx, int32(profile.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, qualityProfileResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, qualityProfileResourceName, err))
 
 		return
 	}

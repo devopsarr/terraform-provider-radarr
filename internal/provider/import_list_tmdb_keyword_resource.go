@@ -260,7 +260,7 @@ func (r *ImportListTMDBKeywordResource) Delete(ctx context.Context, req resource
 	// Delete ImportListTMDBKeyword current value
 	_, err := r.client.ImportListApi.DeleteImportList(ctx, int32(importList.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListTMDBKeywordResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListTMDBKeywordResourceName, err))
 
 		return
 	}
