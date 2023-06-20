@@ -292,7 +292,7 @@ func (r *IndexerPassThePopcornResource) Delete(ctx context.Context, req resource
 	// Delete IndexerPassThePopcorn current value
 	_, err := r.client.IndexerApi.DeleteIndexer(ctx, int32(indexer.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, indexerPassThePopcornResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, indexerPassThePopcornResourceName, err))
 
 		return
 	}

@@ -199,7 +199,7 @@ func (r *MetadataEmbyResource) Delete(ctx context.Context, req resource.DeleteRe
 	// Delete MetadataEmby current value
 	_, err := r.client.MetadataApi.DeleteMetadata(ctx, int32(metadata.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, metadataEmbyResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, metadataEmbyResourceName, err))
 
 		return
 	}

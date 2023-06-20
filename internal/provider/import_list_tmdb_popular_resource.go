@@ -311,7 +311,7 @@ func (r *ImportListTMDBPopularResource) Delete(ctx context.Context, req resource
 	// Delete ImportListTMDBPopular current value
 	_, err := r.client.ImportListApi.DeleteImportList(ctx, int32(importList.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListTMDBPopularResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListTMDBPopularResourceName, err))
 
 		return
 	}

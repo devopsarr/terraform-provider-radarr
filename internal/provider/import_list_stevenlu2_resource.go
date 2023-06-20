@@ -271,7 +271,7 @@ func (r *ImportListStevenlu2Resource) Delete(ctx context.Context, req resource.D
 	// Delete ImportListStevenlu2 current value
 	_, err := r.client.ImportListApi.DeleteImportList(ctx, int32(importList.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListStevenlu2ResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListStevenlu2ResourceName, err))
 
 		return
 	}

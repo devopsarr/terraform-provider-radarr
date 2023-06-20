@@ -174,7 +174,7 @@ func (r *RootFolderResource) Delete(ctx context.Context, req resource.DeleteRequ
 	// Delete rootFolder current value
 	_, err := r.client.RootFolderApi.DeleteRootFolder(ctx, int32(folder.ID.ValueInt64())).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, rootFolderResourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, rootFolderResourceName, err))
 
 		return
 	}
