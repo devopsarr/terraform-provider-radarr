@@ -7,6 +7,7 @@ import (
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -195,7 +196,7 @@ func (r *DownloadClientNzbvortexResource) Create(ctx context.Context, req resour
 	}
 
 	// Create new DownloadClientNzbvortex
-	request := client.read(ctx)
+	request := client.read(ctx, &resp.Diagnostics)
 
 	response, _, err := r.client.DownloadClientApi.CreateDownloadClient(ctx).DownloadClientResource(*request).Execute()
 	if err != nil {
@@ -206,7 +207,7 @@ func (r *DownloadClientNzbvortexResource) Create(ctx context.Context, req resour
 
 	tflog.Trace(ctx, "created "+downloadClientNzbvortexResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
-	client.write(ctx, response)
+	client.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &client)...)
 }
 
@@ -230,7 +231,7 @@ func (r *DownloadClientNzbvortexResource) Read(ctx context.Context, req resource
 
 	tflog.Trace(ctx, "read "+downloadClientNzbvortexResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Map response body to resource schema attribute
-	client.write(ctx, response)
+	client.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &client)...)
 }
 
@@ -245,7 +246,7 @@ func (r *DownloadClientNzbvortexResource) Update(ctx context.Context, req resour
 	}
 
 	// Update DownloadClientNzbvortex
-	request := client.read(ctx)
+	request := client.read(ctx, &resp.Diagnostics)
 
 	response, _, err := r.client.DownloadClientApi.UpdateDownloadClient(ctx, strconv.Itoa(int(request.GetId()))).DownloadClientResource(*request).Execute()
 	if err != nil {
@@ -256,28 +257,28 @@ func (r *DownloadClientNzbvortexResource) Update(ctx context.Context, req resour
 
 	tflog.Trace(ctx, "updated "+downloadClientNzbvortexResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
-	client.write(ctx, response)
+	client.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &client)...)
 }
 
 func (r *DownloadClientNzbvortexResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var client *DownloadClientNzbvortex
+	var ID int64
 
-	resp.Diagnostics.Append(req.State.Get(ctx, &client)...)
+	resp.Diagnostics.Append(req.State.GetAttribute(ctx, path.Root("id"), &ID)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Delete DownloadClientNzbvortex current value
-	_, err := r.client.DownloadClientApi.DeleteDownloadClient(ctx, int32(client.ID.ValueInt64())).Execute()
+	_, err := r.client.DownloadClientApi.DeleteDownloadClient(ctx, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, downloadClientNzbvortexResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "deleted "+downloadClientNzbvortexResourceName+": "+strconv.Itoa(int(client.ID.ValueInt64())))
+	tflog.Trace(ctx, "deleted "+downloadClientNzbvortexResourceName+": "+strconv.Itoa(int(ID)))
 	resp.State.RemoveResource(ctx)
 }
 
@@ -286,12 +287,12 @@ func (r *DownloadClientNzbvortexResource) ImportState(ctx context.Context, req r
 	tflog.Trace(ctx, "imported "+downloadClientNzbvortexResourceName+": "+req.ID)
 }
 
-func (d *DownloadClientNzbvortex) write(ctx context.Context, downloadClient *radarr.DownloadClientResource) {
+func (d *DownloadClientNzbvortex) write(ctx context.Context, downloadClient *radarr.DownloadClientResource, diags *diag.Diagnostics) {
 	genericDownloadClient := d.toDownloadClient()
-	genericDownloadClient.write(ctx, downloadClient)
+	genericDownloadClient.write(ctx, downloadClient, diags)
 	d.fromDownloadClient(genericDownloadClient)
 }
 
-func (d *DownloadClientNzbvortex) read(ctx context.Context) *radarr.DownloadClientResource {
-	return d.toDownloadClient().read(ctx)
+func (d *DownloadClientNzbvortex) read(ctx context.Context, diags *diag.Diagnostics) *radarr.DownloadClientResource {
+	return d.toDownloadClient().read(ctx, diags)
 }

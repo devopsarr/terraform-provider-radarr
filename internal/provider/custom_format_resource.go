@@ -6,12 +6,13 @@ import (
 
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -39,6 +40,16 @@ type CustomFormat struct {
 	Name                            types.String `tfsdk:"name"`
 	ID                              types.Int64  `tfsdk:"id"`
 	IncludeCustomFormatWhenRenaming types.Bool   `tfsdk:"include_custom_format_when_renaming"`
+}
+
+func (c CustomFormat) getType() attr.Type {
+	return types.ObjectType{}.WithAttributeTypes(
+		map[string]attr.Type{
+			"include_custom_format_when_renaming": types.BoolType,
+			"id":                                  types.Int64Type,
+			"name":                                types.StringType,
+			"specifications":                      types.SetType{}.WithElementType(CustomFormatCondition{}.getType()),
+		})
 }
 
 func (r *CustomFormatResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -136,7 +147,7 @@ func (r *CustomFormatResource) Create(ctx context.Context, req resource.CreateRe
 	}
 
 	// Create new CustomFormat
-	request := client.read(ctx)
+	request := client.read(ctx, &resp.Diagnostics)
 
 	response, _, err := r.client.CustomFormatApi.CreateCustomFormat(ctx).CustomFormatResource(*request).Execute()
 	if err != nil {
@@ -150,7 +161,7 @@ func (r *CustomFormatResource) Create(ctx context.Context, req resource.CreateRe
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state CustomFormat
 
-	state.write(ctx, response)
+	state.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
@@ -177,7 +188,7 @@ func (r *CustomFormatResource) Read(ctx context.Context, req resource.ReadReques
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state CustomFormat
 
-	state.write(ctx, response)
+	state.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
@@ -192,7 +203,7 @@ func (r *CustomFormatResource) Update(ctx context.Context, req resource.UpdateRe
 	}
 
 	// Update CustomFormat
-	request := client.read(ctx)
+	request := client.read(ctx, &resp.Diagnostics)
 
 	response, _, err := r.client.CustomFormatApi.UpdateCustomFormat(ctx, strconv.Itoa(int(request.GetId()))).CustomFormatResource(*request).Execute()
 	if err != nil {
@@ -206,28 +217,28 @@ func (r *CustomFormatResource) Update(ctx context.Context, req resource.UpdateRe
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state CustomFormat
 
-	state.write(ctx, response)
+	state.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
 func (r *CustomFormatResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var client *CustomFormat
+	var ID int64
 
-	resp.Diagnostics.Append(req.State.Get(ctx, &client)...)
+	resp.Diagnostics.Append(req.State.GetAttribute(ctx, path.Root("id"), &ID)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Delete CustomFormat current value
-	_, err := r.client.CustomFormatApi.DeleteCustomFormat(ctx, int32(client.ID.ValueInt64())).Execute()
+	_, err := r.client.CustomFormatApi.DeleteCustomFormat(ctx, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, customFormatResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "deleted "+customFormatResourceName+": "+strconv.Itoa(int(client.ID.ValueInt64())))
+	tflog.Trace(ctx, "deleted "+customFormatResourceName+": "+strconv.Itoa(int(ID)))
 	resp.State.RemoveResource(ctx)
 }
 
@@ -236,23 +247,24 @@ func (r *CustomFormatResource) ImportState(ctx context.Context, req resource.Imp
 	tflog.Trace(ctx, "imported "+customFormatResourceName+": "+req.ID)
 }
 
-func (c *CustomFormat) write(ctx context.Context, customFormat *radarr.CustomFormatResource) {
-	c.ID = types.Int64Value(int64(customFormat.GetId()))
-	c.Name = types.StringValue(customFormat.GetName())
-	c.IncludeCustomFormatWhenRenaming = types.BoolValue(customFormat.GetIncludeCustomFormatWhenRenaming())
-	c.Specifications = types.SetValueMust(CustomFormatResource{}.getSpecificationSchema().Type(), nil)
+func (c *CustomFormat) write(ctx context.Context, customFormat *radarr.CustomFormatResource, diags *diag.Diagnostics) {
+	var tempDiag diag.Diagnostics
 
 	specs := make([]CustomFormatCondition, len(customFormat.Specifications))
 	for n, s := range customFormat.Specifications {
 		specs[n].write(ctx, s)
 	}
 
-	tfsdk.ValueFrom(ctx, specs, c.Specifications.Type(ctx), &c.Specifications)
+	c.ID = types.Int64Value(int64(customFormat.GetId()))
+	c.Name = types.StringValue(customFormat.GetName())
+	c.IncludeCustomFormatWhenRenaming = types.BoolValue(customFormat.GetIncludeCustomFormatWhenRenaming())
+	c.Specifications, tempDiag = types.SetValueFrom(ctx, CustomFormatCondition{}.getType(), specs)
+	diags.Append(tempDiag...)
 }
 
-func (c *CustomFormat) read(ctx context.Context) *radarr.CustomFormatResource {
+func (c *CustomFormat) read(ctx context.Context, diags *diag.Diagnostics) *radarr.CustomFormatResource {
 	specifications := make([]CustomFormatCondition, len(c.Specifications.Elements()))
-	tfsdk.ValueAs(ctx, c.Specifications, &specifications)
+	diags.Append(c.Specifications.ElementsAs(ctx, &specifications, false)...)
 	specs := make([]*radarr.CustomFormatSpecificationSchema, len(specifications))
 
 	for n, s := range specifications {

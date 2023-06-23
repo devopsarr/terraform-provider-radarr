@@ -7,13 +7,14 @@ import (
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -102,6 +103,68 @@ type ImportList struct {
 	PersonCastProducer        types.Bool   `tfsdk:"cast_producer"`
 	PersonCastSound           types.Bool   `tfsdk:"cast_sound"`
 	PersonCastWriting         types.Bool   `tfsdk:"cast_writing"`
+}
+
+func (i ImportList) getType() attr.Type {
+	return types.ObjectType{}.WithAttributeTypes(
+		map[string]attr.Type{
+			"tag_ids":                     types.SetType{}.WithElementType(types.Int64Type),
+			"tags":                        types.SetType{}.WithElementType(types.Int64Type),
+			"profile_ids":                 types.SetType{}.WithElementType(types.Int64Type),
+			"name":                        types.StringType,
+			"config_contract":             types.StringType,
+			"implementation":              types.StringType,
+			"monitor":                     types.StringType,
+			"minimum_availability":        types.StringType,
+			"root_folder_path":            types.StringType,
+			"list_type":                   types.StringType,
+			"trakt_additional_parameters": types.StringType,
+			"certification":               types.StringType,
+			"genres":                      types.StringType,
+			"years":                       types.StringType,
+			"rating":                      types.StringType,
+			"min_vote_average":            types.StringType,
+			"min_votes":                   types.StringType,
+			"tmdb_certification":          types.StringType,
+			"include_genre_ids":           types.StringType,
+			"exclude_genre_ids":           types.StringType,
+			"auth_user":                   types.StringType,
+			"username":                    types.StringType,
+			"listname":                    types.StringType,
+			"keyword_id":                  types.StringType,
+			"company_id":                  types.StringType,
+			"list_id":                     types.StringType,
+			"person_id":                   types.StringType,
+			"account_id":                  types.StringType,
+			"access_token":                types.StringType,
+			"refresh_token":               types.StringType,
+			"expires":                     types.StringType,
+			"base_url":                    types.StringType,
+			"url_base":                    types.StringType,
+			"url":                         types.StringType,
+			"link":                        types.StringType,
+			"api_key":                     types.StringType,
+			"list_order":                  types.Int64Type,
+			"id":                          types.Int64Type,
+			"quality_profile_id":          types.Int64Type,
+			"port":                        types.Int64Type,
+			"source":                      types.Int64Type,
+			"min_score":                   types.Int64Type,
+			"tmdb_list_type":              types.Int64Type,
+			"user_list_type":              types.Int64Type,
+			"limit":                       types.Int64Type,
+			"trakt_list_type":             types.Int64Type,
+			"language_code":               types.Int64Type,
+			"enabled":                     types.BoolType,
+			"enable_auto":                 types.BoolType,
+			"search_on_add":               types.BoolType,
+			"only_active":                 types.BoolType,
+			"cast":                        types.BoolType,
+			"cast_director":               types.BoolType,
+			"cast_producer":               types.BoolType,
+			"cast_sound":                  types.BoolType,
+			"cast_writing":                types.BoolType,
+		})
 }
 
 func (r *ImportListResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -424,7 +487,7 @@ func (r *ImportListResource) Create(ctx context.Context, req resource.CreateRequ
 	}
 
 	// Create new ImportList
-	request := importList.read(ctx)
+	request := importList.read(ctx, &resp.Diagnostics)
 
 	response, _, err := r.client.ImportListApi.CreateImportList(ctx).ImportListResource(*request).Execute()
 	if err != nil {
@@ -438,7 +501,7 @@ func (r *ImportListResource) Create(ctx context.Context, req resource.CreateRequ
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state ImportList
 
-	state.write(ctx, response)
+	state.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
@@ -465,7 +528,7 @@ func (r *ImportListResource) Read(ctx context.Context, req resource.ReadRequest,
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state ImportList
 
-	state.write(ctx, response)
+	state.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
@@ -480,7 +543,7 @@ func (r *ImportListResource) Update(ctx context.Context, req resource.UpdateRequ
 	}
 
 	// Update ImportList
-	request := importList.read(ctx)
+	request := importList.read(ctx, &resp.Diagnostics)
 
 	response, _, err := r.client.ImportListApi.UpdateImportList(ctx, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
 	if err != nil {
@@ -494,28 +557,28 @@ func (r *ImportListResource) Update(ctx context.Context, req resource.UpdateRequ
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state ImportList
 
-	state.write(ctx, response)
+	state.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
 func (r *ImportListResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var importList *ImportList
+	var ID int64
 
-	resp.Diagnostics.Append(req.State.Get(ctx, &importList)...)
+	resp.Diagnostics.Append(req.State.GetAttribute(ctx, path.Root("id"), &ID)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Delete ImportList current value
-	_, err := r.client.ImportListApi.DeleteImportList(ctx, int32(importList.ID.ValueInt64())).Execute()
+	_, err := r.client.ImportListApi.DeleteImportList(ctx, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "deleted "+importListResourceName+": "+strconv.Itoa(int(importList.ID.ValueInt64())))
+	tflog.Trace(ctx, "deleted "+importListResourceName+": "+strconv.Itoa(int(ID)))
 	resp.State.RemoveResource(ctx)
 }
 
@@ -524,8 +587,12 @@ func (r *ImportListResource) ImportState(ctx context.Context, req resource.Impor
 	tflog.Trace(ctx, "imported "+importListResourceName+": "+req.ID)
 }
 
-func (i *ImportList) write(ctx context.Context, importList *radarr.ImportListResource) {
-	i.Tags, _ = types.SetValueFrom(ctx, types.Int64Type, importList.Tags)
+func (i *ImportList) write(ctx context.Context, importList *radarr.ImportListResource, diags *diag.Diagnostics) {
+	var localDiag diag.Diagnostics
+
+	i.Tags, localDiag = types.SetValueFrom(ctx, types.Int64Type, importList.Tags)
+	diags.Append(localDiag...)
+
 	i.Enabled = types.BoolValue(importList.GetEnabled())
 	i.EnableAuto = types.BoolValue(importList.GetEnableAuto())
 	i.SearchOnAdd = types.BoolValue(importList.GetSearchOnAdd())
@@ -544,10 +611,7 @@ func (i *ImportList) write(ctx context.Context, importList *radarr.ImportListRes
 	helpers.WriteFields(ctx, i, importList.GetFields(), importListFields)
 }
 
-func (i *ImportList) read(ctx context.Context) *radarr.ImportListResource {
-	tags := make([]*int32, len(i.Tags.Elements()))
-	tfsdk.ValueAs(ctx, i.Tags, &tags)
-
+func (i *ImportList) read(ctx context.Context, diags *diag.Diagnostics) *radarr.ImportListResource {
 	list := radarr.NewImportListResource()
 	list.SetEnabled(i.Enabled.ValueBool())
 	list.SetEnableAuto(i.EnableAuto.ValueBool())
@@ -562,7 +626,7 @@ func (i *ImportList) read(ctx context.Context) *radarr.ImportListResource {
 	list.SetConfigContract(i.ConfigContract.ValueString())
 	list.SetImplementation(i.Implementation.ValueString())
 	list.SetName(i.Name.ValueString())
-	list.SetTags(tags)
+	diags.Append(i.Tags.ElementsAs(ctx, &list.Tags, true)...)
 	list.SetFields(helpers.ReadFields(ctx, i, importListFields))
 
 	return list

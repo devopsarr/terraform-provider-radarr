@@ -7,6 +7,7 @@ import (
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -237,7 +238,7 @@ func (r *ImportListTraktListResource) Create(ctx context.Context, req resource.C
 	}
 
 	// Create new ImportListTraktList
-	request := importList.read(ctx)
+	request := importList.read(ctx, &resp.Diagnostics)
 
 	response, _, err := r.client.ImportListApi.CreateImportList(ctx).ImportListResource(*request).Execute()
 	if err != nil {
@@ -248,7 +249,7 @@ func (r *ImportListTraktListResource) Create(ctx context.Context, req resource.C
 
 	tflog.Trace(ctx, "created "+importListTraktListResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
-	importList.write(ctx, response)
+	importList.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &importList)...)
 }
 
@@ -272,7 +273,7 @@ func (r *ImportListTraktListResource) Read(ctx context.Context, req resource.Rea
 
 	tflog.Trace(ctx, "read "+importListTraktListResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Map response body to resource schema attribute
-	importList.write(ctx, response)
+	importList.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &importList)...)
 }
 
@@ -287,7 +288,7 @@ func (r *ImportListTraktListResource) Update(ctx context.Context, req resource.U
 	}
 
 	// Update ImportListTraktList
-	request := importList.read(ctx)
+	request := importList.read(ctx, &resp.Diagnostics)
 
 	response, _, err := r.client.ImportListApi.UpdateImportList(ctx, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
 	if err != nil {
@@ -298,28 +299,28 @@ func (r *ImportListTraktListResource) Update(ctx context.Context, req resource.U
 
 	tflog.Trace(ctx, "updated "+importListTraktListResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
-	importList.write(ctx, response)
+	importList.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &importList)...)
 }
 
 func (r *ImportListTraktListResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var importList *ImportListTraktList
+	var ID int64
 
-	resp.Diagnostics.Append(req.State.Get(ctx, &importList)...)
+	resp.Diagnostics.Append(req.State.GetAttribute(ctx, path.Root("id"), &ID)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Delete ImportListTraktList current value
-	_, err := r.client.ImportListApi.DeleteImportList(ctx, int32(importList.ID.ValueInt64())).Execute()
+	_, err := r.client.ImportListApi.DeleteImportList(ctx, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListTraktListResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "deleted "+importListTraktListResourceName+": "+strconv.Itoa(int(importList.ID.ValueInt64())))
+	tflog.Trace(ctx, "deleted "+importListTraktListResourceName+": "+strconv.Itoa(int(ID)))
 	resp.State.RemoveResource(ctx)
 }
 
@@ -328,12 +329,12 @@ func (r *ImportListTraktListResource) ImportState(ctx context.Context, req resou
 	tflog.Trace(ctx, "imported "+importListTraktListResourceName+": "+req.ID)
 }
 
-func (i *ImportListTraktList) write(ctx context.Context, importList *radarr.ImportListResource) {
+func (i *ImportListTraktList) write(ctx context.Context, importList *radarr.ImportListResource, diags *diag.Diagnostics) {
 	genericImportList := i.toImportList()
-	genericImportList.write(ctx, importList)
+	genericImportList.write(ctx, importList, diags)
 	i.fromImportList(genericImportList)
 }
 
-func (i *ImportListTraktList) read(ctx context.Context) *radarr.ImportListResource {
-	return i.toImportList().read(ctx)
+func (i *ImportListTraktList) read(ctx context.Context, diags *diag.Diagnostics) *radarr.ImportListResource {
+	return i.toImportList().read(ctx, diags)
 }

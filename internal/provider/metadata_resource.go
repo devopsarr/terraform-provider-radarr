@@ -6,12 +6,13 @@ import (
 
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -52,6 +53,24 @@ type Metadata struct {
 	MovieImages           types.Bool   `tfsdk:"movie_images"`
 	UseMovieNfo           types.Bool   `tfsdk:"use_movie_nfo"`
 	AddCollectionName     types.Bool   `tfsdk:"add_collection_name"`
+}
+
+func (m Metadata) getType() attr.Type {
+	return types.ObjectType{}.WithAttributeTypes(
+		map[string]attr.Type{
+			"tags":                    types.SetType{}.WithElementType(types.Int64Type),
+			"name":                    types.StringType,
+			"config_contract":         types.StringType,
+			"implementation":          types.StringType,
+			"id":                      types.Int64Type,
+			"movie_metadata_language": types.Int64Type,
+			"enable":                  types.BoolType,
+			"movie_metadata":          types.BoolType,
+			"movie_metadata_url":      types.BoolType,
+			"movie_images":            types.BoolType,
+			"use_movie_nfo":           types.BoolType,
+			"add_collection_name":     types.BoolType,
+		})
 }
 
 func (r *MetadataResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -144,7 +163,7 @@ func (r *MetadataResource) Create(ctx context.Context, req resource.CreateReques
 	}
 
 	// Create new Metadata
-	request := metadata.read(ctx)
+	request := metadata.read(ctx, &resp.Diagnostics)
 
 	response, _, err := r.client.MetadataApi.CreateMetadata(ctx).MetadataResource(*request).Execute()
 	if err != nil {
@@ -158,7 +177,7 @@ func (r *MetadataResource) Create(ctx context.Context, req resource.CreateReques
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state Metadata
 
-	state.write(ctx, response)
+	state.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
@@ -185,7 +204,7 @@ func (r *MetadataResource) Read(ctx context.Context, req resource.ReadRequest, r
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state Metadata
 
-	state.write(ctx, response)
+	state.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
@@ -200,7 +219,7 @@ func (r *MetadataResource) Update(ctx context.Context, req resource.UpdateReques
 	}
 
 	// Update Metadata
-	request := metadata.read(ctx)
+	request := metadata.read(ctx, &resp.Diagnostics)
 
 	response, _, err := r.client.MetadataApi.UpdateMetadata(ctx, strconv.Itoa(int(request.GetId()))).MetadataResource(*request).Execute()
 	if err != nil {
@@ -214,28 +233,28 @@ func (r *MetadataResource) Update(ctx context.Context, req resource.UpdateReques
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state Metadata
 
-	state.write(ctx, response)
+	state.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
 func (r *MetadataResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var metadata Metadata
+	var ID int64
 
-	resp.Diagnostics.Append(req.State.Get(ctx, &metadata)...)
+	resp.Diagnostics.Append(req.State.GetAttribute(ctx, path.Root("id"), &ID)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Delete Metadata current value
-	_, err := r.client.MetadataApi.DeleteMetadata(ctx, int32(metadata.ID.ValueInt64())).Execute()
+	_, err := r.client.MetadataApi.DeleteMetadata(ctx, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, metadataResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "deleted "+metadataResourceName+": "+strconv.Itoa(int(metadata.ID.ValueInt64())))
+	tflog.Trace(ctx, "deleted "+metadataResourceName+": "+strconv.Itoa(int(ID)))
 	resp.State.RemoveResource(ctx)
 }
 
@@ -244,27 +263,27 @@ func (r *MetadataResource) ImportState(ctx context.Context, req resource.ImportS
 	tflog.Trace(ctx, "imported "+metadataResourceName+": "+req.ID)
 }
 
-func (m *Metadata) write(ctx context.Context, metadata *radarr.MetadataResource) {
-	m.Tags, _ = types.SetValueFrom(ctx, types.Int64Type, metadata.GetTags())
+func (m *Metadata) write(ctx context.Context, metadata *radarr.MetadataResource, diags *diag.Diagnostics) {
+	var localDiag diag.Diagnostics
+
 	m.Enable = types.BoolValue(metadata.GetEnable())
 	m.ID = types.Int64Value(int64(metadata.GetId()))
 	m.ConfigContract = types.StringValue(metadata.GetConfigContract())
 	m.Implementation = types.StringValue(metadata.GetImplementation())
 	m.Name = types.StringValue(metadata.GetName())
+	m.Tags, localDiag = types.SetValueFrom(ctx, types.Int64Type, metadata.Tags)
+	diags.Append(localDiag...)
 	helpers.WriteFields(ctx, m, metadata.GetFields(), metadataFields)
 }
 
-func (m *Metadata) read(ctx context.Context) *radarr.MetadataResource {
-	tags := make([]*int32, len(m.Tags.Elements()))
-	tfsdk.ValueAs(ctx, m.Tags, &tags)
-
+func (m *Metadata) read(ctx context.Context, diags *diag.Diagnostics) *radarr.MetadataResource {
 	metadata := radarr.NewMetadataResource()
 	metadata.SetEnable(m.Enable.ValueBool())
 	metadata.SetId(int32(m.ID.ValueInt64()))
 	metadata.SetConfigContract(m.ConfigContract.ValueString())
 	metadata.SetImplementation(m.Implementation.ValueString())
 	metadata.SetName(m.Name.ValueString())
-	metadata.SetTags(tags)
+	diags.Append(m.Tags.ElementsAs(ctx, &metadata.Tags, true)...)
 	metadata.SetFields(helpers.ReadFields(ctx, m, metadataFields))
 
 	return metadata

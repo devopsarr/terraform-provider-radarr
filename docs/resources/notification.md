@@ -106,7 +106,7 @@ resource "radarr_notification" "example" {
 - `on_movie_file_delete_for_upgrade` (Boolean) On movie file delete for upgrade flag.
 - `on_rename` (Boolean) On rename flag.
 - `on_upgrade` (Boolean) On upgrade flag.
-- `password` (String) password.
+- `password` (String, Sensitive) password.
 - `path` (String) Path.
 - `port` (Number) Port.
 - `priority` (Number) Priority.

@@ -2,13 +2,13 @@ package provider
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -61,9 +61,9 @@ func (d *ImportListExclusionDataSource) Configure(ctx context.Context, req datas
 }
 
 func (d *ImportListExclusionDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var importListExclusion *ImportListExclusion
+	var data *ImportListExclusion
 
-	resp.Diagnostics.Append(req.Config.Get(ctx, &importListExclusion)...)
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -77,25 +77,20 @@ func (d *ImportListExclusionDataSource) Read(ctx context.Context, req datasource
 		return
 	}
 
-	value, err := findImportListExclusion(importListExclusion.TMDBID.ValueInt64(), response)
-	if err != nil {
-		resp.Diagnostics.AddError(helpers.DataSourceError, fmt.Sprintf("Unable to find %s, got error: %s", importListExclusionDataSourceName, err))
-
-		return
-	}
-
+	data.find(data.TMDBID.ValueInt64(), response, &resp.Diagnostics)
 	tflog.Trace(ctx, "read "+importListExclusionDataSourceName)
-	importListExclusion.write(value)
 	// Map response body to resource schema attribute
-	resp.Diagnostics.Append(resp.State.Set(ctx, &importListExclusion)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func findImportListExclusion(tvID int64, importListExclusions []*radarr.ImportExclusionsResource) (*radarr.ImportExclusionsResource, error) {
+func (i *ImportListExclusion) find(tmdbID int64, importListExclusions []*radarr.ImportExclusionsResource, diags *diag.Diagnostics) {
 	for _, t := range importListExclusions {
-		if t.GetTmdbId() == int32(tvID) {
-			return t, nil
+		if t.GetTmdbId() == int32(tmdbID) {
+			i.write(t)
+
+			return
 		}
 	}
 
-	return nil, helpers.ErrDataNotFoundError(importListExclusionDataSourceName, "tmdb_id", strconv.Itoa(int(tvID)))
+	diags.AddError(helpers.DataSourceError, helpers.ParseNotFoundError(importListExclusionDataSourceName, "tmdb_id", strconv.Itoa(int(tmdbID))))
 }

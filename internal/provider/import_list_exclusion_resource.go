@@ -6,6 +6,7 @@ import (
 
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -38,6 +39,16 @@ type ImportListExclusion struct {
 	Year   types.Int64  `tfsdk:"year"`
 	TMDBID types.Int64  `tfsdk:"tmdb_id"`
 	ID     types.Int64  `tfsdk:"id"`
+}
+
+func (i ImportListExclusion) getType() attr.Type {
+	return types.ObjectType{}.WithAttributeTypes(
+		map[string]attr.Type{
+			"id":      types.Int64Type,
+			"tmdb_id": types.Int64Type,
+			"year":    types.Int64Type,
+			"title":   types.StringType,
+		})
 }
 
 func (r *ImportListExclusionResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -154,23 +165,23 @@ func (r *ImportListExclusionResource) Update(ctx context.Context, req resource.U
 }
 
 func (r *ImportListExclusionResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var importListExclusion *ImportListExclusion
+	var ID int64
 
-	resp.Diagnostics.Append(req.State.Get(ctx, &importListExclusion)...)
+	resp.Diagnostics.Append(req.State.GetAttribute(ctx, path.Root("id"), &ID)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Delete importListExclusion current value
-	_, err := r.client.ImportExclusionsApi.DeleteExclusions(ctx, int32(importListExclusion.ID.ValueInt64())).Execute()
+	_, err := r.client.ImportExclusionsApi.DeleteExclusions(ctx, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListExclusionResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "deleted "+importListExclusionResourceName+": "+strconv.Itoa(int(importListExclusion.ID.ValueInt64())))
+	tflog.Trace(ctx, "deleted "+importListExclusionResourceName+": "+strconv.Itoa(int(ID)))
 	resp.State.RemoveResource(ctx)
 }
 

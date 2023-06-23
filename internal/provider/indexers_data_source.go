@@ -8,7 +8,6 @@ import (
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -204,13 +203,6 @@ func (d *IndexersDataSource) Configure(ctx context.Context, req datasource.Confi
 }
 
 func (d *IndexersDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var data *Indexers
-
-	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
-
-	if resp.Diagnostics.HasError() {
-		return
-	}
 	// Get indexers current value
 	response, _, err := d.client.IndexerApi.ListIndexer(ctx).Execute()
 	if err != nil {
@@ -221,13 +213,12 @@ func (d *IndexersDataSource) Read(ctx context.Context, req datasource.ReadReques
 
 	tflog.Trace(ctx, "read "+indexersDataSourceName)
 	// Map response body to resource schema attribute
-	profiles := make([]Indexer, len(response))
+	indexers := make([]Indexer, len(response))
 	for i, p := range response {
-		profiles[i].write(ctx, p)
+		indexers[i].write(ctx, p, &resp.Diagnostics)
 	}
 
-	tfsdk.ValueFrom(ctx, profiles, data.Indexers.Type(ctx), &data.Indexers)
-	// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
-	data.ID = types.StringValue(strconv.Itoa(len(response)))
-	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	indexerList, diags := types.SetValueFrom(ctx, Indexer{}.getType(), indexers)
+	resp.Diagnostics.Append(diags...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, Indexers{Indexers: indexerList, ID: types.StringValue(strconv.Itoa(len(response)))})...)
 }

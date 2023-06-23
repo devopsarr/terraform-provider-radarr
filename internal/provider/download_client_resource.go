@@ -8,13 +8,14 @@ import (
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -96,6 +97,61 @@ type DownloadClient struct {
 	Enable                   types.Bool   `tfsdk:"enable"`
 	RemoveFailedDownloads    types.Bool   `tfsdk:"remove_failed_downloads"`
 	RemoveCompletedDownloads types.Bool   `tfsdk:"remove_completed_downloads"`
+}
+
+func (d DownloadClient) getType() attr.Type {
+	return types.ObjectType{}.WithAttributeTypes(
+		map[string]attr.Type{
+			"tags":                       types.SetType{}.WithElementType(types.Int64Type),
+			"additional_tags":            types.SetType{}.WithElementType(types.Int64Type),
+			"post_import_tags":           types.SetType{}.WithElementType(types.StringType),
+			"field_tags":                 types.SetType{}.WithElementType(types.StringType),
+			"nzb_folder":                 types.StringType,
+			"category":                   types.StringType,
+			"implementation":             types.StringType,
+			"name":                       types.StringType,
+			"protocol":                   types.StringType,
+			"magnet_file_extension":      types.StringType,
+			"torrent_folder":             types.StringType,
+			"strm_folder":                types.StringType,
+			"host":                       types.StringType,
+			"config_contract":            types.StringType,
+			"destination":                types.StringType,
+			"movie_directory":            types.StringType,
+			"username":                   types.StringType,
+			"movie_imported_category":    types.StringType,
+			"movie_category":             types.StringType,
+			"password":                   types.StringType,
+			"secret_token":               types.StringType,
+			"rpc_path":                   types.StringType,
+			"url_base":                   types.StringType,
+			"api_url":                    types.StringType,
+			"api_key":                    types.StringType,
+			"app_id":                     types.StringType,
+			"app_token":                  types.StringType,
+			"watch_folder":               types.StringType,
+			"destination_directory":      types.StringType,
+			"recent_priority":            types.Int64Type,
+			"older_priority":             types.Int64Type,
+			"recent_movie_priority":      types.Int64Type,
+			"intial_state":               types.Int64Type,
+			"initial_state":              types.Int64Type,
+			"older_movie_priority":       types.Int64Type,
+			"priority":                   types.Int64Type,
+			"port":                       types.Int64Type,
+			"id":                         types.Int64Type,
+			"add_stopped":                types.BoolType,
+			"save_magnet_files":          types.BoolType,
+			"read_only":                  types.BoolType,
+			"first_and_last":             types.BoolType,
+			"sequential_order":           types.BoolType,
+			"start_on_add":               types.BoolType,
+			"use_ssl":                    types.BoolType,
+			"add_paused":                 types.BoolType,
+			"enable":                     types.BoolType,
+			"remove_failed_downloads":    types.BoolType,
+			"remove_completed_downloads": types.BoolType,
+		})
 }
 
 func (r *DownloadClientResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -395,7 +451,7 @@ func (r *DownloadClientResource) Create(ctx context.Context, req resource.Create
 	}
 
 	// Create new DownloadClient
-	request := client.read(ctx)
+	request := client.read(ctx, &resp.Diagnostics)
 
 	response, _, err := r.client.DownloadClientApi.CreateDownloadClient(ctx).DownloadClientResource(*request).Execute()
 	if err != nil {
@@ -409,7 +465,7 @@ func (r *DownloadClientResource) Create(ctx context.Context, req resource.Create
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state DownloadClient
 
-	state.write(ctx, response)
+	state.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
@@ -436,7 +492,7 @@ func (r *DownloadClientResource) Read(ctx context.Context, req resource.ReadRequ
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state DownloadClient
 
-	state.write(ctx, response)
+	state.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
@@ -451,7 +507,7 @@ func (r *DownloadClientResource) Update(ctx context.Context, req resource.Update
 	}
 
 	// Update DownloadClient
-	request := client.read(ctx)
+	request := client.read(ctx, &resp.Diagnostics)
 
 	response, _, err := r.client.DownloadClientApi.UpdateDownloadClient(ctx, strconv.Itoa(int(request.GetId()))).DownloadClientResource(*request).Execute()
 	if err != nil {
@@ -465,28 +521,28 @@ func (r *DownloadClientResource) Update(ctx context.Context, req resource.Update
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state DownloadClient
 
-	state.write(ctx, response)
+	state.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
 func (r *DownloadClientResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var client *DownloadClient
+	var ID int64
 
-	resp.Diagnostics.Append(req.State.Get(ctx, &client)...)
+	resp.Diagnostics.Append(req.State.GetAttribute(ctx, path.Root("id"), &ID)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Delete DownloadClient current value
-	_, err := r.client.DownloadClientApi.DeleteDownloadClient(ctx, int32(client.ID.ValueInt64())).Execute()
+	_, err := r.client.DownloadClientApi.DeleteDownloadClient(ctx, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, downloadClientResourceName, err))
 
 		return
 	}
 
-	tflog.Trace(ctx, "deleted "+downloadClientResourceName+": "+strconv.Itoa(int(client.ID.ValueInt64())))
+	tflog.Trace(ctx, "deleted "+downloadClientResourceName+": "+strconv.Itoa(int(ID)))
 	resp.State.RemoveResource(ctx)
 }
 
@@ -495,8 +551,12 @@ func (r *DownloadClientResource) ImportState(ctx context.Context, req resource.I
 	tflog.Trace(ctx, "imported "+downloadClientResourceName+": "+req.ID)
 }
 
-func (d *DownloadClient) write(ctx context.Context, downloadClient *radarr.DownloadClientResource) {
-	d.Tags, _ = types.SetValueFrom(ctx, types.Int64Type, downloadClient.GetTags())
+func (d *DownloadClient) write(ctx context.Context, downloadClient *radarr.DownloadClientResource, diags *diag.Diagnostics) {
+	var localDiag diag.Diagnostics
+
+	d.Tags, localDiag = types.SetValueFrom(ctx, types.Int64Type, downloadClient.Tags)
+	diags.Append(localDiag...)
+
 	d.Enable = types.BoolValue(downloadClient.GetEnable())
 	d.RemoveCompletedDownloads = types.BoolValue(downloadClient.GetRemoveCompletedDownloads())
 	d.RemoveFailedDownloads = types.BoolValue(downloadClient.GetRemoveFailedDownloads())
@@ -512,10 +572,7 @@ func (d *DownloadClient) write(ctx context.Context, downloadClient *radarr.Downl
 	helpers.WriteFields(ctx, d, downloadClient.GetFields(), downloadClientFields)
 }
 
-func (d *DownloadClient) read(ctx context.Context) *radarr.DownloadClientResource {
-	tags := make([]*int32, len(d.Tags.Elements()))
-	tfsdk.ValueAs(ctx, d.Tags, &tags)
-
+func (d *DownloadClient) read(ctx context.Context, diags *diag.Diagnostics) *radarr.DownloadClientResource {
 	client := radarr.NewDownloadClientResource()
 	client.SetEnable(d.Enable.ValueBool())
 	client.SetRemoveCompletedDownloads(d.RemoveCompletedDownloads.ValueBool())
@@ -526,7 +583,7 @@ func (d *DownloadClient) read(ctx context.Context) *radarr.DownloadClientResourc
 	client.SetImplementation(d.Implementation.ValueString())
 	client.SetName(d.Name.ValueString())
 	client.SetProtocol(radarr.DownloadProtocol(d.Protocol.ValueString()))
-	client.SetTags(tags)
+	diags.Append(d.Tags.ElementsAs(ctx, &client.Tags, true)...)
 	client.SetFields(helpers.ReadFields(ctx, d, downloadClientFields))
 
 	return client

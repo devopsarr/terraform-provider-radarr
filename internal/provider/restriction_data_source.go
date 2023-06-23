@@ -2,13 +2,13 @@ package provider
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -64,9 +64,9 @@ func (d *RestrictionDataSource) Configure(ctx context.Context, req datasource.Co
 }
 
 func (d *RestrictionDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var restriction *Restriction
+	var data *Restriction
 
-	resp.Diagnostics.Append(req.Config.Get(ctx, &restriction)...)
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -79,26 +79,20 @@ func (d *RestrictionDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
-	// Map response body to resource schema attribute
-	value, err := findRestriction(restriction.ID.ValueInt64(), response)
-	if err != nil {
-		resp.Diagnostics.AddError(helpers.DataSourceError, fmt.Sprintf("Unable to find %s, got error: %s", restrictionDataSourceName, err))
-
-		return
-	}
-
+	data.find(ctx, data.ID.ValueInt64(), response, &resp.Diagnostics)
 	tflog.Trace(ctx, "read "+restrictionDataSourceName)
-
-	restriction.write(ctx, value)
-	resp.Diagnostics.Append(resp.State.Set(ctx, &restriction)...)
+	// Map response body to resource schema attribute
+	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func findRestriction(id int64, restrictions []*radarr.RestrictionResource) (*radarr.RestrictionResource, error) {
-	for _, m := range restrictions {
-		if int64(m.GetId()) == id {
-			return m, nil
+func (r *Restriction) find(ctx context.Context, id int64, restrictions []*radarr.RestrictionResource, diags *diag.Diagnostics) {
+	for _, restriction := range restrictions {
+		if int64(restriction.GetId()) == id {
+			r.write(ctx, restriction, diags)
+
+			return
 		}
 	}
 
-	return nil, helpers.ErrDataNotFoundError(restrictionDataSourceName, "id", strconv.Itoa(int(id)))
+	diags.AddError(helpers.DataSourceError, helpers.ParseNotFoundError(restrictionDataSourceName, "id", strconv.Itoa(int(id))))
 }
