@@ -6,13 +6,13 @@ import (
 
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -40,6 +40,16 @@ type CustomFormat struct {
 	Name                            types.String `tfsdk:"name"`
 	ID                              types.Int64  `tfsdk:"id"`
 	IncludeCustomFormatWhenRenaming types.Bool   `tfsdk:"include_custom_format_when_renaming"`
+}
+
+func (c CustomFormat) getType() attr.Type {
+	return types.ObjectType{}.WithAttributeTypes(
+		map[string]attr.Type{
+			"include_custom_format_when_renaming": types.BoolType,
+			"id":                                  types.Int64Type,
+			"name":                                types.StringType,
+			"specifications":                      types.SetType{}.WithElementType(CustomFormatCondition{}.getType()),
+		})
 }
 
 func (r *CustomFormatResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -240,17 +250,16 @@ func (r *CustomFormatResource) ImportState(ctx context.Context, req resource.Imp
 func (c *CustomFormat) write(ctx context.Context, customFormat *radarr.CustomFormatResource, diags *diag.Diagnostics) {
 	var tempDiag diag.Diagnostics
 
-	c.ID = types.Int64Value(int64(customFormat.GetId()))
-	c.Name = types.StringValue(customFormat.GetName())
-	c.IncludeCustomFormatWhenRenaming = types.BoolValue(customFormat.GetIncludeCustomFormatWhenRenaming())
-	c.Specifications = types.SetValueMust(CustomFormatResource{}.getSpecificationSchema().Type(), nil)
-
 	specs := make([]CustomFormatCondition, len(customFormat.Specifications))
 	for n, s := range customFormat.Specifications {
 		specs[n].write(ctx, s)
 	}
 
-	tfsdk.ValueFrom(ctx, specs, c.Specifications.Type(ctx), &c.Specifications)
+	c.ID = types.Int64Value(int64(customFormat.GetId()))
+	c.Name = types.StringValue(customFormat.GetName())
+	c.IncludeCustomFormatWhenRenaming = types.BoolValue(customFormat.GetIncludeCustomFormatWhenRenaming())
+	c.Specifications, tempDiag = types.SetValueFrom(ctx, CustomFormatCondition{}.getType(), specs)
+	diags.Append(tempDiag...)
 }
 
 func (c *CustomFormat) read(ctx context.Context, diags *diag.Diagnostics) *radarr.CustomFormatResource {

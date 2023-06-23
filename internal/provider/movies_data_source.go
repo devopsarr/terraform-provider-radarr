@@ -8,7 +8,6 @@ import (
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -149,13 +148,6 @@ func (d *MoviesDataSource) Configure(ctx context.Context, req datasource.Configu
 }
 
 func (d *MoviesDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var data *Movies
-
-	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
-
-	if resp.Diagnostics.HasError() {
-		return
-	}
 	// Get movies current value
 	response, _, err := d.client.MovieApi.ListMovie(ctx).Execute()
 	if err != nil {
@@ -168,11 +160,10 @@ func (d *MoviesDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 	// Map response body to resource schema attribute
 	movies := make([]Movie, len(response))
 	for i, m := range response {
-		movies[i].write(ctx, m)
+		movies[i].write(ctx, m, &resp.Diagnostics)
 	}
 
-	tfsdk.ValueFrom(ctx, movies, data.Movies.Type(ctx), &data.Movies)
-	// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
-	data.ID = types.StringValue(strconv.Itoa(len(response)))
-	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	movieList, diags := types.SetValueFrom(ctx, Movie{}.getType(), movies)
+	resp.Diagnostics.Append(diags...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, Movies{Movies: movieList, ID: types.StringValue(strconv.Itoa(len(response)))})...)
 }

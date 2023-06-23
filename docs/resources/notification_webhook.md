@@ -61,7 +61,7 @@ resource "radarr_notification_webhook" "example" {
 - `on_movie_file_delete_for_upgrade` (Boolean) On movie file delete for upgrade flag.
 - `on_rename` (Boolean) On rename flag.
 - `on_upgrade` (Boolean) On upgrade flag.
-- `password` (String) password.
+- `password` (String, Sensitive) password.
 - `tags` (Set of Number) List of associated tags.
 - `username` (String) Username.
 

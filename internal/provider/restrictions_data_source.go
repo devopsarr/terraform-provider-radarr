@@ -8,7 +8,6 @@ import (
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -82,13 +81,6 @@ func (d *RestrictionsDataSource) Configure(ctx context.Context, req datasource.C
 }
 
 func (d *RestrictionsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var data *Restrictions
-
-	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
-
-	if resp.Diagnostics.HasError() {
-		return
-	}
 	// Get restrictions current value
 	response, _, err := d.client.RestrictionApi.ListRestriction(ctx).Execute()
 	if err != nil {
@@ -101,11 +93,10 @@ func (d *RestrictionsDataSource) Read(ctx context.Context, req datasource.ReadRe
 	// Map response body to resource schema attribute
 	restrictions := make([]Restriction, len(response))
 	for i, p := range response {
-		restrictions[i].write(ctx, p)
+		restrictions[i].write(ctx, p, &resp.Diagnostics)
 	}
 
-	tfsdk.ValueFrom(ctx, restrictions, data.Restrictions.Type(ctx), &data.Restrictions)
-	// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
-	data.ID = types.StringValue(strconv.Itoa(len(response)))
-	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	restrictionList, diags := types.SetValueFrom(ctx, Restriction{}.getType(), restrictions)
+	resp.Diagnostics.Append(diags...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, Restrictions{Restrictions: restrictionList, ID: types.StringValue(strconv.Itoa(len(response)))})...)
 }

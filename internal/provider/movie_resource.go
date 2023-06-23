@@ -8,13 +8,14 @@ import (
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -76,6 +77,30 @@ type Movie struct {
 	// Ratings        types.Object  `tfsdk:"ratings"`
 	// MovieFile      types.Object  `tfsdk:"movieFile"`
 	// Collection     types.Object  `tfsdk:"collection"`
+}
+
+func (m Movie) getType() attr.Type {
+	return types.ObjectType{}.WithAttributeTypes(
+		map[string]attr.Type{
+			"genres":               types.SetType{}.WithElementType(types.StringType),
+			"tags":                 types.SetType{}.WithElementType(types.Int64Type),
+			"original_language":    QualityLanguage{}.getType(),
+			"title":                types.StringType,
+			"path":                 types.StringType,
+			"minimum_availability": types.StringType,
+			"original_title":       types.StringType,
+			"status":               types.StringType,
+			"imdb_id":              types.StringType,
+			"youtube_trailer_id":   types.StringType,
+			"overview":             types.StringType,
+			"website":              types.StringType,
+			"id":                   types.Int64Type,
+			"quality_profile_id":   types.Int64Type,
+			"tmdb_id":              types.Int64Type,
+			"year":                 types.Int64Type,
+			"is_available":         types.BoolType,
+			"monitored":            types.BoolType,
+		})
 }
 
 func (r *MovieResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -190,7 +215,7 @@ func (r *MovieResource) Create(ctx context.Context, req resource.CreateRequest, 
 	}
 
 	// Create new Movie
-	request := movie.read(ctx)
+	request := movie.read(ctx, &resp.Diagnostics)
 	// TODO: can parametrize AddMovieOptions
 	options := radarr.NewAddMovieOptions()
 	options.SetMonitor(radarr.MONITORTYPES_MOVIE_ONLY)
@@ -205,7 +230,7 @@ func (r *MovieResource) Create(ctx context.Context, req resource.CreateRequest, 
 
 	tflog.Trace(ctx, "created movie: "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
-	movie.write(ctx, response)
+	movie.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &movie)...)
 }
 
@@ -229,7 +254,7 @@ func (r *MovieResource) Read(ctx context.Context, req resource.ReadRequest, resp
 
 	tflog.Trace(ctx, "read "+movieResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Map response body to resource schema attribute
-	movie.write(ctx, response)
+	movie.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &movie)...)
 }
 
@@ -244,7 +269,7 @@ func (r *MovieResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	}
 
 	// Update Movie
-	request := movie.read(ctx)
+	request := movie.read(ctx, &resp.Diagnostics)
 
 	response, _, err := r.client.MovieApi.UpdateMovie(ctx, fmt.Sprint(request.GetId())).MovieResource(*request).Execute()
 	if err != nil {
@@ -255,7 +280,7 @@ func (r *MovieResource) Update(ctx context.Context, req resource.UpdateRequest, 
 
 	tflog.Trace(ctx, "updated "+movieResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
-	movie.write(ctx, response)
+	movie.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &movie)...)
 }
 
@@ -285,8 +310,9 @@ func (r *MovieResource) ImportState(ctx context.Context, req resource.ImportStat
 	tflog.Trace(ctx, "imported "+movieResourceName+": "+req.ID)
 }
 
-func (m *Movie) write(ctx context.Context, movie *radarr.MovieResource) {
-	m.Tags, _ = types.SetValueFrom(ctx, types.Int64Type, movie.GetTags())
+func (m *Movie) write(ctx context.Context, movie *radarr.MovieResource, diags *diag.Diagnostics) {
+	var tempDiag diag.Diagnostics
+
 	m.Monitored = types.BoolValue(movie.GetMonitored())
 	m.ID = types.Int64Value(int64(movie.GetId()))
 	m.Title = types.StringValue(movie.GetTitle())
@@ -294,7 +320,6 @@ func (m *Movie) write(ctx context.Context, movie *radarr.MovieResource) {
 	m.QualityProfileID = types.Int64Value(int64(movie.GetQualityProfileId()))
 	m.TMDBID = types.Int64Value(int64(movie.GetTmdbId()))
 	m.MinimumAvailability = types.StringValue(string(movie.GetMinimumAvailability()))
-	// Read only values
 	m.IsAvailable = types.BoolValue(movie.GetIsAvailable())
 	m.OriginalTitle = types.StringValue(movie.GetOriginalTitle())
 	m.Status = types.StringValue(string(movie.GetStatus()))
@@ -305,15 +330,15 @@ func (m *Movie) write(ctx context.Context, movie *radarr.MovieResource) {
 	m.Website = types.StringValue(movie.GetWebsite())
 	language := QualityLanguage{}
 	language.write(movie.OriginalLanguage)
-	tfsdk.ValueFrom(ctx, language, QualityProfileResource{}.getQualityLanguageSchema().Type(), &m.OriginalLanguage)
-	m.Genres = types.SetValueMust(types.StringType, nil)
-	tfsdk.ValueFrom(ctx, movie.Genres, m.Genres.Type(ctx), &m.Genres)
+	m.OriginalLanguage, tempDiag = types.ObjectValueFrom(ctx, QualityLanguage{}.getType().(attr.TypeWithAttributeTypes).AttributeTypes(), language)
+	diags.Append(tempDiag...)
+	m.Genres, tempDiag = types.SetValueFrom(ctx, types.StringType, movie.GetGenres())
+	diags.Append(tempDiag...)
+	m.Tags, tempDiag = types.SetValueFrom(ctx, types.Int64Type, movie.GetTags())
+	diags.Append(tempDiag...)
 }
 
-func (m *Movie) read(ctx context.Context) *radarr.MovieResource {
-	tags := make([]*int32, len(m.Tags.Elements()))
-	tfsdk.ValueAs(ctx, m.Tags, &tags)
-
+func (m *Movie) read(ctx context.Context, diags *diag.Diagnostics) *radarr.MovieResource {
 	movie := radarr.NewMovieResource()
 	movie.SetMonitored(m.Monitored.ValueBool())
 	movie.SetTitle(m.Title.ValueString())
@@ -321,7 +346,7 @@ func (m *Movie) read(ctx context.Context) *radarr.MovieResource {
 	movie.SetQualityProfileId(int32(m.QualityProfileID.ValueInt64()))
 	movie.SetTmdbId(int32(m.TMDBID.ValueInt64()))
 	movie.SetId(int32(m.ID.ValueInt64()))
-	movie.SetTags(tags)
+	diags.Append(m.Tags.ElementsAs(ctx, &movie.Tags, true)...)
 
 	if !m.MinimumAvailability.IsNull() && !m.MinimumAvailability.IsUnknown() {
 		movie.SetMinimumAvailability(radarr.MovieStatusType(m.MinimumAvailability.ValueString()))

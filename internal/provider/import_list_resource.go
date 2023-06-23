@@ -7,6 +7,7 @@ import (
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -102,6 +103,68 @@ type ImportList struct {
 	PersonCastProducer        types.Bool   `tfsdk:"cast_producer"`
 	PersonCastSound           types.Bool   `tfsdk:"cast_sound"`
 	PersonCastWriting         types.Bool   `tfsdk:"cast_writing"`
+}
+
+func (i ImportList) getType() attr.Type {
+	return types.ObjectType{}.WithAttributeTypes(
+		map[string]attr.Type{
+			"tag_ids":                     types.SetType{}.WithElementType(types.Int64Type),
+			"tags":                        types.SetType{}.WithElementType(types.Int64Type),
+			"profile_ids":                 types.SetType{}.WithElementType(types.Int64Type),
+			"name":                        types.StringType,
+			"config_contract":             types.StringType,
+			"implementation":              types.StringType,
+			"monitor":                     types.StringType,
+			"minimum_availability":        types.StringType,
+			"root_folder_path":            types.StringType,
+			"list_type":                   types.StringType,
+			"trakt_additional_parameters": types.StringType,
+			"certification":               types.StringType,
+			"genres":                      types.StringType,
+			"years":                       types.StringType,
+			"rating":                      types.StringType,
+			"min_vote_average":            types.StringType,
+			"min_votes":                   types.StringType,
+			"tmdb_certification":          types.StringType,
+			"include_genre_ids":           types.StringType,
+			"exclude_genre_ids":           types.StringType,
+			"auth_user":                   types.StringType,
+			"username":                    types.StringType,
+			"listname":                    types.StringType,
+			"keyword_id":                  types.StringType,
+			"company_id":                  types.StringType,
+			"list_id":                     types.StringType,
+			"person_id":                   types.StringType,
+			"account_id":                  types.StringType,
+			"access_token":                types.StringType,
+			"refresh_token":               types.StringType,
+			"expires":                     types.StringType,
+			"base_url":                    types.StringType,
+			"url_base":                    types.StringType,
+			"url":                         types.StringType,
+			"link":                        types.StringType,
+			"api_key":                     types.StringType,
+			"list_order":                  types.Int64Type,
+			"id":                          types.Int64Type,
+			"quality_profile_id":          types.Int64Type,
+			"port":                        types.Int64Type,
+			"source":                      types.Int64Type,
+			"min_score":                   types.Int64Type,
+			"tmdb_list_type":              types.Int64Type,
+			"user_list_type":              types.Int64Type,
+			"limit":                       types.Int64Type,
+			"trakt_list_type":             types.Int64Type,
+			"language_code":               types.Int64Type,
+			"enabled":                     types.BoolType,
+			"enable_auto":                 types.BoolType,
+			"search_on_add":               types.BoolType,
+			"only_active":                 types.BoolType,
+			"cast":                        types.BoolType,
+			"cast_director":               types.BoolType,
+			"cast_producer":               types.BoolType,
+			"cast_sound":                  types.BoolType,
+			"cast_writing":                types.BoolType,
+		})
 }
 
 func (r *ImportListResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {

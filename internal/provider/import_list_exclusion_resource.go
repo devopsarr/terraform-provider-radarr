@@ -6,6 +6,7 @@ import (
 
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -38,6 +39,16 @@ type ImportListExclusion struct {
 	Year   types.Int64  `tfsdk:"year"`
 	TMDBID types.Int64  `tfsdk:"tmdb_id"`
 	ID     types.Int64  `tfsdk:"id"`
+}
+
+func (i ImportListExclusion) getType() attr.Type {
+	return types.ObjectType{}.WithAttributeTypes(
+		map[string]attr.Type{
+			"id":      types.Int64Type,
+			"tmdb_id": types.Int64Type,
+			"year":    types.Int64Type,
+			"title":   types.StringType,
+		})
 }
 
 func (r *ImportListExclusionResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {

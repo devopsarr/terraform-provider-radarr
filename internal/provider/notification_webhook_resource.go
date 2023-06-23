@@ -216,6 +216,7 @@ func (r *NotificationWebhookResource) Schema(ctx context.Context, req resource.S
 				MarkdownDescription: "password.",
 				Optional:            true,
 				Computed:            true,
+				Sensitive:           true,
 			},
 			"method": schema.Int64Attribute{
 				MarkdownDescription: "Method. `1` POST, `2` PUT.",

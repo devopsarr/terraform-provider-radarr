@@ -2,13 +2,13 @@ package provider
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -131,9 +131,9 @@ func (d *MovieDataSource) Configure(ctx context.Context, req datasource.Configur
 }
 
 func (d *MovieDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var movie *Movie
+	var data *Movie
 
-	resp.Diagnostics.Append(req.Config.Get(ctx, &movie)...)
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -147,25 +147,20 @@ func (d *MovieDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 		return
 	}
 
-	value, err := findMovie(movie.TMDBID.ValueInt64(), response)
-	if err != nil {
-		resp.Diagnostics.AddError(helpers.DataSourceError, fmt.Sprintf("Unable to find %s, got error: %s", movieDataSourceName, err))
-
-		return
-	}
-
-	tflog.Trace(ctx, "read "+movieDataSourceName)
-	movie.write(ctx, value)
+	data.find(ctx, data.TMDBID.ValueInt64(), response, &resp.Diagnostics)
+	tflog.Trace(ctx, "read "+tagDataSourceName)
 	// Map response body to resource schema attribute
-	resp.Diagnostics.Append(resp.State.Set(ctx, &movie)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func findMovie(ID int64, movies []*radarr.MovieResource) (*radarr.MovieResource, error) {
+func (m *Movie) find(ctx context.Context, ID int64, movies []*radarr.MovieResource, diags *diag.Diagnostics) {
 	for _, t := range movies {
 		if t.GetTmdbId() == int32(ID) {
-			return t, nil
+			m.write(ctx, t, diags)
+
+			return
 		}
 	}
 
-	return nil, helpers.ErrDataNotFoundError(movieDataSourceName, "TMDB ID", strconv.Itoa(int(ID)))
+	diags.AddError(helpers.DataSourceError, helpers.ParseNotFoundError(movieDataSourceName, "TMDB ID", strconv.Itoa(int(ID))))
 }

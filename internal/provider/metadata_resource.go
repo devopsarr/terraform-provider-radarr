@@ -6,6 +6,7 @@ import (
 
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -52,6 +53,24 @@ type Metadata struct {
 	MovieImages           types.Bool   `tfsdk:"movie_images"`
 	UseMovieNfo           types.Bool   `tfsdk:"use_movie_nfo"`
 	AddCollectionName     types.Bool   `tfsdk:"add_collection_name"`
+}
+
+func (m Metadata) getType() attr.Type {
+	return types.ObjectType{}.WithAttributeTypes(
+		map[string]attr.Type{
+			"tags":                    types.SetType{}.WithElementType(types.Int64Type),
+			"name":                    types.StringType,
+			"config_contract":         types.StringType,
+			"implementation":          types.StringType,
+			"id":                      types.Int64Type,
+			"movie_metadata_language": types.Int64Type,
+			"enable":                  types.BoolType,
+			"movie_metadata":          types.BoolType,
+			"movie_metadata_url":      types.BoolType,
+			"movie_images":            types.BoolType,
+			"use_movie_nfo":           types.BoolType,
+			"add_collection_name":     types.BoolType,
+		})
 }
 
 func (r *MetadataResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -247,14 +266,13 @@ func (r *MetadataResource) ImportState(ctx context.Context, req resource.ImportS
 func (m *Metadata) write(ctx context.Context, metadata *radarr.MetadataResource, diags *diag.Diagnostics) {
 	var localDiag diag.Diagnostics
 
-	m.Tags, localDiag = types.SetValueFrom(ctx, types.Int64Type, metadata.Tags)
-	diags.Append(localDiag...)
-
 	m.Enable = types.BoolValue(metadata.GetEnable())
 	m.ID = types.Int64Value(int64(metadata.GetId()))
 	m.ConfigContract = types.StringValue(metadata.GetConfigContract())
 	m.Implementation = types.StringValue(metadata.GetImplementation())
 	m.Name = types.StringValue(metadata.GetName())
+	m.Tags, localDiag = types.SetValueFrom(ctx, types.Int64Type, metadata.Tags)
+	diags.Append(localDiag...)
 	helpers.WriteFields(ctx, m, metadata.GetFields(), metadataFields)
 }
 

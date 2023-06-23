@@ -6,13 +6,14 @@ import (
 
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -42,10 +43,28 @@ type RootFolder struct {
 	Accessible      types.Bool   `tfsdk:"accessible"`
 }
 
+func (r RootFolder) getType() attr.Type {
+	return types.ObjectType{}.WithAttributeTypes(
+		map[string]attr.Type{
+			"unmapped_folders": types.SetType{}.WithElementType(Path{}.getType()),
+			"path":             types.StringType,
+			"id":               types.Int64Type,
+			"accessible":       types.BoolType,
+		})
+}
+
 // Path part of RootFolder.
 type Path struct {
 	Name types.String `tfsdk:"name"`
 	Path types.String `tfsdk:"path"`
+}
+
+func (p Path) getType() attr.Type {
+	return types.ObjectType{}.WithAttributeTypes(
+		map[string]attr.Type{
+			"name": types.StringType,
+			"path": types.StringType,
+		})
 }
 
 func (r *RootFolderResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -130,7 +149,7 @@ func (r *RootFolderResource) Create(ctx context.Context, req resource.CreateRequ
 
 	tflog.Trace(ctx, "created "+rootFolderResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Generate resource state struct
-	folder.write(ctx, response)
+	folder.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &folder)...)
 }
 
@@ -154,7 +173,7 @@ func (r *RootFolderResource) Read(ctx context.Context, req resource.ReadRequest,
 
 	tflog.Trace(ctx, "read "+rootFolderResourceName+": "+strconv.Itoa(int(response.GetId())))
 	// Map response body to resource schema attribute
-	folder.write(ctx, response)
+	folder.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &folder)...)
 }
 
@@ -188,18 +207,20 @@ func (r *RootFolderResource) ImportState(ctx context.Context, req resource.Impor
 	tflog.Trace(ctx, "imported "+rootFolderResourceName+": "+req.ID)
 }
 
-func (r *RootFolder) write(ctx context.Context, rootFolder *radarr.RootFolderResource) {
+func (r *RootFolder) write(ctx context.Context, rootFolder *radarr.RootFolderResource, diags *diag.Diagnostics) {
+	var tempDiag diag.Diagnostics
+
 	r.Accessible = types.BoolValue(rootFolder.GetAccessible())
 	r.ID = types.Int64Value(int64(rootFolder.GetId()))
 	r.Path = types.StringValue(rootFolder.GetPath())
-	r.UnmappedFolders = types.SetValueMust(RootFolderResource{}.getUnmappedFolderSchema().Type(), nil)
 
 	unmapped := make([]Path, len(rootFolder.GetUnmappedFolders()))
 	for i, f := range rootFolder.UnmappedFolders {
 		unmapped[i].write(f)
 	}
 
-	tfsdk.ValueFrom(ctx, unmapped, r.UnmappedFolders.Type(ctx), r.UnmappedFolders)
+	r.UnmappedFolders, tempDiag = types.SetValueFrom(ctx, Path{}.getType(), unmapped)
+	diags.Append(tempDiag...)
 }
 
 func (p *Path) write(folder *radarr.UnmappedFolder) {

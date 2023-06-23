@@ -8,7 +8,6 @@ import (
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -440,13 +439,6 @@ func (d *NotificationsDataSource) Configure(ctx context.Context, req datasource.
 }
 
 func (d *NotificationsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var data *Notifications
-
-	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
-
-	if resp.Diagnostics.HasError() {
-		return
-	}
 	// Get notifications current value
 	response, _, err := d.client.NotificationApi.ListNotification(ctx).Execute()
 	if err != nil {
@@ -457,13 +449,12 @@ func (d *NotificationsDataSource) Read(ctx context.Context, req datasource.ReadR
 
 	tflog.Trace(ctx, "read "+notificationsDataSourceName)
 	// Map response body to resource schema attribute
-	profiles := make([]Notification, len(response))
-	for i, p := range response {
-		profiles[i].write(ctx, p, &resp.Diagnostics)
+	notifications := make([]Notification, len(response))
+	for i, n := range response {
+		notifications[i].write(ctx, n, &resp.Diagnostics)
 	}
 
-	tfsdk.ValueFrom(ctx, profiles, data.Notifications.Type(ctx), &data.Notifications)
-	// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
-	data.ID = types.StringValue(strconv.Itoa(len(response)))
-	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	notificationList, diags := types.SetValueFrom(ctx, Notification{}.getType(), notifications)
+	resp.Diagnostics.Append(diags...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, Notifications{Notifications: notificationList, ID: types.StringValue(strconv.Itoa(len(response)))})...)
 }
