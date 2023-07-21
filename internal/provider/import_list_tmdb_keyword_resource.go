@@ -91,11 +91,11 @@ func (i *ImportListTMDBKeyword) fromImportList(importList *ImportList) {
 	i.SearchOnAdd = importList.SearchOnAdd
 }
 
-func (r *ImportListTMDBKeywordResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (r *ImportListTMDBKeywordResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + importListTMDBKeywordResourceName
 }
 
-func (r *ImportListTMDBKeywordResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *ImportListTMDBKeywordResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List TMDB Keyword resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [TMDB Keyword](https://wiki.servarr.com/radarr/supported#tmdbkeywordimport).",
 		Attributes: map[string]schema.Attribute{

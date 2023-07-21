@@ -106,11 +106,11 @@ func (i *ImportListTMDBPerson) fromImportList(importList *ImportList) {
 	i.PersonCastWriting = importList.PersonCastWriting
 }
 
-func (r *ImportListTMDBPersonResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (r *ImportListTMDBPersonResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + importListTMDBPersonResourceName
 }
 
-func (r *ImportListTMDBPersonResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *ImportListTMDBPersonResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List TMDB Person resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [TMDB Person](https://wiki.servarr.com/radarr/supported#tmdbpersonimport).",
 		Attributes: map[string]schema.Attribute{

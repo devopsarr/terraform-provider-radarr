@@ -41,11 +41,11 @@ type ImportListConfig struct {
 	ID           types.Int64  `tfsdk:"id"`
 }
 
-func (r *ImportListConfigResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (r *ImportListConfigResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + importListConfigResourceName
 }
 
-func (r *ImportListConfigResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *ImportListConfigResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List Config resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#completed-download-handling) documentation.",
 		Attributes: map[string]schema.Attribute{
@@ -156,13 +156,13 @@ func (r *ImportListConfigResource) Update(ctx context.Context, req resource.Upda
 	resp.Diagnostics.Append(resp.State.Set(ctx, config)...)
 }
 
-func (r *ImportListConfigResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+func (r *ImportListConfigResource) Delete(ctx context.Context, _ resource.DeleteRequest, resp *resource.DeleteResponse) {
 	// ImportListConfig cannot be really deleted just removing configuration
 	tflog.Trace(ctx, "decoupled "+importListConfigResourceName+": 1")
 	resp.State.RemoveResource(ctx)
 }
 
-func (r *ImportListConfigResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+func (r *ImportListConfigResource) ImportState(ctx context.Context, _ resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Trace(ctx, "imported "+importListConfigResourceName+": 1")
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), 1)...)
 }

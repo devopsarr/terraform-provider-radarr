@@ -29,11 +29,11 @@ type CustomFormatConditionEditionDataSource struct {
 	client *radarr.APIClient
 }
 
-func (d *CustomFormatConditionEditionDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+func (d *CustomFormatConditionEditionDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + customFormatConditionEditionDataSourceName
 }
 
-func (d *CustomFormatConditionEditionDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *CustomFormatConditionEditionDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
 		MarkdownDescription: "<!-- subcategory:Profiles --> Custom Format Condition Edition data source.\nFor more information refer to [Custom Format Conditions](https://wiki.servarr.com/radarr/settings#conditions).",
@@ -74,7 +74,7 @@ func (d *CustomFormatConditionEditionDataSource) Configure(ctx context.Context, 
 	}
 }
 
-func (d *CustomFormatConditionEditionDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+func (d *CustomFormatConditionEditionDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data *CustomFormatConditionValue
 
 	hash, err := hashstructure.Hash(&data, hashstructure.FormatV2, nil)

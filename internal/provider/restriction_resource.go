@@ -52,7 +52,7 @@ func (r Restriction) getType() attr.Type {
 		})
 }
 
-func (r *RestrictionResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *RestrictionResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Indexers -->Restriction resource.\nFor more information refer to [Restriction](https://wiki.servarr.com/radarr/settings#remote-path-restrictions) documentation.",
 		Attributes: map[string]schema.Attribute{
@@ -83,7 +83,7 @@ func (r *RestrictionResource) Schema(ctx context.Context, req resource.SchemaReq
 	}
 }
 
-func (r *RestrictionResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (r *RestrictionResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + restrictionName
 }
 

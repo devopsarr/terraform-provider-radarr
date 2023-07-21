@@ -32,11 +32,11 @@ type Movies struct {
 	ID     types.String `tfsdk:"id"`
 }
 
-func (d *MoviesDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+func (d *MoviesDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + moviesDataSourceName
 }
 
-func (d *MoviesDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *MoviesDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
 		MarkdownDescription: "<!-- subcategory:Movies -->List all available [Movies](../resources/movie).",
@@ -147,7 +147,7 @@ func (d *MoviesDataSource) Configure(ctx context.Context, req datasource.Configu
 	}
 }
 
-func (d *MoviesDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+func (d *MoviesDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get movies current value
 	response, _, err := d.client.MovieApi.ListMovie(ctx).Execute()
 	if err != nil {

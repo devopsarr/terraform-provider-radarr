@@ -24,11 +24,11 @@ type MetadataConfigDataSource struct {
 	client *radarr.APIClient
 }
 
-func (d *MetadataConfigDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+func (d *MetadataConfigDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + metadataConfigDataSourceName
 }
 
-func (d *MetadataConfigDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *MetadataConfigDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
 		MarkdownDescription: "<!-- subcategory:Metadata -->[Metadata Config](../resources/metadata_config).",
@@ -51,7 +51,7 @@ func (d *MetadataConfigDataSource) Configure(ctx context.Context, req datasource
 	}
 }
 
-func (d *MetadataConfigDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+func (d *MetadataConfigDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get metadata config current value
 	response, _, err := d.client.MetadataConfigApi.GetMetadataConfig(ctx).Execute()
 	if err != nil {

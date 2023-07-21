@@ -91,11 +91,11 @@ func (i *ImportListCustom) fromImportList(importList *ImportList) {
 	i.SearchOnAdd = importList.SearchOnAdd
 }
 
-func (r *ImportListCustomResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (r *ImportListCustomResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + importListCustomResourceName
 }
 
-func (r *ImportListCustomResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *ImportListCustomResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List Custom resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Custom List](https://wiki.servarr.com/radarr/supported#radarrlistimport).",
 		Attributes: map[string]schema.Attribute{

@@ -91,11 +91,11 @@ func (i *ImportListIMDB) fromImportList(importList *ImportList) {
 	i.SearchOnAdd = importList.SearchOnAdd
 }
 
-func (r *ImportListIMDBResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (r *ImportListIMDBResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + importListIMDBResourceName
 }
 
-func (r *ImportListIMDBResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *ImportListIMDBResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List IMDB resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [IMDB](https://wiki.servarr.com/radarr/supported#imdblistimport).",
 		Attributes: map[string]schema.Attribute{

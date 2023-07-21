@@ -67,11 +67,11 @@ func (m *MetadataEmby) fromMetadata(metadata *Metadata) {
 	m.MovieMetadata = metadata.MovieMetadata
 }
 
-func (r *MetadataEmbyResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (r *MetadataEmbyResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + metadataEmbyResourceName
 }
 
-func (r *MetadataEmbyResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *MetadataEmbyResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Metadata -->Metadata Emby resource.\nFor more information refer to [Metadata](https://wiki.servarr.com/radarr/settings#metadata) and [Emby](https://wiki.servarr.com/radarr/supported#mediabrowsermetadata).",
 		Attributes: map[string]schema.Attribute{

@@ -29,11 +29,11 @@ type CustomFormatConditionQualityModifierDataSource struct {
 	client *radarr.APIClient
 }
 
-func (d *CustomFormatConditionQualityModifierDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+func (d *CustomFormatConditionQualityModifierDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + customFormatConditionQualityModifierDataSourceName
 }
 
-func (d *CustomFormatConditionQualityModifierDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *CustomFormatConditionQualityModifierDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
 		MarkdownDescription: "<!-- subcategory:Profiles --> Custom Format Condition Quality Modifier data source.\nFor more information refer to [Custom Format Conditions](https://wiki.servarr.com/radarr/settings#conditions).",
@@ -74,7 +74,7 @@ func (d *CustomFormatConditionQualityModifierDataSource) Configure(ctx context.C
 	}
 }
 
-func (d *CustomFormatConditionQualityModifierDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+func (d *CustomFormatConditionQualityModifierDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data *CustomFormatConditionValue
 
 	hash, err := hashstructure.Hash(&data, hashstructure.FormatV2, nil)

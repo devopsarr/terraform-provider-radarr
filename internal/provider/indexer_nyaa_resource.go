@@ -99,11 +99,11 @@ func (i *IndexerNyaa) fromIndexer(indexer *Indexer) {
 	i.RequiredFlags = indexer.RequiredFlags
 }
 
-func (r *IndexerNyaaResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (r *IndexerNyaaResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + indexerNyaaResourceName
 }
 
-func (r *IndexerNyaaResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *IndexerNyaaResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Indexers -->Indexer Nyaa resource.\nFor more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [Nyaa](https://wiki.servarr.com/radarr/supported#nyaa).",
 		Attributes: map[string]schema.Attribute{

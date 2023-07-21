@@ -111,11 +111,11 @@ func (n *NotificationMailgun) fromNotification(notification *Notification) {
 	n.OnDownload = notification.OnDownload
 }
 
-func (r *NotificationMailgunResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (r *NotificationMailgunResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + notificationMailgunResourceName
 }
 
-func (r *NotificationMailgunResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *NotificationMailgunResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Notifications -->Notification Mailgun resource.\nFor more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Mailgun](https://wiki.servarr.com/radarr/supported#mailgun).",
 		Attributes: map[string]schema.Attribute{

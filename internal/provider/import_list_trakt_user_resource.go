@@ -113,11 +113,11 @@ func (i *ImportListTraktUser) fromImportList(importList *ImportList) {
 	i.SearchOnAdd = importList.SearchOnAdd
 }
 
-func (r *ImportListTraktUserResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (r *ImportListTraktUserResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + importListTraktUserResourceName
 }
 
-func (r *ImportListTraktUserResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *ImportListTraktUserResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List Trakt User resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Trakt User](https://wiki.servarr.com/radarr/supported#traktuserimport).",
 		Attributes: map[string]schema.Attribute{

@@ -32,12 +32,12 @@ type Radarr struct {
 	URL    types.String `tfsdk:"url"`
 }
 
-func (p *RadarrProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
+func (p *RadarrProvider) Metadata(_ context.Context, _ provider.MetadataRequest, resp *provider.MetadataResponse) {
 	resp.TypeName = "radarr"
 	resp.Version = p.version
 }
 
-func (p *RadarrProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
+func (p *RadarrProvider) Schema(_ context.Context, _ provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "The Radarr provider is used to interact with any [Radarr](https://radarr.video/) installation. You must configure the provider with the proper credentials before you can use it. Use the left navigation to read about the available resources.",
 		Attributes: map[string]schema.Attribute{
@@ -129,7 +129,7 @@ func (p *RadarrProvider) Configure(ctx context.Context, req provider.ConfigureRe
 	resp.ResourceData = client
 }
 
-func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resource {
+func (p *RadarrProvider) Resources(_ context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		// Download Clients
 		NewDownloadClientConfigResource,
@@ -244,7 +244,7 @@ func (p *RadarrProvider) Resources(ctx context.Context) []func() resource.Resour
 	}
 }
 
-func (p *RadarrProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
+func (p *RadarrProvider) DataSources(_ context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		// Download Clients
 		NewDownloadClientConfigDataSource,

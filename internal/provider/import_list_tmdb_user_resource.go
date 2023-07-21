@@ -98,11 +98,11 @@ func (i *ImportListTMDBUser) fromImportList(importList *ImportList) {
 	i.SearchOnAdd = importList.SearchOnAdd
 }
 
-func (r *ImportListTMDBUserResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (r *ImportListTMDBUserResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + importListTMDBUserResourceName
 }
 
-func (r *ImportListTMDBUserResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *ImportListTMDBUserResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List TMDB User resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [TMDB User](https://wiki.servarr.com/radarr/supported#tmdbuserimport).",
 		Attributes: map[string]schema.Attribute{

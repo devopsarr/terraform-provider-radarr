@@ -70,11 +70,11 @@ func (m *MetadataWdtv) fromMetadata(metadata *Metadata) {
 	m.MovieImages = metadata.MovieImages
 }
 
-func (r *MetadataWdtvResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (r *MetadataWdtvResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + metadataWdtvResourceName
 }
 
-func (r *MetadataWdtvResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *MetadataWdtvResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Metadata -->Metadata Wdtv resource.\nFor more information refer to [Metadata](https://wiki.servarr.com/radarr/settings#metadata) and [WDTV](https://wiki.servarr.com/radarr/supported#wdtvmetadata).",
 		Attributes: map[string]schema.Attribute{

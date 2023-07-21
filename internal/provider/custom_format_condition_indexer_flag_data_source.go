@@ -29,11 +29,11 @@ type CustomFormatConditionIndexerFlagDataSource struct {
 	client *radarr.APIClient
 }
 
-func (d *CustomFormatConditionIndexerFlagDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+func (d *CustomFormatConditionIndexerFlagDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + customFormatConditionIndexerFlagDataSourceName
 }
 
-func (d *CustomFormatConditionIndexerFlagDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *CustomFormatConditionIndexerFlagDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
 		MarkdownDescription: "<!-- subcategory:Profiles --> Custom Format Condition Indexer Flag data source.\nFor more information refer to [Custom Format Conditions](https://wiki.servarr.com/radarr/settings#conditions) and [Indexer Flag](https://wiki.servarr.com/radarr/settings#indexer-flags).",
@@ -74,7 +74,7 @@ func (d *CustomFormatConditionIndexerFlagDataSource) Configure(ctx context.Conte
 	}
 }
 
-func (d *CustomFormatConditionIndexerFlagDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+func (d *CustomFormatConditionIndexerFlagDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data *CustomFormatConditionValue
 
 	hash, err := hashstructure.Hash(&data, hashstructure.FormatV2, nil)
