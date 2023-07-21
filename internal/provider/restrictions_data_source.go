@@ -32,11 +32,11 @@ type Restrictions struct {
 	ID           types.String `tfsdk:"id"`
 }
 
-func (d *RestrictionsDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+func (d *RestrictionsDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + restrictionsDataSourceName
 }
 
-func (d *RestrictionsDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *RestrictionsDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
 		MarkdownDescription: "<!-- subcategory:Indexers -->List all available [Restrictions](../resources/restriction).",
@@ -80,7 +80,7 @@ func (d *RestrictionsDataSource) Configure(ctx context.Context, req datasource.C
 	}
 }
 
-func (d *RestrictionsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+func (d *RestrictionsDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get restrictions current value
 	response, _, err := d.client.RestrictionApi.ListRestriction(ctx).Execute()
 	if err != nil {

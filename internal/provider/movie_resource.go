@@ -103,11 +103,11 @@ func (m Movie) getType() attr.Type {
 		})
 }
 
-func (r *MovieResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (r *MovieResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + movieResourceName
 }
 
-func (r *MovieResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *MovieResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Movies -->Movie resource.\nFor more information refer to [Movies](https://wiki.servarr.com/radarr/library#movies) documentation.",
 		Attributes: map[string]schema.Attribute{

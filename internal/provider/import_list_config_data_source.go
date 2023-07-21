@@ -24,11 +24,11 @@ type ImportListConfigDataSource struct {
 	client *radarr.APIClient
 }
 
-func (d *ImportListConfigDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+func (d *ImportListConfigDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + importListConfigDataSourceName
 }
 
-func (d *ImportListConfigDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *ImportListConfigDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
 		MarkdownDescription: "<!-- subcategory:Import Lists -->[Import List Config](../resources/import_list_config).",
@@ -55,7 +55,7 @@ func (d *ImportListConfigDataSource) Configure(ctx context.Context, req datasour
 	}
 }
 
-func (d *ImportListConfigDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+func (d *ImportListConfigDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get indexer config current value
 	response, _, err := d.client.ImportListConfigApi.GetImportListConfig(ctx).Execute()
 	if err != nil {

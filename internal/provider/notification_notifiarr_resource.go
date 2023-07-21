@@ -99,11 +99,11 @@ func (n *NotificationNotifiarr) fromNotification(notification *Notification) {
 	n.OnDownload = notification.OnDownload
 }
 
-func (r *NotificationNotifiarrResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (r *NotificationNotifiarrResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + notificationNotifiarrResourceName
 }
 
-func (r *NotificationNotifiarrResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *NotificationNotifiarrResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Notifications -->Notification Notifiarr resource.\nFor more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Notifiarr](https://wiki.servarr.com/radarr/supported#notifiarr).",
 		Attributes: map[string]schema.Attribute{

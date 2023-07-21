@@ -102,11 +102,11 @@ func (i *IndexerTorrentPotato) fromIndexer(indexer *Indexer) {
 	i.RequiredFlags = indexer.RequiredFlags
 }
 
-func (r *IndexerTorrentPotatoResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (r *IndexerTorrentPotatoResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + indexerTorrentPotatoResourceName
 }
 
-func (r *IndexerTorrentPotatoResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *IndexerTorrentPotatoResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Indexers -->Indexer TorrentPotato resource.\nFor more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [TorrentPotato](https://wiki.servarr.com/radarr/supported#torrentpotato).",
 		Attributes: map[string]schema.Attribute{

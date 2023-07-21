@@ -102,11 +102,11 @@ func (i *IndexerPassThePopcorn) fromIndexer(indexer *Indexer) {
 	i.RequiredFlags = indexer.RequiredFlags
 }
 
-func (r *IndexerPassThePopcornResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (r *IndexerPassThePopcornResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + indexerPassThePopcornResourceName
 }
 
-func (r *IndexerPassThePopcornResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *IndexerPassThePopcornResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Indexers -->Indexer PassThePopcorn resource.\nFor more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [PassThePopcorn](https://wiki.servarr.com/radarr/supported#passthepopcorn).",
 		Attributes: map[string]schema.Attribute{

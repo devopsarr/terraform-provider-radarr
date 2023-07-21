@@ -111,11 +111,11 @@ func (i *IndexerTorznab) fromIndexer(indexer *Indexer) {
 	i.RequiredFlags = indexer.RequiredFlags
 }
 
-func (r *IndexerTorznabResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (r *IndexerTorznabResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + indexerTorznabResourceName
 }
 
-func (r *IndexerTorznabResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *IndexerTorznabResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Indexers -->Indexer Torznab resource.\nFor more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [Torznab](https://wiki.servarr.com/radarr/supported#torznab).",
 		Attributes: map[string]schema.Attribute{

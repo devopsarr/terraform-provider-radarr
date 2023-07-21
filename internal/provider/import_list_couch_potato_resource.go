@@ -103,11 +103,11 @@ func (i *ImportListCouchPotato) fromImportList(importList *ImportList) {
 	i.OnlyActive = importList.OnlyActive
 }
 
-func (r *ImportListCouchPotatoResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+func (r *ImportListCouchPotatoResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_" + importListCouchPotatoResourceName
 }
 
-func (r *ImportListCouchPotatoResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *ImportListCouchPotatoResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List Couch Potato resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Couch Potato](https://wiki.servarr.com/radarr/supported#couchpotatoimport).",
 		Attributes: map[string]schema.Attribute{
