@@ -41,22 +41,22 @@ type IndexerHdbitsResource struct {
 
 // IndexerHdbits describes the Hdbits indexer data model.
 type IndexerHdbits struct {
+	SeedRatio               types.Float64 `tfsdk:"seed_ratio"`
 	Tags                    types.Set     `tfsdk:"tags"`
 	Categories              types.Set     `tfsdk:"categories"`
 	Mediums                 types.Set     `tfsdk:"mediums"`
 	Codecs                  types.Set     `tfsdk:"codecs"`
 	MultiLanguages          types.Set     `tfsdk:"multi_languages"`
 	RequiredFlags           types.Set     `tfsdk:"required_flags"`
-	Name                    types.String  `tfsdk:"name"`
-	BaseURL                 types.String  `tfsdk:"base_url"`
 	Username                types.String  `tfsdk:"username"`
+	BaseURL                 types.String  `tfsdk:"base_url"`
 	APIKey                  types.String  `tfsdk:"api_key"`
+	Name                    types.String  `tfsdk:"name"`
 	Priority                types.Int64   `tfsdk:"priority"`
 	ID                      types.Int64   `tfsdk:"id"`
 	DownloadClientID        types.Int64   `tfsdk:"download_client_id"`
 	MinimumSeeders          types.Int64   `tfsdk:"minimum_seeders"`
 	SeedTime                types.Int64   `tfsdk:"seed_time"`
-	SeedRatio               types.Float64 `tfsdk:"seed_ratio"`
 	EnableAutomaticSearch   types.Bool    `tfsdk:"enable_automatic_search"`
 	EnableRss               types.Bool    `tfsdk:"enable_rss"`
 	EnableInteractiveSearch types.Bool    `tfsdk:"enable_interactive_search"`
