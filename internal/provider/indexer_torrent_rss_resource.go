@@ -41,18 +41,18 @@ type IndexerTorrentRssResource struct {
 
 // IndexerTorrentRss describes the TorrentRss indexer data model.
 type IndexerTorrentRss struct {
-	Tags             types.Set     `tfsdk:"tags"`
+	SeedRatio        types.Float64 `tfsdk:"seed_ratio"`
 	MultiLanguages   types.Set     `tfsdk:"multi_languages"`
 	RequiredFlags    types.Set     `tfsdk:"required_flags"`
+	Tags             types.Set     `tfsdk:"tags"`
 	Name             types.String  `tfsdk:"name"`
 	BaseURL          types.String  `tfsdk:"base_url"`
 	Cookie           types.String  `tfsdk:"cookie"`
 	Priority         types.Int64   `tfsdk:"priority"`
-	ID               types.Int64   `tfsdk:"id"`
 	DownloadClientID types.Int64   `tfsdk:"download_client_id"`
 	MinimumSeeders   types.Int64   `tfsdk:"minimum_seeders"`
 	SeedTime         types.Int64   `tfsdk:"seed_time"`
-	SeedRatio        types.Float64 `tfsdk:"seed_ratio"`
+	ID               types.Int64   `tfsdk:"id"`
 	AllowZeroSize    types.Bool    `tfsdk:"allow_zero_size"`
 	EnableRss        types.Bool    `tfsdk:"enable_rss"`
 }

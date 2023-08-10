@@ -41,6 +41,7 @@ type IndexerIptorrentsResource struct {
 
 // IndexerIptorrents describes the Iptorrents indexer data model.
 type IndexerIptorrents struct {
+	SeedRatio        types.Float64 `tfsdk:"seed_ratio"`
 	Tags             types.Set     `tfsdk:"tags"`
 	MultiLanguages   types.Set     `tfsdk:"multi_languages"`
 	RequiredFlags    types.Set     `tfsdk:"required_flags"`
@@ -51,7 +52,6 @@ type IndexerIptorrents struct {
 	DownloadClientID types.Int64   `tfsdk:"download_client_id"`
 	MinimumSeeders   types.Int64   `tfsdk:"minimum_seeders"`
 	SeedTime         types.Int64   `tfsdk:"seed_time"`
-	SeedRatio        types.Float64 `tfsdk:"seed_ratio"`
 	EnableRss        types.Bool    `tfsdk:"enable_rss"`
 }
 

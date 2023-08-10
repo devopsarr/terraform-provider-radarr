@@ -48,15 +48,15 @@ type IndexerResource struct {
 
 // Indexer describes the indexer data model.
 type Indexer struct {
+	SeedRatio               types.Float64 `tfsdk:"seed_ratio"`
 	Categories              types.Set     `tfsdk:"categories"`
 	Mediums                 types.Set     `tfsdk:"mediums"`
 	Codecs                  types.Set     `tfsdk:"codecs"`
 	RequiredFlags           types.Set     `tfsdk:"required_flags"`
 	Tags                    types.Set     `tfsdk:"tags"`
 	MultiLanguages          types.Set     `tfsdk:"multi_languages"`
+	AdditionalParameters    types.String  `tfsdk:"additional_parameters"`
 	Cookie                  types.String  `tfsdk:"cookie"`
-	APIKey                  types.String  `tfsdk:"api_key"`
-	ConfigContract          types.String  `tfsdk:"config_contract"`
 	Implementation          types.String  `tfsdk:"implementation"`
 	Protocol                types.String  `tfsdk:"protocol"`
 	Username                types.String  `tfsdk:"username"`
@@ -64,17 +64,17 @@ type Indexer struct {
 	Passkey                 types.String  `tfsdk:"passkey"`
 	BaseURL                 types.String  `tfsdk:"base_url"`
 	CaptchaToken            types.String  `tfsdk:"captcha_token"`
-	AdditionalParameters    types.String  `tfsdk:"additional_parameters"`
+	APIKey                  types.String  `tfsdk:"api_key"`
 	APIPath                 types.String  `tfsdk:"api_path"`
 	APIUser                 types.String  `tfsdk:"api_user"`
 	Name                    types.String  `tfsdk:"name"`
-	Priority                types.Int64   `tfsdk:"priority"`
+	ConfigContract          types.String  `tfsdk:"config_contract"`
 	SeedTime                types.Int64   `tfsdk:"seed_time"`
 	MinimumSeeders          types.Int64   `tfsdk:"minimum_seeders"`
 	DownloadClientID        types.Int64   `tfsdk:"download_client_id"`
 	Delay                   types.Int64   `tfsdk:"delay"`
 	ID                      types.Int64   `tfsdk:"id"`
-	SeedRatio               types.Float64 `tfsdk:"seed_ratio"`
+	Priority                types.Int64   `tfsdk:"priority"`
 	AllowZeroSize           types.Bool    `tfsdk:"allow_zero_size"`
 	RankedOnly              types.Bool    `tfsdk:"ranked_only"`
 	EnableRss               types.Bool    `tfsdk:"enable_rss"`
