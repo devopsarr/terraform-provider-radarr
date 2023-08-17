@@ -312,8 +312,9 @@ func (p *RadarrProvider) DataSources(_ context.Context) []func() datasource.Data
 		NewCustomFormatConditionSourceDataSource,
 		NewQualityDataSource,
 
-		// System Status
+		// System
 		NewSystemStatusDataSource,
+		NewHostDataSource,
 
 		// Tags
 		NewTagDataSource,
