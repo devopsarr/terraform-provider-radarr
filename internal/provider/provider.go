@@ -243,6 +243,7 @@ func (p *RadarrProvider) Resources(_ context.Context) []func() resource.Resource
 
 		// Tags
 		NewTagResource,
+		NewAutoTagResource,
 	}
 }
 
