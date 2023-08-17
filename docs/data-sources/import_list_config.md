@@ -23,7 +23,6 @@ data "radarr_import_list_config" "example" {
 ### Read-Only
 
 - `id` (Number) Import List Config ID.
-- `sync_interval` (Number) List Update Interval.
 - `sync_level` (String) Clean library level.
 
 

@@ -54,7 +54,6 @@ func TestAccImportListConfigResource(t *testing.T) {
 func testAccImportListConfigResourceConfig(level string) string {
 	return fmt.Sprintf(`
 	resource "radarr_import_list_config" "test" {
-		sync_interval = 24
 		sync_level = "%s"
 	}`, level)
 }

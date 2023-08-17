@@ -36,9 +36,8 @@ type ImportListConfigResource struct {
 
 // ImportListConfig describes the import list config data model.
 type ImportListConfig struct {
-	SyncLevel    types.String `tfsdk:"sync_level"`
-	SyncInterval types.Int64  `tfsdk:"sync_interval"`
-	ID           types.Int64  `tfsdk:"id"`
+	SyncLevel types.String `tfsdk:"sync_level"`
+	ID        types.Int64  `tfsdk:"id"`
 }
 
 func (r *ImportListConfigResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -55,10 +54,6 @@ func (r *ImportListConfigResource) Schema(_ context.Context, _ resource.SchemaRe
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.UseStateForUnknown(),
 				},
-			},
-			"sync_interval": schema.Int64Attribute{
-				MarkdownDescription: "List Update Interval.",
-				Required:            true,
 			},
 			"sync_level": schema.StringAttribute{
 				MarkdownDescription: "Clean library level.",
@@ -169,7 +164,6 @@ func (r *ImportListConfigResource) ImportState(ctx context.Context, _ resource.I
 
 func (c *ImportListConfig) write(importListConfig *radarr.ImportListConfigResource) {
 	c.ID = types.Int64Value(int64(importListConfig.GetId()))
-	c.SyncInterval = types.Int64Value(int64(importListConfig.GetImportListSyncInterval()))
 	c.SyncLevel = types.StringValue(importListConfig.GetListSyncLevel())
 }
 
@@ -177,7 +171,6 @@ func (c *ImportListConfig) read() *radarr.ImportListConfigResource {
 	config := radarr.NewImportListConfigResource()
 	config.SetId(int32(c.ID.ValueInt64()))
 	config.SetListSyncLevel(c.SyncLevel.ValueString())
-	config.SetImportListSyncInterval(int32(c.SyncInterval.ValueInt64()))
 
 	return config
 }
