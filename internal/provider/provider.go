@@ -166,7 +166,6 @@ func (p *RadarrProvider) Resources(_ context.Context) []func() resource.Resource
 		NewIndexerTorrentPotatoResource,
 		NewIndexerTorrentRssResource,
 		NewIndexerTorznabResource,
-		NewRestrictionResource,
 
 		// Import Lists
 		NewImportListResource,
@@ -260,8 +259,6 @@ func (p *RadarrProvider) DataSources(_ context.Context) []func() datasource.Data
 		NewIndexerConfigDataSource,
 		NewIndexerDataSource,
 		NewIndexersDataSource,
-		NewRestrictionDataSource,
-		NewRestrictionsDataSource,
 
 		// Import Lists
 		NewImportListConfigDataSource,
