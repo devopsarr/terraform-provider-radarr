@@ -319,6 +319,11 @@ func (p *RadarrProvider) DataSources(_ context.Context) []func() datasource.Data
 		NewTagsDataSource,
 		NewAutoTagDataSource,
 		NewAutoTagsDataSource,
+		NewAutoTagConditionDataSource,
+		NewAutoTagConditionGenresDataSource,
+		NewAutoTagConditionMonitoredDataSource,
+		NewAutoTagConditionRootFolderDataSource,
+		NewAutoTagConditionYearDataSource,
 	}
 }
 
