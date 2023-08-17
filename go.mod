@@ -3,7 +3,7 @@ module github.com/devopsarr/terraform-provider-radarr
 go 1.19
 
 require (
-	github.com/devopsarr/radarr-go v0.3.0
+	github.com/devopsarr/radarr-go v0.4.0
 	github.com/hashicorp/terraform-plugin-docs v0.16.0
 	github.com/hashicorp/terraform-plugin-framework v1.3.4
 	github.com/hashicorp/terraform-plugin-framework-validators v0.11.0

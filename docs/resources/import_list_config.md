@@ -26,7 +26,6 @@ resource "radarr_import_list_config" "example" {
 
 ### Required
 
-- `sync_interval` (Number) List Update Interval.
 - `sync_level` (String) Clean library level.
 
 ### Read-Only

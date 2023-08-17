@@ -37,10 +37,6 @@ func (d *ImportListConfigDataSource) Schema(_ context.Context, _ datasource.Sche
 				MarkdownDescription: "Import List Config ID.",
 				Computed:            true,
 			},
-			"sync_interval": schema.Int64Attribute{
-				MarkdownDescription: "List Update Interval.",
-				Computed:            true,
-			},
 			"sync_level": schema.StringAttribute{
 				MarkdownDescription: "Clean library level.",
 				Computed:            true,

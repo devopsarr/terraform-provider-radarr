@@ -166,7 +166,6 @@ func (p *RadarrProvider) Resources(_ context.Context) []func() resource.Resource
 		NewIndexerTorrentPotatoResource,
 		NewIndexerTorrentRssResource,
 		NewIndexerTorznabResource,
-		NewRestrictionResource,
 
 		// Import Lists
 		NewImportListResource,
@@ -244,6 +243,7 @@ func (p *RadarrProvider) Resources(_ context.Context) []func() resource.Resource
 
 		// Tags
 		NewTagResource,
+		NewAutoTagResource,
 	}
 }
 
@@ -260,8 +260,6 @@ func (p *RadarrProvider) DataSources(_ context.Context) []func() datasource.Data
 		NewIndexerConfigDataSource,
 		NewIndexerDataSource,
 		NewIndexersDataSource,
-		NewRestrictionDataSource,
-		NewRestrictionsDataSource,
 
 		// Import Lists
 		NewImportListConfigDataSource,
@@ -319,6 +317,13 @@ func (p *RadarrProvider) DataSources(_ context.Context) []func() datasource.Data
 		// Tags
 		NewTagDataSource,
 		NewTagsDataSource,
+		NewAutoTagDataSource,
+		NewAutoTagsDataSource,
+		NewAutoTagConditionDataSource,
+		NewAutoTagConditionGenresDataSource,
+		NewAutoTagConditionMonitoredDataSource,
+		NewAutoTagConditionRootFolderDataSource,
+		NewAutoTagConditionYearDataSource,
 	}
 }
 
