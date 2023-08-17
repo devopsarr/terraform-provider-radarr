@@ -317,6 +317,7 @@ func (p *RadarrProvider) DataSources(_ context.Context) []func() datasource.Data
 		// Tags
 		NewTagDataSource,
 		NewTagsDataSource,
+		NewAutoTagDataSource,
 	}
 }
 
