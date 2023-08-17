@@ -239,6 +239,9 @@ func (p *RadarrProvider) Resources(_ context.Context) []func() resource.Resource
 		NewQualityProfileResource,
 		NewQualityDefinitionResource,
 
+		// System
+		NewHostResource,
+
 		// Tags
 		NewTagResource,
 	}
@@ -309,8 +312,9 @@ func (p *RadarrProvider) DataSources(_ context.Context) []func() datasource.Data
 		NewCustomFormatConditionSourceDataSource,
 		NewQualityDataSource,
 
-		// System Status
+		// System
 		NewSystemStatusDataSource,
+		NewHostDataSource,
 
 		// Tags
 		NewTagDataSource,
