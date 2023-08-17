@@ -239,6 +239,9 @@ func (p *RadarrProvider) Resources(_ context.Context) []func() resource.Resource
 		NewQualityProfileResource,
 		NewQualityDefinitionResource,
 
+		// System
+		NewHostResource,
+
 		// Tags
 		NewTagResource,
 	}
