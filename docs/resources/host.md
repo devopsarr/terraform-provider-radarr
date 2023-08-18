@@ -15,7 +15,7 @@ For more information refer to [Host](https://wiki.servarr.com/radarr/settings#ge
 ## Example Usage
 
 ```terraform
-resource "radarr_naming" "test" {
+resource "radarr_host" "test" {
   launch_browser  = true
   port            = 7878
   url_base        = ""
