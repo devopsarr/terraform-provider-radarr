@@ -1,4 +1,4 @@
-resource "radarr_naming" "test" {
+resource "radarr_host" "test" {
   launch_browser  = true
   port            = 7878
   url_base        = ""

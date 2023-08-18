@@ -16,8 +16,7 @@ For more information refer to [Import List](https://wiki.servarr.com/radarr/sett
 
 ```terraform
 resource "radarr_import_list_config" "example" {
-  sync_interval = 24
-  sync_level    = "logOnly"
+  sync_level = "logOnly"
 }
 ```
 
