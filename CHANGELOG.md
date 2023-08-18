@@ -1,5 +1,40 @@
 # Changelog
 
+## [2.0.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v1.8.0...v2.0.0) (2023-08-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove deprecated restriction
+* remove deprecated import list sync_interval
+* remove obsolete indexer omgwtfnzbs
+
+### Features
+
+* **#203:** add host data source ([be3a56a](https://github.com/devopsarr/terraform-provider-radarr/commit/be3a56acc1449d7ce43641a7248485becea877dc))
+* **#203:** add host resource ([4d7aa59](https://github.com/devopsarr/terraform-provider-radarr/commit/4d7aa5910f7c0249860679911b48eb6dbef3df94))
+* add apprise notification ([d84faec](https://github.com/devopsarr/terraform-provider-radarr/commit/d84faec7e8f07ce4292cfcec348fa5ec57b8848c))
+* add auto tag conditions data source ([c58bb25](https://github.com/devopsarr/terraform-provider-radarr/commit/c58bb25c5f1a5b6a0f546a4364656e08bfff2d15))
+* add auto tag data source ([6bd4726](https://github.com/devopsarr/terraform-provider-radarr/commit/6bd4726f13bba9b1178be300ef127784d4f003e1))
+* add auto tag resource ([f689119](https://github.com/devopsarr/terraform-provider-radarr/commit/f68911907ae828c5897945a6e8abc13d063efb94))
+* add auto tags data source ([d427bfe](https://github.com/devopsarr/terraform-provider-radarr/commit/d427bfef6e5fde654c9cae24b738eaed7d0ebfaf))
+* add ireland certification country ([84785b6](https://github.com/devopsarr/terraform-provider-radarr/commit/84785b6b60b4a15a33e88e7157fc65c16326c93b))
+* add support for new notifications flags ([777c6a6](https://github.com/devopsarr/terraform-provider-radarr/commit/777c6a6ecb2d5c84c5342b7e1444c191ae640d4f))
+* add telegram topic id support ([842567f](https://github.com/devopsarr/terraform-provider-radarr/commit/842567f394fc5cdb3974577cdc6d81aa2471709d))
+* improve diagnostics part 1 ([78a628f](https://github.com/devopsarr/terraform-provider-radarr/commit/78a628f1bc3e765f483a382ddb9197ec5d408cfa))
+* improve diagnostics part 2 ([0e97afe](https://github.com/devopsarr/terraform-provider-radarr/commit/0e97afe2ac5889515db24226978f79d5e48db0ba))
+* remove deprecated import list sync_interval ([17b4490](https://github.com/devopsarr/terraform-provider-radarr/commit/17b4490b33aa83c1638cf82c86245536cab8cf6e))
+* remove deprecated restriction ([37b012c](https://github.com/devopsarr/terraform-provider-radarr/commit/37b012c911420de587db1c9ba626e43fb08be02e))
+* remove obsolete indexer omgwtfnzbs ([3aa2cf9](https://github.com/devopsarr/terraform-provider-radarr/commit/3aa2cf9a008e7327684c628b4d26d99536f6ad7c))
+* remove obsolete indexer rarbg ([e49da69](https://github.com/devopsarr/terraform-provider-radarr/commit/e49da6987bdd514b65ec01ac7032d5635fb3f943))
+* use only ID for delete ([6cb897d](https://github.com/devopsarr/terraform-provider-radarr/commit/6cb897df0f1052ffa9511b001b4df316abbb16b5))
+
+
+### Bug Fixes
+
+* delete error message ([85ccd1c](https://github.com/devopsarr/terraform-provider-radarr/commit/85ccd1c606163222636fe8b1232f765d7e2df555))
+* non empty state for nil fields ([05a969e](https://github.com/devopsarr/terraform-provider-radarr/commit/05a969eb376ca4f8825de39a77faeb8d359c9ab9))
+
 ## [1.8.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v1.7.0...v1.8.0) (2023-02-01)
 
 
