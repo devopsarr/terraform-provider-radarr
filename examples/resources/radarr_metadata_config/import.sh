@@ -1,2 +1,2 @@
 # import does not need parameters
-terraform import radarr_metadata_config.example
+terraform import radarr_metadata_config.example ""
