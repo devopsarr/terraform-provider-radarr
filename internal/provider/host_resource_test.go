@@ -17,12 +17,12 @@ func TestAccHostResource(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Unauthorized Create
 			{
-				Config:      testAccHostResourceConfig("Radarr") + testUnauthorizedProvider,
+				Config:      testAccHostResourceConfig("Radarr", "test") + testUnauthorizedProvider,
 				ExpectError: regexp.MustCompile("Client Error"),
 			},
 			// Create and Read testing
 			{
-				Config: testAccHostResourceConfig("Radarr"),
+				Config: testAccHostResourceConfig("Radarr", "test"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("radarr_host.test", "port", "7878"),
 					resource.TestCheckResourceAttrSet("radarr_host.test", "id"),
@@ -30,12 +30,12 @@ func TestAccHostResource(t *testing.T) {
 			},
 			// Unauthorized Read
 			{
-				Config:      testAccHostResourceConfig("Radarr") + testUnauthorizedProvider,
+				Config:      testAccHostResourceConfig("Radarr", "test") + testUnauthorizedProvider,
 				ExpectError: regexp.MustCompile("Client Error"),
 			},
 			// Update and Read testing
 			{
-				Config: testAccHostResourceConfig("RadarrTest"),
+				Config: testAccHostResourceConfig("RadarrTest", "test123"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("radarr_host.test", "port", "7878"),
 				),
@@ -45,13 +45,14 @@ func TestAccHostResource(t *testing.T) {
 				ResourceName:      "radarr_host.test",
 				ImportState:       true,
 				ImportStateVerify: true,
+				ImportStateId:     "test123",
 			},
 			// Delete testing automatically occurs in TestCase
 		},
 	})
 }
 
-func testAccHostResourceConfig(name string) string {
+func testAccHostResourceConfig(name, password string) string {
 	return fmt.Sprintf(`
 	resource "radarr_host" "test" {
 		launch_browser = true
@@ -76,11 +77,13 @@ func testAccHostResourceConfig(name string) string {
 			retention = 10
 		}
 		authentication = {
-			method = "none"
+			method = "basic"
+			username = "test"
+			password = "%s"
 		}
 		update = {
 			mechanism = "docker"
 			branch = "develop"
 		}
-	}`, name)
+	}`, name, password)
 }

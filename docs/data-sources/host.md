@@ -41,6 +41,7 @@ data "radarr_host" "example" {
 
 Read-Only:
 
+- `encrypted_password` (String, Sensitive) Needed for validation.
 - `method` (String) Authentication method.
 - `password` (String, Sensitive) Password.
 - `username` (String) Username.
