@@ -84,6 +84,10 @@ Optional:
 - `password` (String, Sensitive) Password.
 - `username` (String) Username.
 
+Read-Only:
+
+- `encrypted_password` (String, Sensitive) Needed for validation.
+
 
 <a id="nestedatt--backup"></a>
 ### Nested Schema for `backup`
@@ -159,6 +163,9 @@ Optional:
 Import is supported using the following syntax:
 
 ```shell
-# import does not need parameters
-terraform import radarr_host.example
+# import using the authentication password
+terraform import radarr_host.example "pa$$word"
+
+# leave empty if authentication is set to none
+terraform import radarr_host.example ""
 ```

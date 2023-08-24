@@ -14,6 +14,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -101,17 +103,19 @@ func (s SSLConfig) getType() attr.Type {
 
 // AuthConfig is part of Host.
 type AuthConfig struct {
-	Method   types.String `tfsdk:"method"`
-	Username types.String `tfsdk:"username"`
-	Password types.String `tfsdk:"password"`
+	Method            types.String `tfsdk:"method"`
+	Username          types.String `tfsdk:"username"`
+	Password          types.String `tfsdk:"password"`
+	EncryptedPassword types.String `tfsdk:"encrypted_password"`
 }
 
 func (a AuthConfig) getType() attr.Type {
 	return types.ObjectType{}.WithAttributeTypes(
 		map[string]attr.Type{
-			"method":   types.StringType,
-			"username": types.StringType,
-			"password": types.StringType,
+			"method":             types.StringType,
+			"username":           types.StringType,
+			"password":           types.StringType,
+			"encrypted_password": types.StringType,
 		})
 }
 
@@ -286,6 +290,15 @@ func (r *HostResource) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
+						Default:             stringdefault.StaticString(""),
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.UseStateForUnknown(),
+						},
+					},
+					"encrypted_password": schema.StringAttribute{
+						MarkdownDescription: "Needed for validation.",
+						Computed:            true,
+						Sensitive:           true,
 					},
 				},
 			},
@@ -385,13 +398,6 @@ func (r *HostResource) Create(ctx context.Context, req resource.CreateRequest, r
 		return
 	}
 
-	// Init call if we remove this it the very first update on a brand new instance will fail
-	if _, _, err := r.client.HostConfigApi.GetHostConfig(ctx).Execute(); err != nil {
-		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, hostResourceName, err))
-
-		return
-	}
-
 	// Build Create resource
 	request := host.read(ctx, &resp.Diagnostics)
 	request.SetId(1)
@@ -467,9 +473,10 @@ func (r *HostResource) Delete(ctx context.Context, _ resource.DeleteRequest, res
 	resp.State.RemoveResource(ctx)
 }
 
-func (r *HostResource) ImportState(ctx context.Context, _ resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+func (r *HostResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Trace(ctx, "imported "+hostResourceName+": 1")
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), 1)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("authentication").AtName("password"), req.ID)...)
 }
 
 func (h *Host) write(ctx context.Context, host *radarr.HostConfigResource, diags *diag.Diagnostics) {
@@ -489,6 +496,9 @@ func (h *Host) write(ctx context.Context, host *radarr.HostConfigResource, diags
 	backup := BackupConfig{}
 	update := UpdateConfig{}
 	log := LoggingConfig{}
+
+	// Get the state/plan password to propagate the same
+	diags.Append(h.AuthConfig.As(ctx, &auth, basetypes.ObjectAsOptions{})...)
 
 	proxy.write(host)
 	ssl.write(host)
@@ -533,7 +543,7 @@ func (b *BackupConfig) write(host *radarr.HostConfigResource) {
 func (a *AuthConfig) write(host *radarr.HostConfigResource) {
 	a.Method = types.StringValue(string(host.GetAuthenticationMethod()))
 	a.Username = types.StringValue(host.GetUsername())
-	a.Password = types.StringValue(host.GetPassword())
+	a.EncryptedPassword = types.StringValue(host.GetPassword())
 }
 
 func (s *SSLConfig) write(host *radarr.HostConfigResource) {
