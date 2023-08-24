@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.0.0...v2.0.1) (2023-08-24)
+
+
+### Bug Fixes
+
+* manage encrypted host password ([fb8387b](https://github.com/devopsarr/terraform-provider-radarr/commit/fb8387b655ca8540e836c81292063ecccfc5313a))
+
 ## [2.0.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v1.8.0...v2.0.0) (2023-08-18)
 
 
