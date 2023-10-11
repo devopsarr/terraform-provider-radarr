@@ -17,6 +17,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+	"golang.org/x/exp/slices"
 )
 
 const qualityProfileResourceName = "quality_profile"
@@ -38,8 +39,8 @@ type QualityProfileResource struct {
 
 // QualityProfile describes the quality profile data model.
 type QualityProfile struct {
-	QualityGroups     types.Set    `tfsdk:"quality_groups"`
 	FormatItems       types.Set    `tfsdk:"format_items"`
+	QualityGroups     types.List   `tfsdk:"quality_groups"`
 	Name              types.String `tfsdk:"name"`
 	Language          types.Object `tfsdk:"language"`
 	ID                types.Int64  `tfsdk:"id"`
@@ -52,7 +53,7 @@ type QualityProfile struct {
 func (p QualityProfile) getType() attr.Type {
 	return types.ObjectType{}.WithAttributeTypes(
 		map[string]attr.Type{
-			"quality_groups":      types.SetType{}.WithElementType(QualityGroup{}.getType()),
+			"quality_groups":      types.ListType{}.WithElementType(QualityGroup{}.getType()),
 			"format_items":        types.SetType{}.WithElementType(FormatItem{}.getType()),
 			"language":            QualityLanguage{}.getType(),
 			"name":                types.StringType,
@@ -66,15 +67,15 @@ func (p QualityProfile) getType() attr.Type {
 
 // QualityGroup is part of QualityProfile.
 type QualityGroup struct {
-	Qualities types.Set    `tfsdk:"qualities"`
+	Qualities types.List   `tfsdk:"qualities"`
 	Name      types.String `tfsdk:"name"`
 	ID        types.Int64  `tfsdk:"id"`
 }
 
-func (q QualityGroup) getType() attr.Type {
+func (g QualityGroup) getType() attr.Type {
 	return types.ObjectType{}.WithAttributeTypes(
 		map[string]attr.Type{
-			"qualities": types.SetType{}.WithElementType(Quality{}.getType()),
+			"qualities": types.ListType{}.WithElementType(Quality{}.getType()),
 			"name":      types.StringType,
 			"id":        types.Int64Type,
 		})
@@ -154,15 +155,15 @@ func (r *QualityProfileResource) Schema(_ context.Context, _ resource.SchemaRequ
 				Required:            true,
 				Attributes:          r.getQualityLanguageSchema().Attributes,
 			},
-			"quality_groups": schema.SetNestedAttribute{
-				MarkdownDescription: "Quality groups.",
+			"quality_groups": schema.ListNestedAttribute{
+				MarkdownDescription: "Ordered list of allowed quality groups.",
 				Required:            true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: r.getQualityGroupSchema().Attributes,
 				},
 			},
 			"format_items": schema.SetNestedAttribute{
-				MarkdownDescription: "Format items.",
+				MarkdownDescription: "Format items. Only the ones with score > 0 are needed.",
 				Optional:            true,
 				Computed:            true,
 				NestedObject: schema.NestedAttributeObject{
@@ -186,8 +187,8 @@ func (r QualityProfileResource) getQualityGroupSchema() schema.Schema {
 				Optional:            true,
 				Computed:            true,
 			},
-			"qualities": schema.SetNestedAttribute{
-				MarkdownDescription: "Qualities in group.",
+			"qualities": schema.ListNestedAttribute{
+				MarkdownDescription: "Ordered list of qualities in group.",
 				Required:            true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: r.getQualitySchema().Attributes,
@@ -292,7 +293,7 @@ func (r *QualityProfileResource) Create(ctx context.Context, req resource.Create
 	}
 
 	// Build Create resource
-	request := profile.read(ctx, &resp.Diagnostics)
+	request := profile.read(ctx, r.getQualityIDs(ctx, &resp.Diagnostics), r.getFormatsIDs(ctx, &resp.Diagnostics), &resp.Diagnostics)
 
 	// Create new QualityProfile
 	response, _, err := r.client.QualityProfileApi.CreateQualityProfile(ctx).QualityProfileResource(*request).Execute()
@@ -343,7 +344,7 @@ func (r *QualityProfileResource) Update(ctx context.Context, req resource.Update
 	}
 
 	// Build Update resource
-	request := profile.read(ctx, &resp.Diagnostics)
+	request := profile.read(ctx, r.getQualityIDs(ctx, &resp.Diagnostics), r.getFormatsIDs(ctx, &resp.Diagnostics), &resp.Diagnostics)
 
 	// Update QualityProfile
 	response, _, err := r.client.QualityProfileApi.UpdateQualityProfile(ctx, strconv.Itoa(int(request.GetId()))).QualityProfileResource(*request).Execute()
@@ -395,28 +396,41 @@ func (p *QualityProfile) write(ctx context.Context, profile *radarr.QualityProfi
 	p.CutoffFormatScore = types.Int64Value(int64(profile.GetCutoffFormatScore()))
 	p.MinFormatScore = types.Int64Value(int64(profile.GetMinFormatScore()))
 
-	qualityGroups := make([]QualityGroup, len(profile.GetItems()))
-	for n, g := range profile.GetItems() {
-		qualityGroups[n].write(ctx, g, diags)
+	qualityGroups := make([]QualityGroup, 0, len(profile.GetItems()))
+
+	for _, g := range profile.GetItems() {
+		if g.GetAllowed() {
+			group := QualityGroup{}
+			group.write(ctx, g, diags)
+			qualityGroups = append(qualityGroups, group)
+		}
 	}
 
-	formatItems := make([]FormatItem, len(profile.GetFormatItems()))
-	for n, f := range profile.GetFormatItems() {
-		formatItems[n].write(f)
+	formatItems := make([]FormatItem, 0, len(profile.GetFormatItems()))
+
+	for _, f := range profile.GetFormatItems() {
+		if f.GetScore() != 0 {
+			format := FormatItem{}
+			format.write(f)
+			formatItems = append(formatItems, format)
+		}
 	}
+
+	// Order groups from higher to lower
+	slices.Reverse(qualityGroups)
 
 	language := QualityLanguage{}
 	language.write(profile.Language)
 
 	p.Language, tempDiag = types.ObjectValueFrom(ctx, language.getType().(attr.TypeWithAttributeTypes).AttributeTypes(), language)
 	diags.Append(tempDiag...)
-	p.QualityGroups, tempDiag = types.SetValueFrom(ctx, QualityGroup{}.getType(), qualityGroups)
+	p.QualityGroups, tempDiag = types.ListValueFrom(ctx, QualityGroup{}.getType(), qualityGroups)
 	diags.Append(tempDiag...)
 	p.FormatItems, tempDiag = types.SetValueFrom(ctx, FormatItem{}.getType(), formatItems)
 	diags.Append(tempDiag...)
 }
 
-func (q *QualityGroup) write(ctx context.Context, group *radarr.QualityProfileQualityItemResource, diags *diag.Diagnostics) {
+func (g *QualityGroup) write(ctx context.Context, group *radarr.QualityProfileQualityItemResource, diags *diag.Diagnostics) {
 	var tempDiag diag.Diagnostics
 
 	name := types.StringValue(group.GetName())
@@ -438,9 +452,9 @@ func (q *QualityGroup) write(ctx context.Context, group *radarr.QualityProfileQu
 		}}
 	}
 
-	q.Name = name
-	q.ID = id
-	q.Qualities, tempDiag = types.SetValueFrom(ctx, Quality{}.getType(), &qualities)
+	g.Name = name
+	g.ID = id
+	g.Qualities, tempDiag = types.ListValueFrom(ctx, Quality{}.getType(), &qualities)
 	diags.Append(tempDiag...)
 }
 
@@ -462,50 +476,52 @@ func (l *QualityLanguage) write(language *radarr.Language) {
 	l.ID = types.Int64Value(int64(language.GetId()))
 }
 
-func (p *QualityProfile) read(ctx context.Context, diags *diag.Diagnostics) *radarr.QualityProfileResource {
+func (p *QualityProfile) read(ctx context.Context, qualitiesIDs []int32, formatIDs []int32, diags *diag.Diagnostics) *radarr.QualityProfileResource {
+	var allowedQualities, allowedFormats []int32
+
 	groups := make([]QualityGroup, len(p.QualityGroups.Elements()))
 	diags.Append(p.QualityGroups.ElementsAs(ctx, &groups, false)...)
-	qualities := make([]*radarr.QualityProfileQualityItemResource, len(groups))
+	// Read allowed qualities
+	qualities := make([]*radarr.QualityProfileQualityItemResource, 0, len(groups))
+	for _, g := range groups {
+		qualities = append(qualities, g.read(ctx, &allowedQualities, diags))
+	}
 
-	for n, g := range groups {
-		q := make([]Quality, len(g.Qualities.Elements()))
-		diags.Append(g.Qualities.ElementsAs(ctx, &q, false)...)
-
-		if len(q) == 1 {
+	// Fill qualities with not allowed ones
+	for _, id := range qualitiesIDs {
+		if !slices.Contains(allowedQualities, id) {
 			quality := radarr.NewQuality()
-			quality.SetId(int32(q[0].ID.ValueInt64()))
-			quality.SetName(q[0].Name.ValueString())
-			quality.SetSource(radarr.Source(q[0].Source.ValueString()))
-			quality.SetResolution(int32(q[0].Resolution.ValueInt64()))
+			quality.SetId(id)
 
 			item := radarr.NewQualityProfileQualityItemResource()
-			item.SetAllowed(true)
+			item.SetAllowed(false)
+			item.SetItems([]*radarr.QualityProfileQualityItemResource{})
 			item.SetQuality(*quality)
 
-			qualities[n] = item
-
-			continue
+			qualities = append(qualities, item)
 		}
-
-		items := make([]*radarr.QualityProfileQualityItemResource, len(q))
-		for m, q := range q {
-			items[m] = q.read()
-		}
-
-		quality := radarr.NewQualityProfileQualityItemResource()
-		quality.SetId(int32(g.ID.ValueInt64()))
-		quality.SetName(g.Name.ValueString())
-		quality.SetAllowed(true)
-		quality.SetItems(items)
-		qualities[n] = quality
 	}
+
+	// Order groups from higher to lower
+	slices.Reverse(qualities)
 
 	formats := make([]FormatItem, len(p.FormatItems.Elements()))
 	diags.Append(p.FormatItems.ElementsAs(ctx, &formats, true)...)
 
-	formatItems := make([]*radarr.ProfileFormatItemResource, len(formats))
-	for n, f := range formats {
-		formatItems[n] = f.read()
+	// Read relevant formats
+	formatItems := make([]*radarr.ProfileFormatItemResource, 0, len(formats))
+	for _, f := range formats {
+		formatItems = append(formatItems, f.read())
+	}
+
+	// Fill with irrelevant formats
+	for _, id := range formatIDs {
+		if !slices.Contains(allowedFormats, id) {
+			format := radarr.NewProfileFormatItemResource()
+			format.SetFormat(id)
+			format.SetScore(0)
+			formatItems = append(formatItems, format)
+		}
 	}
 
 	language := QualityLanguage{}
@@ -523,6 +539,41 @@ func (p *QualityProfile) read(ctx context.Context, diags *diag.Diagnostics) *rad
 	profile.SetFormatItems(formatItems)
 
 	return profile
+}
+
+func (g *QualityGroup) read(ctx context.Context, allowedQualities *[]int32, diags *diag.Diagnostics) *radarr.QualityProfileQualityItemResource {
+	q := make([]Quality, len(g.Qualities.Elements()))
+	diags.Append(g.Qualities.ElementsAs(ctx, &q, false)...)
+
+	if len(q) == 1 {
+		quality := radarr.NewQuality()
+		quality.SetId(int32(q[0].ID.ValueInt64()))
+		quality.SetName(q[0].Name.ValueString())
+		quality.SetSource(radarr.Source(q[0].Source.ValueString()))
+		quality.SetResolution(int32(q[0].Resolution.ValueInt64()))
+
+		item := radarr.NewQualityProfileQualityItemResource()
+		item.SetAllowed(true)
+		item.SetQuality(*quality)
+
+		*allowedQualities = append(*allowedQualities, int32(q[0].ID.ValueInt64()))
+
+		return item
+	}
+
+	items := make([]*radarr.QualityProfileQualityItemResource, len(q))
+	for m, q := range q {
+		items[m] = q.read()
+		*allowedQualities = append(*allowedQualities, items[m].Quality.GetId())
+	}
+
+	quality := radarr.NewQualityProfileQualityItemResource()
+	quality.SetId(int32(g.ID.ValueInt64()))
+	quality.SetName(g.Name.ValueString())
+	quality.SetAllowed(true)
+	quality.SetItems(items)
+
+	return quality
 }
 
 func (q *Quality) read() *radarr.QualityProfileQualityItemResource {
@@ -554,4 +605,43 @@ func (l *QualityLanguage) read() *radarr.Language {
 	language.SetName(l.Name.ValueString())
 
 	return language
+}
+
+func (r QualityProfileResource) getQualityIDs(ctx context.Context, diags *diag.Diagnostics) []int32 {
+	// Get qualitydefinitions current value
+	qualities, _, err := r.client.QualityDefinitionApi.ListQualityDefinition(ctx).Execute()
+	if err != nil {
+		diags.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, qualityDefinitionsDataSourceName, err))
+
+		return []int32{}
+	}
+
+	// Generate a list of quality IDs
+	qualityIDs := make([]int32, len(qualities))
+	for i, q := range qualities {
+		qualityIDs[i] = q.Quality.GetId()
+	}
+
+	// Reverse for better visual
+	slices.Reverse(qualityIDs)
+
+	return qualityIDs
+}
+
+func (r QualityProfileResource) getFormatsIDs(ctx context.Context, diags *diag.Diagnostics) []int32 {
+	// Get qualitydefinitions current value
+	formats, _, err := r.client.CustomFormatApi.ListCustomFormat(ctx).Execute()
+	if err != nil {
+		diags.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, customFormatsDataSourceName, err))
+
+		return []int32{}
+	}
+
+	// Generate a list of quality IDs
+	formatIDs := make([]int32, len(formats))
+	for i, f := range formats {
+		formatIDs[i] = f.GetId()
+	}
+
+	return formatIDs
 }

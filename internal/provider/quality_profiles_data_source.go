@@ -88,7 +88,7 @@ func (d *QualityProfilesDataSource) Schema(_ context.Context, _ datasource.Schem
 								},
 							},
 						},
-						"quality_groups": schema.SetNestedAttribute{
+						"quality_groups": schema.ListNestedAttribute{
 							MarkdownDescription: "Quality groups.",
 							Computed:            true,
 							NestedObject: schema.NestedAttributeObject{
@@ -101,7 +101,7 @@ func (d *QualityProfilesDataSource) Schema(_ context.Context, _ datasource.Schem
 										MarkdownDescription: "Quality group name.",
 										Computed:            true,
 									},
-									"qualities": schema.SetNestedAttribute{
+									"qualities": schema.ListNestedAttribute{
 										MarkdownDescription: "Qualities in group.",
 										Required:            true,
 										NestedObject: schema.NestedAttributeObject{
