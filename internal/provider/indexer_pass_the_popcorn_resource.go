@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 
 	"github.com/devopsarr/radarr-go/radarr"
@@ -270,7 +269,7 @@ func (r *IndexerPassThePopcornResource) Update(ctx context.Context, req resource
 
 	response, _, err := r.client.IndexerApi.UpdateIndexer(ctx, strconv.Itoa(int(request.GetId()))).IndexerResource(*request).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(helpers.ClientError, fmt.Sprintf("Unable to update "+indexerPassThePopcornResourceName+", got error: %s", err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, indexerPassThePopcornResourceName, err))
 
 		return
 	}

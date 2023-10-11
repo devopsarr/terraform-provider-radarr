@@ -33,7 +33,7 @@ data "radarr_quality_profile" "example" {
 - `id` (Number) Quality Profile ID.
 - `language` (Attributes) Language. (see [below for nested schema](#nestedatt--language))
 - `min_format_score` (Number) Min format score.
-- `quality_groups` (Attributes Set) Quality groups. (see [below for nested schema](#nestedatt--quality_groups))
+- `quality_groups` (Attributes List) Quality groups. (see [below for nested schema](#nestedatt--quality_groups))
 - `upgrade_allowed` (Boolean) Upgrade allowed flag.
 
 <a id="nestedatt--format_items"></a>
@@ -60,7 +60,7 @@ Read-Only:
 
 Required:
 
-- `qualities` (Attributes Set) Qualities in group. (see [below for nested schema](#nestedatt--quality_groups--qualities))
+- `qualities` (Attributes List) Qualities in group. (see [below for nested schema](#nestedatt--quality_groups--qualities))
 
 Read-Only:
 

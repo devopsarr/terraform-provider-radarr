@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
@@ -111,7 +110,7 @@ func (d *AutoTagDataSource) Read(ctx context.Context, req datasource.ReadRequest
 	// Get autoTag current value
 	response, _, err := d.client.AutoTaggingApi.ListAutoTagging(ctx).Execute()
 	if err != nil {
-		resp.Diagnostics.AddError(helpers.ClientError, fmt.Sprintf("Unable to read %s, got error: %s", autoTagDataSourceName, err))
+		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, autoTagDataSourceName, err))
 
 		return
 	}

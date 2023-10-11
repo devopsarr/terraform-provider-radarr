@@ -67,7 +67,7 @@ func testAccQualityProfileResourceConfig(name string) string {
 	resource "radarr_custom_format" "test" {
 		include_custom_format_when_renaming = false
 		name = "QualityFormatTest"
-		
+
 		specifications = [
 			{
 				name = "Surround Sound"
@@ -91,11 +91,7 @@ func testAccQualityProfileResourceConfig(name string) string {
 				min = 0
 				max = 100
 			}
-		]	
-	}
-
-	data "radarr_custom_formats" "test" {
-		depends_on = [radarr_custom_format.test]
+		]
 	}
 
 	data "radarr_language" "test" {
@@ -136,11 +132,10 @@ func testAccQualityProfileResourceConfig(name string) string {
 		]
 
 		format_items = [
-			for format in data.radarr_custom_formats.test.custom_formats :
 			{
-				name   = format.name
-				format = format.id
-				score  = 0
+				name   = radarr_custom_format.test.name
+				format = radarr_custom_format.test.id
+				score  = 10
 			}
 		]
 	}`, name)
