@@ -250,7 +250,7 @@ func (p *QualityDefinition) read() *radarr.QualityDefinitionResource {
 	quality.SetId(int32(p.QualityID.ValueInt64()))
 	quality.SetName(p.QualityName.ValueString())
 	quality.SetResolution(int32(p.Resolution.ValueInt64()))
-	quality.SetSource(radarr.Source(p.Source.ValueString()))
+	quality.SetSource(radarr.QualitySource(p.Source.ValueString()))
 
 	definition := radarr.NewQualityDefinitionResource()
 	definition.SetId(int32(p.ID.ValueInt64()))

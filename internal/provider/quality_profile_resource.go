@@ -549,7 +549,7 @@ func (g *QualityGroup) read(ctx context.Context, allowedQualities *[]int32, diag
 		quality := radarr.NewQuality()
 		quality.SetId(int32(q[0].ID.ValueInt64()))
 		quality.SetName(q[0].Name.ValueString())
-		quality.SetSource(radarr.Source(q[0].Source.ValueString()))
+		quality.SetSource(radarr.QualitySource(q[0].Source.ValueString()))
 		quality.SetResolution(int32(q[0].Resolution.ValueInt64()))
 
 		item := radarr.NewQualityProfileQualityItemResource()
@@ -580,7 +580,7 @@ func (q *Quality) read() *radarr.QualityProfileQualityItemResource {
 	quality := radarr.NewQuality()
 	quality.SetName(q.Name.ValueString())
 	quality.SetId(int32(q.ID.ValueInt64()))
-	quality.SetSource(radarr.Source(q.Source.ValueString()))
+	quality.SetSource(radarr.QualitySource(q.Source.ValueString()))
 	quality.SetResolution(int32(q.Resolution.ValueInt64()))
 
 	item := radarr.NewQualityProfileQualityItemResource()
