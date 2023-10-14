@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.1.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.0.1...v2.1.0) (2023-10-14)
+
+
+### Features
+
+* **#222:** manage v5 sensitive values ([a799aa4](https://github.com/devopsarr/terraform-provider-radarr/commit/a799aa44d50ef2897d0a889fa16cbd3288fdf115))
+
+
+### Bug Fixes
+
+* quality profile use all formats and ordered quality groups ([4470f58](https://github.com/devopsarr/terraform-provider-radarr/commit/4470f587541d926af1f716a1489b6bc8aa621a14))
+
 ## [2.0.1](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.0.0...v2.0.1) (2023-08-24)
 
 
