@@ -42,9 +42,10 @@ func TestAccNotificationBoxcarResource(t *testing.T) {
 			},
 			// ImportState testing
 			{
-				ResourceName:      "radarr_notification_boxcar.test",
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName:            "radarr_notification_boxcar.test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"token"},
 			},
 			// Delete testing automatically occurs in TestCase
 		},
@@ -63,10 +64,10 @@ func testAccNotificationBoxcarResourceConfig(name, token string) string {
 		on_movie_file_delete_for_upgrade   = false
 		on_health_issue                    = false
 		on_application_update              = false
-	  
+
 		include_health_warnings = false
 		name                    = "%s"
-	  
+
 		token = "%s"
 	}`, name, token)
 }

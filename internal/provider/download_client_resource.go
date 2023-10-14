@@ -314,6 +314,7 @@ func (r *DownloadClientResource) Schema(_ context.Context, _ resource.SchemaRequ
 				MarkdownDescription: "API key.",
 				Optional:            true,
 				Computed:            true,
+				Sensitive:           true,
 			},
 			"rpc_path": schema.StringAttribute{
 				MarkdownDescription: "RPC path.",
@@ -345,6 +346,7 @@ func (r *DownloadClientResource) Schema(_ context.Context, _ resource.SchemaRequ
 				MarkdownDescription: "Secret token.",
 				Optional:            true,
 				Computed:            true,
+				Sensitive:           true,
 			},
 			"username": schema.StringAttribute{
 				MarkdownDescription: "Username.",
@@ -465,13 +467,14 @@ func (r *DownloadClientResource) Create(ctx context.Context, req resource.Create
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state DownloadClient
 
+	state.writeSensitive(client)
 	state.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
 func (r *DownloadClientResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	// Get current state
-	var client DownloadClient
+	var client *DownloadClient
 
 	resp.Diagnostics.Append(req.State.Get(ctx, &client)...)
 
@@ -492,6 +495,7 @@ func (r *DownloadClientResource) Read(ctx context.Context, req resource.ReadRequ
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state DownloadClient
 
+	state.writeSensitive(client)
 	state.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
@@ -521,6 +525,7 @@ func (r *DownloadClientResource) Update(ctx context.Context, req resource.Update
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state DownloadClient
 
+	state.writeSensitive(client)
 	state.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
@@ -587,4 +592,23 @@ func (d *DownloadClient) read(ctx context.Context, diags *diag.Diagnostics) *rad
 	client.SetFields(helpers.ReadFields(ctx, d, downloadClientFields))
 
 	return client
+}
+
+// writeSensitive copy sensitive data from another resource.
+func (d *DownloadClient) writeSensitive(client *DownloadClient) {
+	if !client.Password.IsUnknown() {
+		d.Password = client.Password
+	}
+
+	if !client.APIKey.IsUnknown() {
+		d.APIKey = client.APIKey
+	}
+
+	if !client.SecretToken.IsUnknown() {
+		d.SecretToken = client.SecretToken
+	}
+
+	if !client.AppToken.IsUnknown() {
+		d.AppToken = client.AppToken
+	}
 }

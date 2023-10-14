@@ -34,6 +34,7 @@ var notificationFields = helpers.Fields{
 	StringSlices:           []string{"recipients", "to", "cC", "bcc", "topics", "deviceIds", "fieldTags", "channelTags", "devices"},
 	StringSlicesExceptions: []string{"tags"},
 	IntSlices:              []string{"grabFields", "importFields"},
+	// Sensitive:              []string{"apiKey", "token", "password", "appToken", "authToken", "botToken", "accessToken", "accessTokenSecret", "consumerKey", "consumerSecret", "configurationKey", "authPassword"},
 }
 
 func NewNotificationResource() resource.Resource {
@@ -436,11 +437,13 @@ func (r *NotificationResource) Schema(_ context.Context, _ resource.SchemaReques
 				MarkdownDescription: "API key.",
 				Optional:            true,
 				Computed:            true,
+				Sensitive:           true,
 			},
 			"app_token": schema.StringAttribute{
 				MarkdownDescription: "App token.",
 				Optional:            true,
 				Computed:            true,
+				Sensitive:           true,
 			},
 			"arguments": schema.StringAttribute{
 				MarkdownDescription: "Arguments.",
@@ -501,6 +504,7 @@ func (r *NotificationResource) Schema(_ context.Context, _ resource.SchemaReques
 				MarkdownDescription: "Consumer secret.",
 				Optional:            true,
 				Computed:            true,
+				Sensitive:           true,
 			},
 			"device_names": schema.StringAttribute{
 				MarkdownDescription: "Device names.",
@@ -751,6 +755,7 @@ func (r *NotificationResource) Create(ctx context.Context, req resource.CreateRe
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state Notification
 
+	state.writeSensitive(notification)
 	state.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
@@ -778,6 +783,7 @@ func (r *NotificationResource) Read(ctx context.Context, req resource.ReadReques
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state Notification
 
+	state.writeSensitive(notification)
 	state.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
@@ -807,6 +813,7 @@ func (r *NotificationResource) Update(ctx context.Context, req resource.UpdateRe
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state Notification
 
+	state.writeSensitive(notification)
 	state.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
@@ -897,4 +904,51 @@ func (n *Notification) read(ctx context.Context, diags *diag.Diagnostics) *radar
 	notification.SetFields(helpers.ReadFields(ctx, n, notificationFields))
 
 	return notification
+}
+
+// writeSensitive copy sensitive data from another resource.
+func (n *Notification) writeSensitive(notification *Notification) {
+	if !notification.Token.IsUnknown() {
+		n.Token = notification.Token
+	}
+
+	if !notification.APIKey.IsUnknown() {
+		n.APIKey = notification.APIKey
+	}
+
+	if !notification.Password.IsUnknown() {
+		n.Password = notification.Password
+	}
+
+	if !notification.AppToken.IsUnknown() {
+		n.AppToken = notification.AppToken
+	}
+
+	if !notification.BotToken.IsUnknown() {
+		n.BotToken = notification.BotToken
+	}
+
+	if !notification.AccessToken.IsUnknown() {
+		n.AccessToken = notification.AccessToken
+	}
+
+	if !notification.AccessTokenSecret.IsUnknown() {
+		n.AccessTokenSecret = notification.AccessTokenSecret
+	}
+
+	if !notification.ConsumerKey.IsUnknown() {
+		n.ConsumerKey = notification.ConsumerKey
+	}
+
+	if !notification.ConsumerSecret.IsUnknown() {
+		n.ConsumerSecret = notification.ConsumerSecret
+	}
+
+	if !notification.ConfigurationKey.IsUnknown() {
+		n.ConfigurationKey = notification.ConfigurationKey
+	}
+
+	if !notification.AuthPassword.IsUnknown() {
+		n.AuthPassword = notification.AuthPassword
+	}
 }

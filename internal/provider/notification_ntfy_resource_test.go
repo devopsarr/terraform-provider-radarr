@@ -42,9 +42,10 @@ func TestAccNotificationNtfyResource(t *testing.T) {
 			},
 			// ImportState testing
 			{
-				ResourceName:      "radarr_notification_ntfy.test",
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName:            "radarr_notification_ntfy.test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"password"},
 			},
 			// Delete testing automatically occurs in TestCase
 		},
@@ -63,7 +64,7 @@ func testAccNotificationNtfyResourceConfig(name, key string) string {
 		on_movie_file_delete_for_upgrade   = false
 		on_health_issue                    = false
 		on_application_update              = false
-	  
+
 		include_health_warnings = false
 		name                    = "%s"
 

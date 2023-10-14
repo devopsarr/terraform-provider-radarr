@@ -42,7 +42,7 @@ resource "radarr_indexer" "example" {
 
 - `additional_parameters` (String) Additional parameters.
 - `allow_zero_size` (Boolean) Allow zero size files.
-- `api_key` (String) API key.
+- `api_key` (String, Sensitive) API key.
 - `api_path` (String) API path.
 - `api_user` (String) API User.
 - `base_url` (String) Base URL.
@@ -58,7 +58,7 @@ resource "radarr_indexer" "example" {
 - `mediums` (Set of Number) Mediumd.
 - `minimum_seeders` (Number) Minimum seeders.
 - `multi_languages` (Set of Number) Language list.
-- `passkey` (String) Passkey.
+- `passkey` (String, Sensitive) Passkey.
 - `priority` (Number) Priority.
 - `ranked_only` (Boolean) Allow ranked only.
 - `remove_year` (Boolean) Remove year.

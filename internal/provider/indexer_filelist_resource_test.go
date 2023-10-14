@@ -42,9 +42,10 @@ func TestAccIndexerFilelistResource(t *testing.T) {
 			},
 			// ImportState testing
 			{
-				ResourceName:      "radarr_indexer_filelist.test",
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName:            "radarr_indexer_filelist.test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"passkey"},
 			},
 			// Delete testing automatically occurs in TestCase
 		},

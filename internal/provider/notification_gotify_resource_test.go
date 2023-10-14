@@ -42,9 +42,10 @@ func TestAccNotificationGotifyResource(t *testing.T) {
 			},
 			// ImportState testing
 			{
-				ResourceName:      "radarr_notification_gotify.test",
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName:            "radarr_notification_gotify.test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"app_token"},
 			},
 			// Delete testing automatically occurs in TestCase
 		},
@@ -63,10 +64,10 @@ func testAccNotificationGotifyResourceConfig(name string, priority int) string {
 		on_movie_file_delete_for_upgrade   = false
 		on_health_issue                    = false
 		on_application_update              = false
-	  
+
 		include_health_warnings = false
 		name                    = "%s"
-	  
+
 		server = "http://gotify-server.net"
 		app_token = "Token"
 		priority = %d

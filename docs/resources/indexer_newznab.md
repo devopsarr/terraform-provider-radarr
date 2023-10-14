@@ -35,7 +35,7 @@ resource "radarr_indexer_newznab" "example" {
 ### Optional
 
 - `additional_parameters` (String) Additional parameters.
-- `api_key` (String) API key.
+- `api_key` (String, Sensitive) API key.
 - `api_path` (String) API path.
 - `base_url` (String) Base URL.
 - `categories` (Set of Number) Series list.

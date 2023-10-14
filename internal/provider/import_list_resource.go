@@ -501,6 +501,7 @@ func (r *ImportListResource) Create(ctx context.Context, req resource.CreateRequ
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state ImportList
 
+	state.writeSensitive(importList)
 	state.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
@@ -528,6 +529,7 @@ func (r *ImportListResource) Read(ctx context.Context, req resource.ReadRequest,
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state ImportList
 
+	state.writeSensitive(importList)
 	state.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
@@ -557,6 +559,7 @@ func (r *ImportListResource) Update(ctx context.Context, req resource.UpdateRequ
 	// this is needed because of many empty fields are unknown in both plan and read
 	var state ImportList
 
+	state.writeSensitive(importList)
 	state.write(ctx, response, &resp.Diagnostics)
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
@@ -630,4 +633,11 @@ func (i *ImportList) read(ctx context.Context, diags *diag.Diagnostics) *radarr.
 	list.SetFields(helpers.ReadFields(ctx, i, importListFields))
 
 	return list
+}
+
+// writeSensitive copy sensitive data from another resource.
+func (i *ImportList) writeSensitive(importList *ImportList) {
+	if !importList.APIKey.IsUnknown() {
+		i.APIKey = importList.APIKey
+	}
 }

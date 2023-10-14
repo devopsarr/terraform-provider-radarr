@@ -42,9 +42,10 @@ func TestAccDownloadClientFreeboxResource(t *testing.T) {
 			},
 			// ImportState testing
 			{
-				ResourceName:      "radarr_download_client_freebox.test",
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName:            "radarr_download_client_freebox.test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"app_token"},
 			},
 			// Delete testing automatically occurs in TestCase
 		},

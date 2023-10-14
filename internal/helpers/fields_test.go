@@ -607,6 +607,12 @@ func TestWriteFields(t *testing.T) {
 			value:          append(make([]interface{}, 0), []string{"test1", "test2"}),
 			fieldContainer: Test{Set: types.SetValueMust(types.StringType, nil)},
 		},
+		"sensitive": {
+			fieldLists:     Fields{Strings: []string{"str"}},
+			name:           "str",
+			value:          SensitiveValue,
+			fieldContainer: Test{Str: types.StringValue("String")},
+		},
 	}
 	for name, test := range tests {
 		test := test
@@ -624,6 +630,13 @@ func TestWriteFields(t *testing.T) {
 			fields[0].SetValue(test.value)
 
 			container := Test{}
+			if test.value == SensitiveValue {
+				// emulate the sensitive behaviour
+				container = Test{
+					Str: types.StringValue("String"),
+				}
+			}
+
 			WriteFields(context.TODO(), &container, fields, test.fieldLists)
 			assert.Equal(t, &test.fieldContainer, &container)
 		})
