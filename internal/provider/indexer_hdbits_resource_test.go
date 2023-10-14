@@ -42,9 +42,10 @@ func TestAccIndexerHdbitsResource(t *testing.T) {
 			},
 			// ImportState testing
 			{
-				ResourceName:      "radarr_indexer_hdbits.test",
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName:            "radarr_indexer_hdbits.test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"api_key"},
 			},
 			// Delete testing automatically occurs in TestCase
 		},

@@ -47,6 +47,12 @@ func TestAccDownloadClientResource(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
+			{
+				ResourceName:            "radarr_download_client.test_sensitive",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"password"},
+			},
 			// Delete testing automatically occurs in TestCase
 		},
 	})
@@ -64,5 +70,20 @@ func testAccDownloadClientResourceConfig(name, enable string) string {
 		host = "transmission"
 		url_base = "/transmission/"
 		port = 9091
-	}`, enable, name)
+	}
+
+	resource "radarr_download_client" "test_sensitive" {
+		enable = false
+		priority = 1
+		name = "%sWithSensitive"
+		host = "hadouken"
+		url_base = "/hadouken/"
+		port = 9091
+		category = "sonarr-tv"
+		username = "username"
+		password = "password"
+		protocol = "torrent"
+		config_contract = "HadoukenSettings"
+		implementation = "Hadouken"
+	}`, enable, name, name)
 }

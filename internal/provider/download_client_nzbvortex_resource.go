@@ -174,6 +174,7 @@ func (r *DownloadClientNzbvortexResource) Schema(_ context.Context, _ resource.S
 			"api_key": schema.StringAttribute{
 				MarkdownDescription: "API key.",
 				Required:            true,
+				Sensitive:           true,
 			},
 		},
 	}

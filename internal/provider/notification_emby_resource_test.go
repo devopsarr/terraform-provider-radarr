@@ -42,9 +42,10 @@ func TestAccNotificationEmbyResource(t *testing.T) {
 			},
 			// ImportState testing
 			{
-				ResourceName:      "radarr_notification_emby.test",
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName:            "radarr_notification_emby.test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"api_key"},
 			},
 			// Delete testing automatically occurs in TestCase
 		},
@@ -64,10 +65,10 @@ func testAccNotificationEmbyResourceConfig(name, token string) string {
 		on_movie_file_delete_for_upgrade   = false
 		on_health_issue                    = false
 		on_application_update              = false
-	  
+
 		include_health_warnings = false
 		name                    = "%s"
-	  
+
 		host = "emby.lcl"
 		port = 8096
 		api_key = "%s"

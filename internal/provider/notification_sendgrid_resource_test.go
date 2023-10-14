@@ -42,9 +42,10 @@ func TestAccNotificationSendgridResource(t *testing.T) {
 			},
 			// ImportState testing
 			{
-				ResourceName:      "radarr_notification_sendgrid.test",
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName:            "radarr_notification_sendgrid.test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"api_key"},
 			},
 			// Delete testing automatically occurs in TestCase
 		},
@@ -63,10 +64,10 @@ func testAccNotificationSendgridResourceConfig(name, from string) string {
 		on_movie_file_delete_for_upgrade   = false
 		on_health_issue                    = false
 		on_application_update              = false
-	  
+
 		include_health_warnings = false
 		name                    = "%s"
-		
+
 		api_key = "APIkey"
 		from = "%s"
 		recipients = ["test@test.com", "test1@test.com"]

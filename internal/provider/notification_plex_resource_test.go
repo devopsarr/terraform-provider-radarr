@@ -42,9 +42,10 @@ func TestAccNotificationPlexResource(t *testing.T) {
 			},
 			// ImportState testing
 			{
-				ResourceName:      "radarr_notification_plex.test",
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName:            "radarr_notification_plex.test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"auth_token"},
 			},
 			// Delete testing automatically occurs in TestCase
 		},
@@ -61,10 +62,10 @@ func testAccNotificationPlexResourceConfig(name, token string) string {
 		on_movie_delete                    = false
 		on_movie_file_delete               = false
 		on_movie_file_delete_for_upgrade   = false
-	  
+
 		include_health_warnings = false
 		name                    = "%s"
-	  
+
 		host = "plex.lcl"
 		port = 32400
 		auth_token = "%s"

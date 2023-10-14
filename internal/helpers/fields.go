@@ -12,6 +12,8 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+const SensitiveValue = "********"
+
 type fieldException struct {
 	apiName string
 	tfName  string
@@ -341,6 +343,13 @@ func WriteFields(ctx context.Context, fieldContainer interface{}, fields []*rada
 	// Loop over each field and populate the related container field with the corresponding write function.
 	for _, f := range fields {
 		fieldName := f.GetName()
+		// Manage sensitive data.
+		if f.GetValue() == SensitiveValue {
+			if tempField := readStringField(fieldName, fieldContainer); tempField.GetValue() != nil {
+				f = tempField
+			}
+		}
+
 		for listName, writeFunc := range writeFuncs {
 			if slices.Contains(fieldLists.getList(listName), fieldName) {
 				writeFunc(f, fieldContainer)

@@ -163,6 +163,7 @@ func (r *IndexerNewznabResource) Schema(_ context.Context, _ resource.SchemaRequ
 				MarkdownDescription: "API key.",
 				Optional:            true,
 				Computed:            true,
+				Sensitive:           true,
 			},
 			"api_path": schema.StringAttribute{
 				MarkdownDescription: "API path.",

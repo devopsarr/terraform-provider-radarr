@@ -52,8 +52,8 @@ resource "radarr_notification" "example" {
 - `access_token` (String) Access token.
 - `access_token_secret` (String) Access token secret.
 - `always_update` (Boolean) Always update flag.
-- `api_key` (String) API key.
-- `app_token` (String) App token.
+- `api_key` (String, Sensitive) API key.
+- `app_token` (String, Sensitive) App token.
 - `arguments` (String) Arguments.
 - `auth_password` (String, Sensitive) Password.
 - `auth_token` (String) Auth token.
@@ -71,7 +71,7 @@ resource "radarr_notification" "example" {
 - `click_url` (String) Click URL.
 - `configuration_key` (String, Sensitive) Configuration key.
 - `consumer_key` (String) Consumer key.
-- `consumer_secret` (String) Consumer secret.
+- `consumer_secret` (String, Sensitive) Consumer secret.
 - `device_ids` (Set of String) Device IDs.
 - `device_names` (String) Device names.
 - `devices` (Set of String) Devices.
