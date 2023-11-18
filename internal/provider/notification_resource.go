@@ -34,7 +34,6 @@ var notificationFields = helpers.Fields{
 	StringSlices:           []string{"recipients", "to", "cC", "bcc", "topics", "deviceIds", "fieldTags", "channelTags", "devices"},
 	StringSlicesExceptions: []string{"tags"},
 	IntSlices:              []string{"grabFields", "importFields"},
-	// Sensitive:              []string{"apiKey", "token", "password", "appToken", "authToken", "botToken", "accessToken", "accessTokenSecret", "consumerKey", "consumerSecret", "configurationKey", "authPassword"},
 }
 
 func NewNotificationResource() resource.Resource {
