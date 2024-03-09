@@ -47,8 +47,8 @@ type ImportListResource struct {
 
 // ImportList describes the import list data model.
 type ImportList struct {
-	ProfileIds                types.Set    `tfsdk:"profile_ids"`
-	TagIds                    types.Set    `tfsdk:"tag_ids"`
+	ProfileIDs                types.Set    `tfsdk:"profile_ids"`
+	TagIDs                    types.Set    `tfsdk:"tag_ids"`
 	Tags                      types.Set    `tfsdk:"tags"`
 	Name                      types.String `tfsdk:"name"`
 	ConfigContract            types.String `tfsdk:"config_contract"`
@@ -65,8 +65,8 @@ type ImportList struct {
 	MinVoteAverage            types.String `tfsdk:"min_vote_average"`
 	MinVotes                  types.String `tfsdk:"min_votes"`
 	TMDBCertification         types.String `tfsdk:"tmdb_certification"`
-	IncludeGenreIds           types.String `tfsdk:"include_genre_ids"`
-	ExcludeGenreIds           types.String `tfsdk:"exclude_genre_ids"`
+	IncludeGenreIDs           types.String `tfsdk:"include_genre_ids"`
+	ExcludeGenreIDs           types.String `tfsdk:"exclude_genre_ids"`
 	AuthUser                  types.String `tfsdk:"auth_user"`
 	Username                  types.String `tfsdk:"username"`
 	Listname                  types.String `tfsdk:"listname"`
@@ -609,8 +609,8 @@ func (i *ImportList) write(ctx context.Context, importList *radarr.ImportListRes
 	i.RootFolderPath = types.StringValue(importList.GetRootFolderPath())
 	i.ListType = types.StringValue(string(importList.GetListType()))
 	i.Name = types.StringValue(importList.GetName())
-	i.ProfileIds = types.SetValueMust(types.Int64Type, nil)
-	i.TagIds = types.SetValueMust(types.Int64Type, nil)
+	i.ProfileIDs = types.SetValueMust(types.Int64Type, nil)
+	i.TagIDs = types.SetValueMust(types.Int64Type, nil)
 	helpers.WriteFields(ctx, i, importList.GetFields(), importListFields)
 }
 

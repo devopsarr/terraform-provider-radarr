@@ -40,10 +40,12 @@ func TestDataSourceConfigure(t *testing.T) {
 
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
+
 			client := DataSourceConfigure(context.TODO(), req, &resp)
 			if !resp.Diagnostics.HasError() {
 				assert.Equal(t, test.expected, client)
 			}
+
 			assert.Equal(t, test.errorString, resp.Diagnostics)
 		})
 	}
@@ -78,10 +80,12 @@ func TestResourceConfigure(t *testing.T) {
 
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
+
 			client := ResourceConfigure(context.TODO(), req, &resp)
 			if !resp.Diagnostics.HasError() {
 				assert.Equal(t, test.expected, client)
 			}
+
 			assert.Equal(t, test.errorString, resp.Diagnostics)
 		})
 	}
