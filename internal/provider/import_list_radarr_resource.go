@@ -42,8 +42,8 @@ type ImportListRadarrResource struct {
 
 // ImportListRadarr describes the import list data model.
 type ImportListRadarr struct {
-	ProfileIds          types.Set    `tfsdk:"profile_ids"`
-	TagIds              types.Set    `tfsdk:"tag_ids"`
+	ProfileIDs          types.Set    `tfsdk:"profile_ids"`
+	TagIDs              types.Set    `tfsdk:"tag_ids"`
 	Tags                types.Set    `tfsdk:"tags"`
 	Name                types.String `tfsdk:"name"`
 	Monitor             types.String `tfsdk:"monitor"`
@@ -61,8 +61,8 @@ type ImportListRadarr struct {
 
 func (i ImportListRadarr) toImportList() *ImportList {
 	return &ImportList{
-		ProfileIds:          i.ProfileIds,
-		TagIds:              i.TagIds,
+		ProfileIDs:          i.ProfileIDs,
+		TagIDs:              i.TagIDs,
 		Tags:                i.Tags,
 		Name:                i.Name,
 		Monitor:             i.Monitor,
@@ -83,8 +83,8 @@ func (i ImportListRadarr) toImportList() *ImportList {
 }
 
 func (i *ImportListRadarr) fromImportList(importList *ImportList) {
-	i.ProfileIds = importList.ProfileIds
-	i.TagIds = importList.TagIds
+	i.ProfileIDs = importList.ProfileIDs
+	i.TagIDs = importList.TagIDs
 	i.Tags = importList.Tags
 	i.Name = importList.Name
 	i.Monitor = importList.Monitor

@@ -51,8 +51,8 @@ type ImportListTMDBPopular struct {
 	MinVoteAverage      types.String `tfsdk:"min_vote_average"`
 	MinVotes            types.String `tfsdk:"min_votes"`
 	TMDBCertification   types.String `tfsdk:"tmdb_certification"`
-	IncludeGenreIds     types.String `tfsdk:"include_genre_ids"`
-	ExcludeGenreIds     types.String `tfsdk:"exclude_genre_ids"`
+	IncludeGenreIDs     types.String `tfsdk:"include_genre_ids"`
+	ExcludeGenreIDs     types.String `tfsdk:"exclude_genre_ids"`
 	LanguageCode        types.Int64  `tfsdk:"language_code"`
 	TMDBListType        types.Int64  `tfsdk:"tmdb_list_type"`
 	ListOrder           types.Int64  `tfsdk:"list_order"`
@@ -74,8 +74,8 @@ func (i ImportListTMDBPopular) toImportList() *ImportList {
 		MinVoteAverage:      i.MinVoteAverage,
 		MinVotes:            i.MinVotes,
 		TMDBCertification:   i.TMDBCertification,
-		IncludeGenreIds:     i.IncludeGenreIds,
-		ExcludeGenreIds:     i.ExcludeGenreIds,
+		IncludeGenreIDs:     i.IncludeGenreIDs,
+		ExcludeGenreIDs:     i.ExcludeGenreIDs,
 		LanguageCode:        i.LanguageCode,
 		ListOrder:           i.ListOrder,
 		ID:                  i.ID,
@@ -99,8 +99,8 @@ func (i *ImportListTMDBPopular) fromImportList(importList *ImportList) {
 	i.MinVoteAverage = importList.MinVoteAverage
 	i.MinVotes = importList.MinVotes
 	i.TMDBCertification = importList.TMDBCertification
-	i.IncludeGenreIds = importList.IncludeGenreIds
-	i.ExcludeGenreIds = importList.ExcludeGenreIds
+	i.IncludeGenreIDs = importList.IncludeGenreIDs
+	i.ExcludeGenreIDs = importList.ExcludeGenreIDs
 	i.LanguageCode = importList.LanguageCode
 	i.ListOrder = importList.ListOrder
 	i.ID = importList.ID
