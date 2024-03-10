@@ -37,6 +37,7 @@ func NewNotificationJoinResource() resource.Resource {
 // NotificationJoinResource defines the notification implementation.
 type NotificationJoinResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // NotificationJoin describes the notification data model.
@@ -113,7 +114,7 @@ func (r *NotificationJoinResource) Metadata(_ context.Context, req resource.Meta
 
 func (r *NotificationJoinResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Notifications -->Notification Join resource.\nFor more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Join](https://wiki.servarr.com/radarr/supported#join).",
+		MarkdownDescription: "<!-- subcategory:Notifications -->\nNotification Join resource.\nFor more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Join](https://wiki.servarr.com/radarr/supported#join).",
 		Attributes: map[string]schema.Attribute{
 			"on_grab": schema.BoolAttribute{
 				MarkdownDescription: "On grab flag.",
@@ -214,8 +215,9 @@ func (r *NotificationJoinResource) Schema(_ context.Context, _ resource.SchemaRe
 }
 
 func (r *NotificationJoinResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -232,7 +234,7 @@ func (r *NotificationJoinResource) Create(ctx context.Context, req resource.Crea
 	// Create new NotificationJoin
 	request := notification.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.NotificationApi.CreateNotification(ctx).NotificationResource(*request).Execute()
+	response, _, err := r.client.NotificationAPI.CreateNotification(r.auth).NotificationResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, notificationJoinResourceName, err))
 
@@ -256,7 +258,7 @@ func (r *NotificationJoinResource) Read(ctx context.Context, req resource.ReadRe
 	}
 
 	// Get NotificationJoin current value
-	response, _, err := r.client.NotificationApi.GetNotificationById(ctx, int32(notification.ID.ValueInt64())).Execute()
+	response, _, err := r.client.NotificationAPI.GetNotificationById(r.auth, int32(notification.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, notificationJoinResourceName, err))
 
@@ -282,7 +284,7 @@ func (r *NotificationJoinResource) Update(ctx context.Context, req resource.Upda
 	// Update NotificationJoin
 	request := notification.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.NotificationApi.UpdateNotification(ctx, strconv.Itoa(int(request.GetId()))).NotificationResource(*request).Execute()
+	response, _, err := r.client.NotificationAPI.UpdateNotification(r.auth, strconv.Itoa(int(request.GetId()))).NotificationResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, notificationJoinResourceName, err))
 
@@ -305,7 +307,7 @@ func (r *NotificationJoinResource) Delete(ctx context.Context, req resource.Dele
 	}
 
 	// Delete NotificationJoin current value
-	_, err := r.client.NotificationApi.DeleteNotification(ctx, int32(ID)).Execute()
+	_, err := r.client.NotificationAPI.DeleteNotification(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, notificationJoinResourceName, err))
 

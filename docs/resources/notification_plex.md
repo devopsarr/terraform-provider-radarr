@@ -9,7 +9,8 @@ description: |-
 
 # radarr_notification_plex (Resource)
 
-<!-- subcategory:Notifications -->Notification Plex resource.
+<!-- subcategory:Notifications -->
+Notification Plex resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Plex](https://wiki.servarr.com/radarr/supported#plexserver).
 
 ## Example Usage

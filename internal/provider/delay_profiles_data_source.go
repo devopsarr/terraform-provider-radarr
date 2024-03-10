@@ -24,6 +24,7 @@ func NewDelayProfilesDataSource() datasource.DataSource {
 // DelayProfilesDataSource defines the delay profiles implementation.
 type DelayProfilesDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // DelayProfiles describes the delay profiles data model.
@@ -39,7 +40,7 @@ func (d *DelayProfilesDataSource) Metadata(_ context.Context, req datasource.Met
 func (d *DelayProfilesDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Profiles -->List all available [Delay Profiles](../resources/delay_profile).",
+		MarkdownDescription: "<!-- subcategory:Profiles -->\nList all available [Delay Profiles](../resources/delay_profile).",
 		Attributes: map[string]schema.Attribute{
 			// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 			"id": schema.StringAttribute{
@@ -95,14 +96,15 @@ func (d *DelayProfilesDataSource) Schema(_ context.Context, _ datasource.SchemaR
 }
 
 func (d *DelayProfilesDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
 func (d *DelayProfilesDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get delayprofiles current value
-	response, _, err := d.client.DelayProfileApi.ListDelayProfile(ctx).Execute()
+	response, _, err := d.client.DelayProfileAPI.ListDelayProfile(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.List, delayProfileResourceName, err))
 
@@ -113,7 +115,7 @@ func (d *DelayProfilesDataSource) Read(ctx context.Context, _ datasource.ReadReq
 	// Map response body to resource schema attribute
 	profiles := make([]DelayProfile, len(response))
 	for i, p := range response {
-		profiles[i].write(ctx, p, &resp.Diagnostics)
+		profiles[i].write(ctx, &p, &resp.Diagnostics)
 	}
 
 	profileList, diags := types.SetValueFrom(ctx, DelayProfile{}.getType(), profiles)

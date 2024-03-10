@@ -24,6 +24,7 @@ func NewAutoTagDataSource() datasource.DataSource {
 // AutoTagDataSource defines the auto_tag implementation.
 type AutoTagDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *AutoTagDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -33,7 +34,7 @@ func (d *AutoTagDataSource) Metadata(_ context.Context, req datasource.MetadataR
 func (d *AutoTagDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Tags -->Single [Auto Tag](../resources/auto_tag).",
+		MarkdownDescription: "<!-- subcategory:Tags -->\n\nSingle [Auto Tag](../resources/auto_tag).",
 		Attributes: map[string]schema.Attribute{
 			"remove_tags_automatically": schema.BoolAttribute{
 				MarkdownDescription: "Remove tags automatically flag.",
@@ -94,8 +95,9 @@ func (d *AutoTagDataSource) Schema(_ context.Context, _ datasource.SchemaRequest
 }
 
 func (d *AutoTagDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
@@ -108,7 +110,7 @@ func (d *AutoTagDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		return
 	}
 	// Get autoTag current value
-	response, _, err := d.client.AutoTaggingApi.ListAutoTagging(ctx).Execute()
+	response, _, err := d.client.AutoTaggingAPI.ListAutoTagging(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, autoTagDataSourceName, err))
 
@@ -120,10 +122,10 @@ func (d *AutoTagDataSource) Read(ctx context.Context, req datasource.ReadRequest
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func (c *AutoTag) find(ctx context.Context, name string, autoTags []*radarr.AutoTaggingResource, diags *diag.Diagnostics) {
+func (c *AutoTag) find(ctx context.Context, name string, autoTags []radarr.AutoTaggingResource, diags *diag.Diagnostics) {
 	for _, i := range autoTags {
 		if i.GetName() == name {
-			c.write(ctx, i, diags)
+			c.write(ctx, &i, diags)
 
 			return
 		}

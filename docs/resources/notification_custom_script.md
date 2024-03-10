@@ -9,7 +9,8 @@ description: |-
 
 # radarr_notification_custom_script (Resource)
 
-<!-- subcategory:Notifications -->Notification Custom Script resource.
+<!-- subcategory:Notifications -->
+Notification Custom Script resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Custom Script](https://wiki.servarr.com/radarr/supported#customscript).
 
 ## Example Usage

@@ -9,7 +9,8 @@ description: |-
 
 # radarr_download_client_sabnzbd (Resource)
 
-<!-- subcategory:Download Clients -->Download Client Sabnzbd resource.
+<!-- subcategory:Download Clients -->
+Download Client Sabnzbd resource.
 For more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [Sabnzbd](https://wiki.servarr.com/radarr/supported#sabnzbd).
 
 ## Example Usage

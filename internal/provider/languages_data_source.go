@@ -24,6 +24,7 @@ func NewLanguagesDataSource() datasource.DataSource {
 // LanguagesDataSource defines the languages implementation.
 type LanguagesDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // Languages describes the languages data model.
@@ -38,7 +39,7 @@ func (d *LanguagesDataSource) Metadata(_ context.Context, req datasource.Metadat
 
 func (d *LanguagesDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Profiles -->List all available [Languages](../data-sources/language).",
+		MarkdownDescription: "<!-- subcategory:Profiles -->\nList all available [Languages](../data-sources/language).",
 		Attributes: map[string]schema.Attribute{
 			// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 			"id": schema.StringAttribute{
@@ -69,14 +70,15 @@ func (d *LanguagesDataSource) Schema(_ context.Context, _ datasource.SchemaReque
 }
 
 func (d *LanguagesDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
 func (d *LanguagesDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get languages current value
-	response, _, err := d.client.LanguageApi.ListLanguage(ctx).Execute()
+	response, _, err := d.client.LanguageAPI.ListLanguage(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, languagesDataSourceName, err))
 
@@ -87,7 +89,7 @@ func (d *LanguagesDataSource) Read(ctx context.Context, _ datasource.ReadRequest
 	// Map response body to resource schema attribute
 	languages := make([]Language, len(response))
 	for i, t := range response {
-		languages[i].write(t)
+		languages[i].write(&t)
 	}
 
 	languageList, diags := types.SetValueFrom(ctx, Language{}.getType(), languages)

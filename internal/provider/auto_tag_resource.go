@@ -33,6 +33,7 @@ func NewAutoTagResource() resource.Resource {
 // AutoTagResource defines the tag implementation.
 type AutoTagResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // AutoTag describes the tag data model.
@@ -61,7 +62,7 @@ func (r *AutoTagResource) Metadata(_ context.Context, req resource.MetadataReque
 
 func (r *AutoTagResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Tags -->Auto Tag resource.\nFor more information refer to [Tags](https://wiki.servarr.com/radarr/settings#tags) documentation.",
+		MarkdownDescription: "<!-- subcategory:Tags -->\nAuto Tag resource.\nFor more information refer to [Tags](https://wiki.servarr.com/radarr/settings#tags) documentation.",
 		Attributes: map[string]schema.Attribute{
 			"remove_tags_automatically": schema.BoolAttribute{
 				MarkdownDescription: "Remove tags automatically flag.",
@@ -140,8 +141,9 @@ func (r AutoTagResource) getSpecificationSchema() schema.Schema {
 }
 
 func (r *AutoTagResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -158,7 +160,7 @@ func (r *AutoTagResource) Create(ctx context.Context, req resource.CreateRequest
 	// Create new auto tag
 	request := autoTag.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.AutoTaggingApi.CreateAutoTagging(ctx).AutoTaggingResource(*request).Execute()
+	response, _, err := r.client.AutoTaggingAPI.CreateAutoTagging(r.auth).AutoTaggingResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, autoTagResourceName, err))
 
@@ -182,7 +184,7 @@ func (r *AutoTagResource) Read(ctx context.Context, req resource.ReadRequest, re
 	}
 
 	// Get auto tag current value
-	response, _, err := r.client.AutoTaggingApi.GetAutoTaggingById(ctx, int32(autoTag.ID.ValueInt64())).Execute()
+	response, _, err := r.client.AutoTaggingAPI.GetAutoTaggingById(r.auth, int32(autoTag.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, autoTagResourceName, err))
 
@@ -208,7 +210,7 @@ func (r *AutoTagResource) Update(ctx context.Context, req resource.UpdateRequest
 	// Update auto tag
 	request := autoTag.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.AutoTaggingApi.UpdateAutoTagging(ctx, fmt.Sprint(request.GetId())).AutoTaggingResource(*request).Execute()
+	response, _, err := r.client.AutoTaggingAPI.UpdateAutoTagging(r.auth, fmt.Sprint(request.GetId())).AutoTaggingResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, autoTagResourceName, err))
 
@@ -231,7 +233,7 @@ func (r *AutoTagResource) Delete(ctx context.Context, req resource.DeleteRequest
 	}
 
 	// Delete auto tag current value
-	_, err := r.client.AutoTaggingApi.DeleteAutoTagging(ctx, int32(ID)).Execute()
+	_, err := r.client.AutoTaggingAPI.DeleteAutoTagging(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, autoTagResourceName, err))
 
@@ -256,7 +258,7 @@ func (t *AutoTag) write(ctx context.Context, autoTag *radarr.AutoTaggingResource
 
 	specs := make([]AutoTagCondition, len(autoTag.Specifications))
 	for n, s := range autoTag.Specifications {
-		specs[n].write(ctx, s)
+		specs[n].write(ctx, &s)
 	}
 
 	t.Tags, tempDiag = types.SetValueFrom(ctx, types.Int64Type, autoTag.GetTags())
@@ -268,10 +270,10 @@ func (t *AutoTag) write(ctx context.Context, autoTag *radarr.AutoTaggingResource
 func (t *AutoTag) read(ctx context.Context, diags *diag.Diagnostics) *radarr.AutoTaggingResource {
 	specifications := make([]AutoTagCondition, len(t.Specifications.Elements()))
 	diags.Append(t.Specifications.ElementsAs(ctx, &specifications, false)...)
-	specs := make([]*radarr.AutoTaggingSpecificationSchema, len(specifications))
+	specs := make([]radarr.AutoTaggingSpecificationSchema, len(specifications))
 
 	for n, s := range specifications {
-		specs[n] = s.read(ctx)
+		specs[n] = *s.read(ctx)
 	}
 
 	autoTag := radarr.NewAutoTaggingResource()

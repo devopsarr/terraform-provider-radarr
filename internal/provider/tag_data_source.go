@@ -23,6 +23,7 @@ func NewTagDataSource() datasource.DataSource {
 // TagDataSource defines the tag implementation.
 type TagDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *TagDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -32,7 +33,7 @@ func (d *TagDataSource) Metadata(_ context.Context, req datasource.MetadataReque
 func (d *TagDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "<!-- subcategory:Tags -->Single [Tag](../resources/tag).",
+		MarkdownDescription: "<!-- subcategory:Tags -->\nSingle [Tag](../resources/tag).",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
 				MarkdownDescription: "Tag ID.",
@@ -47,8 +48,9 @@ func (d *TagDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, re
 }
 
 func (d *TagDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
@@ -62,7 +64,7 @@ func (d *TagDataSource) Read(ctx context.Context, req datasource.ReadRequest, re
 	}
 
 	// Get tags current value
-	response, _, err := d.client.TagApi.ListTag(ctx).Execute()
+	response, _, err := d.client.TagAPI.ListTag(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, tagDataSourceName, err))
 
@@ -75,10 +77,10 @@ func (d *TagDataSource) Read(ctx context.Context, req datasource.ReadRequest, re
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func (t *Tag) find(label string, tags []*radarr.TagResource, diags *diag.Diagnostics) {
+func (t *Tag) find(label string, tags []radarr.TagResource, diags *diag.Diagnostics) {
 	for _, tag := range tags {
 		if tag.GetLabel() == label {
-			t.write(tag)
+			t.write(&tag)
 
 			return
 		}

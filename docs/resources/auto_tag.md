@@ -9,7 +9,8 @@ description: |-
 
 # radarr_auto_tag (Resource)
 
-<!-- subcategory:Tags -->Auto Tag resource.
+<!-- subcategory:Tags -->
+Auto Tag resource.
 For more information refer to [Tags](https://wiki.servarr.com/radarr/settings#tags) documentation.
 
 ## Example Usage

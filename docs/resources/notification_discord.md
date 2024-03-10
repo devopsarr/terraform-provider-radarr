@@ -9,7 +9,8 @@ description: |-
 
 # radarr_notification_discord (Resource)
 
-<!-- subcategory:Notifications -->Notification Discord resource.
+<!-- subcategory:Notifications -->
+Notification Discord resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Discord](https://wiki.servarr.com/radarr/supported#discord).
 
 ## Example Usage

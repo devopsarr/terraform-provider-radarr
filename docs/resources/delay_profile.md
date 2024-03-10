@@ -9,7 +9,8 @@ description: |-
 
 # radarr_delay_profile (Resource)
 
-<!-- subcategory:Profiles -->Delay Profile resource.
+<!-- subcategory:Profiles -->
+Delay Profile resource.
 For more information refer to [Delay Profiles](https://wiki.servarr.com/radarr/settings#delay-profiles) documentation.
 
 ## Example Usage

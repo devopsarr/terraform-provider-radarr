@@ -24,6 +24,7 @@ func NewMoviesDataSource() datasource.DataSource {
 // MoviesDataSource defines the movies implementation.
 type MoviesDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // Movies describes the movies data model.
@@ -39,7 +40,7 @@ func (d *MoviesDataSource) Metadata(_ context.Context, req datasource.MetadataRe
 func (d *MoviesDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "<!-- subcategory:Movies -->List all available [Movies](../resources/movie).",
+		MarkdownDescription: "<!-- subcategory:Movies -->\nList all available [Movies](../resources/movie).",
 		Attributes: map[string]schema.Attribute{
 			// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 			"id": schema.StringAttribute{
@@ -142,14 +143,15 @@ func (d *MoviesDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 }
 
 func (d *MoviesDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
 func (d *MoviesDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get movies current value
-	response, _, err := d.client.MovieApi.ListMovie(ctx).Execute()
+	response, _, err := d.client.MovieAPI.ListMovie(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.List, moviesDataSourceName, err))
 
@@ -160,7 +162,7 @@ func (d *MoviesDataSource) Read(ctx context.Context, _ datasource.ReadRequest, r
 	// Map response body to resource schema attribute
 	movies := make([]Movie, len(response))
 	for i, m := range response {
-		movies[i].write(ctx, m, &resp.Diagnostics)
+		movies[i].write(ctx, &m, &resp.Diagnostics)
 	}
 
 	movieList, diags := types.SetValueFrom(ctx, Movie{}.getType(), movies)

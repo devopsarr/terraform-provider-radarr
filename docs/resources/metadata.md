@@ -9,7 +9,8 @@ description: |-
 
 # radarr_metadata (Resource)
 
-<!-- subcategory:Metadata -->Generic Metadata resource. When possible use a specific resource instead.
+<!-- subcategory:Metadata -->
+Generic Metadata resource. When possible use a specific resource instead.
 For more information refer to [Metadata](https://wiki.servarr.com/radarr/settings#metadata) documentation.
 
 ## Example Usage

@@ -9,7 +9,8 @@ description: |-
 
 # radarr_indexer_torrent_rss (Resource)
 
-<!-- subcategory:Indexers -->Indexer Torrent RSS resource.
+<!-- subcategory:Indexers -->
+Indexer Torrent RSS resource.
 For more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [Torrent RSS](https://wiki.servarr.com/radarr/supported#torrentrssindexer).
 
 ## Example Usage

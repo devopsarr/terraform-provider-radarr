@@ -9,7 +9,8 @@ description: |-
 
 # radarr_indexer_newznab (Resource)
 
-<!-- subcategory:Indexers -->Indexer Newznab resource.
+<!-- subcategory:Indexers -->
+Indexer Newznab resource.
 For more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [Newznab](https://wiki.servarr.com/radarr/supported#newznab).
 
 ## Example Usage

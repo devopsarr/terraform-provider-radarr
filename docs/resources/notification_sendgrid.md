@@ -9,7 +9,8 @@ description: |-
 
 # radarr_notification_sendgrid (Resource)
 
-<!-- subcategory:Notifications -->Notification Sendgrid resource.
+<!-- subcategory:Notifications -->
+Notification Sendgrid resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Sendgrid](https://wiki.servarr.com/radarr/supported#sendgrid).
 
 ## Example Usage

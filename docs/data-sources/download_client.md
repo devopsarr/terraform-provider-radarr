@@ -8,7 +8,8 @@ description: |-
 
 # radarr_download_client (Data Source)
 
-<!-- subcategory:Download Clients -->Single [Download Client](../resources/download_client).
+<!-- subcategory:Download Clients -->
+Single [Download Client](../resources/download_client).
 
 ## Example Usage
 
@@ -75,5 +76,3 @@ data "radarr_download_client" "example" {
 - `use_ssl` (Boolean) Use SSL flag.
 - `username` (String) Username.
 - `watch_folder` (String) Watch folder flag.
-
-

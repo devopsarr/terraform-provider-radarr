@@ -9,7 +9,8 @@ description: |-
 
 # radarr_indexer_torrent_potato (Resource)
 
-<!-- subcategory:Indexers -->Indexer TorrentPotato resource.
+<!-- subcategory:Indexers -->
+Indexer TorrentPotato resource.
 For more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [TorrentPotato](https://wiki.servarr.com/radarr/supported#torrentpotato).
 
 ## Example Usage

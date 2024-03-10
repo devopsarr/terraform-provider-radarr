@@ -23,6 +23,7 @@ func NewRootFolderDataSource() datasource.DataSource {
 // RootFolderDataSource defines the root folders implementation.
 type RootFolderDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *RootFolderDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -32,7 +33,7 @@ func (d *RootFolderDataSource) Metadata(_ context.Context, req datasource.Metada
 func (d *RootFolderDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Media Management -->Single [Root Folder](../resources/root_folder).",
+		MarkdownDescription: "<!-- subcategory:Media Management -->\nSingle [Root Folder](../resources/root_folder).",
 		Attributes: map[string]schema.Attribute{
 			"path": schema.StringAttribute{
 				MarkdownDescription: "Root Folder absolute path.",
@@ -67,8 +68,9 @@ func (d *RootFolderDataSource) Schema(_ context.Context, _ datasource.SchemaRequ
 }
 
 func (d *RootFolderDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
@@ -81,7 +83,7 @@ func (d *RootFolderDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		return
 	}
 	// Get rootfolders current value
-	response, _, err := d.client.RootFolderApi.ListRootFolder(ctx).Execute()
+	response, _, err := d.client.RootFolderAPI.ListRootFolder(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, rootFolderDataSourceName, err))
 
@@ -95,10 +97,10 @@ func (d *RootFolderDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	resp.Diagnostics.Append(resp.State.Set(ctx, &folder)...)
 }
 
-func (r *RootFolder) find(ctx context.Context, path string, folders []*radarr.RootFolderResource, diags *diag.Diagnostics) {
+func (r *RootFolder) find(ctx context.Context, path string, folders []radarr.RootFolderResource, diags *diag.Diagnostics) {
 	for _, folder := range folders {
 		if folder.GetPath() == path {
-			r.write(ctx, folder, diags)
+			r.write(ctx, &folder, diags)
 
 			return
 		}

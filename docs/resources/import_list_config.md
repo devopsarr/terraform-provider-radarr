@@ -9,7 +9,8 @@ description: |-
 
 # radarr_import_list_config (Resource)
 
-<!-- subcategory:Import Lists -->Import List Config resource.
+<!-- subcategory:Import Lists -->
+Import List Config resource.
 For more information refer to [Import List](https://wiki.servarr.com/radarr/settings#completed-download-handling) documentation.
 
 ## Example Usage

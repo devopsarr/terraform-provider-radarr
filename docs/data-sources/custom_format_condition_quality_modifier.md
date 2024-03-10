@@ -9,7 +9,8 @@ description: |-
 
 # radarr_custom_format_condition_quality_modifier (Data Source)
 
-<!-- subcategory:Profiles --> Custom Format Condition Quality Modifier data source.
+<!-- subcategory:Profiles -->
+ Custom Format Condition Quality Modifier data source.
 For more information refer to [Custom Format Conditions](https://wiki.servarr.com/radarr/settings#conditions).
 
 ## Example Usage
@@ -44,5 +45,3 @@ resource "radarr_custom_format" "example" {
 
 - `id` (Number) Custom format condition quality modifier ID.
 - `implementation` (String) Implementation.
-
-

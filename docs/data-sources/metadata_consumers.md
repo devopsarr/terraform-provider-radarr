@@ -8,7 +8,8 @@ description: |-
 
 # radarr_metadata_consumers (Data Source)
 
-<!-- subcategory:Metadata -->List all available [Metadata Consumers](../resources/metadata).
+<!-- subcategory:Metadata -->
+List all available [Metadata Consumers](../resources/metadata).
 
 ## Example Usage
 
@@ -42,5 +43,3 @@ Read-Only:
 - `name` (String) Metadata name.
 - `tags` (Set of Number) List of associated tags.
 - `use_movie_nfo` (Boolean) Use movie nfo flag.
-
-

@@ -36,6 +36,7 @@ func NewDownloadClientTorrentDownloadStationResource() resource.Resource {
 // DownloadClientTorrentDownloadStationResource defines the download client implementation.
 type DownloadClientTorrentDownloadStationResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // DownloadClientTorrentDownloadStation describes the download client data model.
@@ -95,7 +96,7 @@ func (r *DownloadClientTorrentDownloadStationResource) Metadata(_ context.Contex
 
 func (r *DownloadClientTorrentDownloadStationResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Download Clients -->Download Client TorrentDownloadStation resource.\nFor more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [TorrentDownloadStation](https://wiki.servarr.com/radarr/supported#torrentdownloadstation).",
+		MarkdownDescription: "<!-- subcategory:Download Clients -->\nDownload Client TorrentDownloadStation resource.\nFor more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [TorrentDownloadStation](https://wiki.servarr.com/radarr/supported#torrentdownloadstation).",
 		Attributes: map[string]schema.Attribute{
 			"enable": schema.BoolAttribute{
 				MarkdownDescription: "Enable flag.",
@@ -166,8 +167,9 @@ func (r *DownloadClientTorrentDownloadStationResource) Schema(_ context.Context,
 }
 
 func (r *DownloadClientTorrentDownloadStationResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -184,7 +186,7 @@ func (r *DownloadClientTorrentDownloadStationResource) Create(ctx context.Contex
 	// Create new DownloadClientTorrentDownloadStation
 	request := client.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.DownloadClientApi.CreateDownloadClient(ctx).DownloadClientResource(*request).Execute()
+	response, _, err := r.client.DownloadClientAPI.CreateDownloadClient(r.auth).DownloadClientResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, downloadClientTorrentDownloadStationResourceName, err))
 
@@ -208,7 +210,7 @@ func (r *DownloadClientTorrentDownloadStationResource) Read(ctx context.Context,
 	}
 
 	// Get DownloadClientTorrentDownloadStation current value
-	response, _, err := r.client.DownloadClientApi.GetDownloadClientById(ctx, int32(client.ID.ValueInt64())).Execute()
+	response, _, err := r.client.DownloadClientAPI.GetDownloadClientById(r.auth, int32(client.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, downloadClientTorrentDownloadStationResourceName, err))
 
@@ -234,7 +236,7 @@ func (r *DownloadClientTorrentDownloadStationResource) Update(ctx context.Contex
 	// Update DownloadClientTorrentDownloadStation
 	request := client.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.DownloadClientApi.UpdateDownloadClient(ctx, strconv.Itoa(int(request.GetId()))).DownloadClientResource(*request).Execute()
+	response, _, err := r.client.DownloadClientAPI.UpdateDownloadClient(r.auth, strconv.Itoa(int(request.GetId()))).DownloadClientResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, downloadClientTorrentDownloadStationResourceName, err))
 
@@ -257,7 +259,7 @@ func (r *DownloadClientTorrentDownloadStationResource) Delete(ctx context.Contex
 	}
 
 	// Delete DownloadClientTorrentDownloadStation current value
-	_, err := r.client.DownloadClientApi.DeleteDownloadClient(ctx, int32(ID)).Execute()
+	_, err := r.client.DownloadClientAPI.DeleteDownloadClient(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, downloadClientTorrentDownloadStationResourceName, err))
 

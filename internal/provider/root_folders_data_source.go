@@ -24,6 +24,7 @@ func NewRootFoldersDataSource() datasource.DataSource {
 // RootFoldersDataSource defines the root folders implementation.
 type RootFoldersDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // RootFolders describes the root folders data model.
@@ -39,7 +40,7 @@ func (d *RootFoldersDataSource) Metadata(_ context.Context, req datasource.Metad
 func (d *RootFoldersDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Media Management -->List all available [Root Folders](../resources/root_folder).",
+		MarkdownDescription: "<!-- subcategory:Media Management -->\nList all available [Root Folders](../resources/root_folder).",
 		Attributes: map[string]schema.Attribute{
 			// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 			"id": schema.StringAttribute{
@@ -86,14 +87,15 @@ func (d *RootFoldersDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 }
 
 func (d *RootFoldersDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
 func (d *RootFoldersDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get rootfolders current value
-	response, _, err := d.client.RootFolderApi.ListRootFolder(ctx).Execute()
+	response, _, err := d.client.RootFolderAPI.ListRootFolder(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.List, rootFoldersDataSourceName, err))
 
@@ -104,7 +106,7 @@ func (d *RootFoldersDataSource) Read(ctx context.Context, _ datasource.ReadReque
 	// Map response body to resource schema attribute
 	rootFolders := make([]RootFolder, len(response))
 	for i, f := range response {
-		rootFolders[i].write(ctx, f, &resp.Diagnostics)
+		rootFolders[i].write(ctx, &f, &resp.Diagnostics)
 	}
 
 	folderList, diags := types.SetValueFrom(ctx, RootFolder{}.getType(), rootFolders)

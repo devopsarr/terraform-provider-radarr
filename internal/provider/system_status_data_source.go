@@ -23,6 +23,7 @@ func NewSystemStatusDataSource() datasource.DataSource {
 // SystemStatusDataSource defines the system status implementation.
 type SystemStatusDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // SystemStatus describes the system status data model.
@@ -66,7 +67,7 @@ func (d *SystemStatusDataSource) Metadata(_ context.Context, req datasource.Meta
 func (d *SystemStatusDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:System -->System Status resource. User must have rights to read `config.xml`.\nFor more information refer to [System Status](https://wiki.servarr.com/radarr/system#status) documentation.",
+		MarkdownDescription: "<!-- subcategory:System -->\nSystem Status resource. User must have rights to read `config.xml`.\nFor more information refer to [System Status](https://wiki.servarr.com/radarr/system#status) documentation.",
 		Attributes: map[string]schema.Attribute{
 			// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 			"id": schema.Int64Attribute{
@@ -194,14 +195,15 @@ func (d *SystemStatusDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 }
 
 func (d *SystemStatusDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
 func (d *SystemStatusDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get naming current value
-	response, _, err := d.client.SystemApi.GetSystemStatus(ctx).Execute()
+	response, _, err := d.client.SystemAPI.GetSystemStatus(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.List, systemStatusDataSourceName, err))
 

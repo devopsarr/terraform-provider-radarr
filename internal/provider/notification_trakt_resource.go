@@ -35,6 +35,7 @@ func NewNotificationTraktResource() resource.Resource {
 // NotificationTraktResource defines the notification implementation.
 type NotificationTraktResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // NotificationTrakt describes the notification data model.
@@ -99,7 +100,7 @@ func (r *NotificationTraktResource) Metadata(_ context.Context, req resource.Met
 
 func (r *NotificationTraktResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Notifications -->Notification Trakt resource.\nFor more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Trakt](https://wiki.servarr.com/radarr/supported#trakt).",
+		MarkdownDescription: "<!-- subcategory:Notifications -->\nNotification Trakt resource.\nFor more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Trakt](https://wiki.servarr.com/radarr/supported#trakt).",
 		Attributes: map[string]schema.Attribute{
 			"on_download": schema.BoolAttribute{
 				MarkdownDescription: "On download flag.",
@@ -177,8 +178,9 @@ func (r *NotificationTraktResource) Schema(_ context.Context, _ resource.SchemaR
 }
 
 func (r *NotificationTraktResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -195,7 +197,7 @@ func (r *NotificationTraktResource) Create(ctx context.Context, req resource.Cre
 	// Create new NotificationTrakt
 	request := notification.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.NotificationApi.CreateNotification(ctx).NotificationResource(*request).Execute()
+	response, _, err := r.client.NotificationAPI.CreateNotification(r.auth).NotificationResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, notificationTraktResourceName, err))
 
@@ -219,7 +221,7 @@ func (r *NotificationTraktResource) Read(ctx context.Context, req resource.ReadR
 	}
 
 	// Get NotificationTrakt current value
-	response, _, err := r.client.NotificationApi.GetNotificationById(ctx, int32(notification.ID.ValueInt64())).Execute()
+	response, _, err := r.client.NotificationAPI.GetNotificationById(r.auth, int32(notification.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, notificationTraktResourceName, err))
 
@@ -245,7 +247,7 @@ func (r *NotificationTraktResource) Update(ctx context.Context, req resource.Upd
 	// Update NotificationTrakt
 	request := notification.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.NotificationApi.UpdateNotification(ctx, strconv.Itoa(int(request.GetId()))).NotificationResource(*request).Execute()
+	response, _, err := r.client.NotificationAPI.UpdateNotification(r.auth, strconv.Itoa(int(request.GetId()))).NotificationResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, notificationTraktResourceName, err))
 
@@ -268,7 +270,7 @@ func (r *NotificationTraktResource) Delete(ctx context.Context, req resource.Del
 	}
 
 	// Delete NotificationTrakt current value
-	_, err := r.client.NotificationApi.DeleteNotification(ctx, int32(ID)).Execute()
+	_, err := r.client.NotificationAPI.DeleteNotification(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, notificationTraktResourceName, err))
 

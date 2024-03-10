@@ -9,7 +9,8 @@ description: |-
 
 # radarr_notification_trakt (Resource)
 
-<!-- subcategory:Notifications -->Notification Trakt resource.
+<!-- subcategory:Notifications -->
+Notification Trakt resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Trakt](https://wiki.servarr.com/radarr/supported#trakt).
 
 ## Example Usage

@@ -24,6 +24,7 @@ func NewImportListDataSource() datasource.DataSource {
 // ImportListDataSource defines the import_list implementation.
 type ImportListDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *ImportListDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -33,7 +34,7 @@ func (d *ImportListDataSource) Metadata(_ context.Context, req datasource.Metada
 func (d *ImportListDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Import Lists -->Single [Import List](../resources/import_list).",
+		MarkdownDescription: "<!-- subcategory:Import Lists -->\nSingle [Import List](../resources/import_list).",
 		Attributes: map[string]schema.Attribute{
 			"enable_auto": schema.BoolAttribute{
 				MarkdownDescription: "Enable automatic add flag.",
@@ -271,8 +272,9 @@ func (d *ImportListDataSource) Schema(_ context.Context, _ datasource.SchemaRequ
 }
 
 func (d *ImportListDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
@@ -285,7 +287,7 @@ func (d *ImportListDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		return
 	}
 	// Get importList current value
-	response, _, err := d.client.ImportListApi.ListImportList(ctx).Execute()
+	response, _, err := d.client.ImportListAPI.ListImportList(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListDataSourceName, err))
 
@@ -298,10 +300,10 @@ func (d *ImportListDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func (i *ImportList) find(ctx context.Context, name string, importLists []*radarr.ImportListResource, diags *diag.Diagnostics) {
+func (i *ImportList) find(ctx context.Context, name string, importLists []radarr.ImportListResource, diags *diag.Diagnostics) {
 	for _, list := range importLists {
 		if list.GetName() == name {
-			i.write(ctx, list, diags)
+			i.write(ctx, &list, diags)
 
 			return
 		}

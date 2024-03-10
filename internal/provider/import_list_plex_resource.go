@@ -38,6 +38,7 @@ func NewImportListPlexResource() resource.Resource {
 // ImportListPlexResource defines the import list implementation.
 type ImportListPlexResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // ImportListPlex describes the import list data model.
@@ -97,7 +98,7 @@ func (r *ImportListPlexResource) Metadata(_ context.Context, req resource.Metada
 
 func (r *ImportListPlexResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List Plex resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Plex](https://wiki.servarr.com/radarr/supported#pleximport).",
+		MarkdownDescription: "<!-- subcategory:Import Lists -->\nImport List Plex resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Plex](https://wiki.servarr.com/radarr/supported#pleximport).",
 		Attributes: map[string]schema.Attribute{
 			"enable_auto": schema.BoolAttribute{
 				MarkdownDescription: "Enable automatic add flag.",
@@ -169,8 +170,9 @@ func (r *ImportListPlexResource) Schema(_ context.Context, _ resource.SchemaRequ
 }
 
 func (r *ImportListPlexResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -187,7 +189,7 @@ func (r *ImportListPlexResource) Create(ctx context.Context, req resource.Create
 	// Create new ImportListPlex
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListApi.CreateImportList(ctx).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.CreateImportList(r.auth).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, importListPlexResourceName, err))
 
@@ -211,7 +213,7 @@ func (r *ImportListPlexResource) Read(ctx context.Context, req resource.ReadRequ
 	}
 
 	// Get ImportListPlex current value
-	response, _, err := r.client.ImportListApi.GetImportListById(ctx, int32(importList.ID.ValueInt64())).Execute()
+	response, _, err := r.client.ImportListAPI.GetImportListById(r.auth, int32(importList.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListPlexResourceName, err))
 
@@ -237,7 +239,7 @@ func (r *ImportListPlexResource) Update(ctx context.Context, req resource.Update
 	// Update ImportListPlex
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListApi.UpdateImportList(ctx, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.UpdateImportList(r.auth, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, importListPlexResourceName, err))
 
@@ -260,7 +262,7 @@ func (r *ImportListPlexResource) Delete(ctx context.Context, req resource.Delete
 	}
 
 	// Delete ImportListPlex current value
-	_, err := r.client.ImportListApi.DeleteImportList(ctx, int32(ID)).Execute()
+	_, err := r.client.ImportListAPI.DeleteImportList(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListPlexResourceName, err))
 

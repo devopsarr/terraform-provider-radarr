@@ -36,6 +36,7 @@ func NewIndexerTorznabResource() resource.Resource {
 // IndexerTorznabResource defines the Torznab indexer implementation.
 type IndexerTorznabResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // IndexerTorznab describes the Torznab indexer data model.
@@ -116,7 +117,7 @@ func (r *IndexerTorznabResource) Metadata(_ context.Context, req resource.Metada
 
 func (r *IndexerTorznabResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Indexers -->Indexer Torznab resource.\nFor more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [Torznab](https://wiki.servarr.com/radarr/supported#torznab).",
+		MarkdownDescription: "<!-- subcategory:Indexers -->\nIndexer Torznab resource.\nFor more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [Torznab](https://wiki.servarr.com/radarr/supported#torznab).",
 		Attributes: map[string]schema.Attribute{
 			"enable_automatic_search": schema.BoolAttribute{
 				MarkdownDescription: "Enable automatic search flag.",
@@ -224,8 +225,9 @@ func (r *IndexerTorznabResource) Schema(_ context.Context, _ resource.SchemaRequ
 }
 
 func (r *IndexerTorznabResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -242,7 +244,7 @@ func (r *IndexerTorznabResource) Create(ctx context.Context, req resource.Create
 	// Create new IndexerTorznab
 	request := indexer.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.IndexerApi.CreateIndexer(ctx).IndexerResource(*request).Execute()
+	response, _, err := r.client.IndexerAPI.CreateIndexer(r.auth).IndexerResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, indexerTorznabResourceName, err))
 
@@ -266,7 +268,7 @@ func (r *IndexerTorznabResource) Read(ctx context.Context, req resource.ReadRequ
 	}
 
 	// Get IndexerTorznab current value
-	response, _, err := r.client.IndexerApi.GetIndexerById(ctx, int32(indexer.ID.ValueInt64())).Execute()
+	response, _, err := r.client.IndexerAPI.GetIndexerById(r.auth, int32(indexer.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, indexerTorznabResourceName, err))
 
@@ -292,7 +294,7 @@ func (r *IndexerTorznabResource) Update(ctx context.Context, req resource.Update
 	// Update IndexerTorznab
 	request := indexer.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.IndexerApi.UpdateIndexer(ctx, strconv.Itoa(int(request.GetId()))).IndexerResource(*request).Execute()
+	response, _, err := r.client.IndexerAPI.UpdateIndexer(r.auth, strconv.Itoa(int(request.GetId()))).IndexerResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, indexerTorznabResourceName, err))
 
@@ -315,7 +317,7 @@ func (r *IndexerTorznabResource) Delete(ctx context.Context, req resource.Delete
 	}
 
 	// Delete IndexerTorznab current value
-	_, err := r.client.IndexerApi.DeleteIndexer(ctx, int32(ID)).Execute()
+	_, err := r.client.IndexerAPI.DeleteIndexer(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, indexerTorznabResourceName, err))
 

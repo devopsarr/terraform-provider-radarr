@@ -9,7 +9,8 @@ description: |-
 
 # radarr_download_client_deluge (Resource)
 
-<!-- subcategory:Download Clients -->Download Client Deluge resource.
+<!-- subcategory:Download Clients -->
+Download Client Deluge resource.
 For more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [Deluge](https://wiki.servarr.com/radarr/supported#deluge).
 
 ## Example Usage

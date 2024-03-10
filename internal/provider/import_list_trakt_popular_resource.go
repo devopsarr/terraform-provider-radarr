@@ -39,6 +39,7 @@ func NewImportListTraktPopularResource() resource.Resource {
 // ImportListTraktPopularResource defines the import list implementation.
 type ImportListTraktPopularResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // ImportListTraktPopular describes the import list data model.
@@ -128,7 +129,7 @@ func (r *ImportListTraktPopularResource) Metadata(_ context.Context, req resourc
 
 func (r *ImportListTraktPopularResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List Trakt Popular resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Trakt Popular](https://wiki.servarr.com/radarr/supported#traktpopularimport).",
+		MarkdownDescription: "<!-- subcategory:Import Lists -->\nImport List Trakt Popular resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Trakt Popular](https://wiki.servarr.com/radarr/supported#traktpopularimport).",
 		Attributes: map[string]schema.Attribute{
 			"enable_auto": schema.BoolAttribute{
 				MarkdownDescription: "Enable automatic add flag.",
@@ -252,8 +253,9 @@ func (r *ImportListTraktPopularResource) Schema(_ context.Context, _ resource.Sc
 }
 
 func (r *ImportListTraktPopularResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -270,7 +272,7 @@ func (r *ImportListTraktPopularResource) Create(ctx context.Context, req resourc
 	// Create new ImportListTraktPopular
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListApi.CreateImportList(ctx).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.CreateImportList(r.auth).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, importListTraktPopularResourceName, err))
 
@@ -294,7 +296,7 @@ func (r *ImportListTraktPopularResource) Read(ctx context.Context, req resource.
 	}
 
 	// Get ImportListTraktPopular current value
-	response, _, err := r.client.ImportListApi.GetImportListById(ctx, int32(importList.ID.ValueInt64())).Execute()
+	response, _, err := r.client.ImportListAPI.GetImportListById(r.auth, int32(importList.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListTraktPopularResourceName, err))
 
@@ -320,7 +322,7 @@ func (r *ImportListTraktPopularResource) Update(ctx context.Context, req resourc
 	// Update ImportListTraktPopular
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListApi.UpdateImportList(ctx, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.UpdateImportList(r.auth, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, importListTraktPopularResourceName, err))
 
@@ -343,7 +345,7 @@ func (r *ImportListTraktPopularResource) Delete(ctx context.Context, req resourc
 	}
 
 	// Delete ImportListTraktPopular current value
-	_, err := r.client.ImportListApi.DeleteImportList(ctx, int32(ID)).Execute()
+	_, err := r.client.ImportListAPI.DeleteImportList(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListTraktPopularResourceName, err))
 

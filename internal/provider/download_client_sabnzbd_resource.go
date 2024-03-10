@@ -38,6 +38,7 @@ func NewDownloadClientSabnzbdResource() resource.Resource {
 // DownloadClientSabnzbdResource defines the download client implementation.
 type DownloadClientSabnzbdResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // DownloadClientSabnzbd describes the download client data model.
@@ -112,7 +113,7 @@ func (r *DownloadClientSabnzbdResource) Metadata(_ context.Context, req resource
 
 func (r *DownloadClientSabnzbdResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Download Clients -->Download Client Sabnzbd resource.\nFor more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [Sabnzbd](https://wiki.servarr.com/radarr/supported#sabnzbd).",
+		MarkdownDescription: "<!-- subcategory:Download Clients -->\nDownload Client Sabnzbd resource.\nFor more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [Sabnzbd](https://wiki.servarr.com/radarr/supported#sabnzbd).",
 		Attributes: map[string]schema.Attribute{
 			"enable": schema.BoolAttribute{
 				MarkdownDescription: "Enable flag.",
@@ -215,8 +216,9 @@ func (r *DownloadClientSabnzbdResource) Schema(_ context.Context, _ resource.Sch
 }
 
 func (r *DownloadClientSabnzbdResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -233,7 +235,7 @@ func (r *DownloadClientSabnzbdResource) Create(ctx context.Context, req resource
 	// Create new DownloadClientSabnzbd
 	request := client.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.DownloadClientApi.CreateDownloadClient(ctx).DownloadClientResource(*request).Execute()
+	response, _, err := r.client.DownloadClientAPI.CreateDownloadClient(r.auth).DownloadClientResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, downloadClientSabnzbdResourceName, err))
 
@@ -257,7 +259,7 @@ func (r *DownloadClientSabnzbdResource) Read(ctx context.Context, req resource.R
 	}
 
 	// Get DownloadClientSabnzbd current value
-	response, _, err := r.client.DownloadClientApi.GetDownloadClientById(ctx, int32(client.ID.ValueInt64())).Execute()
+	response, _, err := r.client.DownloadClientAPI.GetDownloadClientById(r.auth, int32(client.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, downloadClientSabnzbdResourceName, err))
 
@@ -283,7 +285,7 @@ func (r *DownloadClientSabnzbdResource) Update(ctx context.Context, req resource
 	// Update DownloadClientSabnzbd
 	request := client.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.DownloadClientApi.UpdateDownloadClient(ctx, strconv.Itoa(int(request.GetId()))).DownloadClientResource(*request).Execute()
+	response, _, err := r.client.DownloadClientAPI.UpdateDownloadClient(r.auth, strconv.Itoa(int(request.GetId()))).DownloadClientResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, downloadClientSabnzbdResourceName, err))
 
@@ -306,7 +308,7 @@ func (r *DownloadClientSabnzbdResource) Delete(ctx context.Context, req resource
 	}
 
 	// Delete DownloadClientSabnzbd current value
-	_, err := r.client.DownloadClientApi.DeleteDownloadClient(ctx, int32(ID)).Execute()
+	_, err := r.client.DownloadClientAPI.DeleteDownloadClient(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, downloadClientSabnzbdResourceName, err))
 

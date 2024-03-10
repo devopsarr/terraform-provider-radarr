@@ -9,7 +9,8 @@ description: |-
 
 # radarr_notification_telegram (Resource)
 
-<!-- subcategory:Notifications -->Notification Telegram resource.
+<!-- subcategory:Notifications -->
+Notification Telegram resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Telegram](https://wiki.servarr.com/radarr/supported#telegram).
 
 ## Example Usage

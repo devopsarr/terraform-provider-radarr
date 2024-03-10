@@ -24,6 +24,7 @@ func NewCustomFormatsDataSource() datasource.DataSource {
 // CustomFormatsDataSource defines the custom formats implementation.
 type CustomFormatsDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // CustomFormats describes the custom formats data model.
@@ -39,7 +40,7 @@ func (d *CustomFormatsDataSource) Metadata(_ context.Context, req datasource.Met
 func (d *CustomFormatsDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Profiles -->List all available [Custom Formats](../resources/custom_format).",
+		MarkdownDescription: "<!-- subcategory:Profiles -->\nList all available [Custom Formats](../resources/custom_format).",
 		Attributes: map[string]schema.Attribute{
 			// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 			"id": schema.StringAttribute{
@@ -107,14 +108,15 @@ func (d *CustomFormatsDataSource) Schema(_ context.Context, _ datasource.SchemaR
 }
 
 func (d *CustomFormatsDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
 func (d *CustomFormatsDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get custom formatss current value
-	response, _, err := d.client.CustomFormatApi.ListCustomFormat(ctx).Execute()
+	response, _, err := d.client.CustomFormatAPI.ListCustomFormat(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.List, customFormatsDataSourceName, err))
 
@@ -125,7 +127,7 @@ func (d *CustomFormatsDataSource) Read(ctx context.Context, _ datasource.ReadReq
 	// Map response body to resource schema attribute
 	formats := make([]CustomFormat, len(response))
 	for i, p := range response {
-		formats[i].write(ctx, p, &resp.Diagnostics)
+		formats[i].write(ctx, &p, &resp.Diagnostics)
 	}
 
 	formatList, diags := types.SetValueFrom(ctx, CustomFormat{}.getType(), formats)

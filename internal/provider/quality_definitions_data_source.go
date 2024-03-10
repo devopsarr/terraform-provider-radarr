@@ -24,6 +24,7 @@ func NewQualityDefinitionsDataSource() datasource.DataSource {
 // QualityDefinitionsDataSource defines the qyality definitions implementation.
 type QualityDefinitionsDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // QualityDefinitions describes the qyality definitions data model.
@@ -39,7 +40,7 @@ func (d *QualityDefinitionsDataSource) Metadata(_ context.Context, req datasourc
 func (d *QualityDefinitionsDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the quality server.
-		MarkdownDescription: "<!-- subcategory:Profiles -->List all available [Quality Definitions](../resources/quality_definition).",
+		MarkdownDescription: "<!-- subcategory:Profiles -->\nList all available [Quality Definitions](../resources/quality_definition).",
 		Attributes: map[string]schema.Attribute{
 			// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 			"id": schema.StringAttribute{
@@ -95,14 +96,15 @@ func (d *QualityDefinitionsDataSource) Schema(_ context.Context, _ datasource.Sc
 }
 
 func (d *QualityDefinitionsDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
 func (d *QualityDefinitionsDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get qualitydefinitions current value
-	response, _, err := d.client.QualityDefinitionApi.ListQualityDefinition(ctx).Execute()
+	response, _, err := d.client.QualityDefinitionAPI.ListQualityDefinition(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, qualityDefinitionsDataSourceName, err))
 
@@ -113,7 +115,7 @@ func (d *QualityDefinitionsDataSource) Read(ctx context.Context, _ datasource.Re
 	// Map response body to resource schema attribute
 	definitions := make([]QualityDefinition, len(response))
 	for i, p := range response {
-		definitions[i].write(p)
+		definitions[i].write(&p)
 	}
 
 	qualityList, diags := types.SetValueFrom(ctx, QualityDefinition{}.getType(), definitions)

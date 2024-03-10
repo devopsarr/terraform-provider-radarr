@@ -8,7 +8,8 @@ description: |-
 
 # radarr_import_list_config (Data Source)
 
-<!-- subcategory:Import Lists -->[Import List Config](../resources/import_list_config).
+<!-- subcategory:Import Lists -->
+[Import List Config](../resources/import_list_config).
 
 ## Example Usage
 
@@ -24,5 +25,3 @@ data "radarr_import_list_config" "example" {
 
 - `id` (Number) Import List Config ID.
 - `sync_level` (String) Clean library level.
-
-

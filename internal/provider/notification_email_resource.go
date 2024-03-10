@@ -6,12 +6,14 @@ import (
 
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
+	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -35,6 +37,7 @@ func NewNotificationEmailResource() resource.Resource {
 // NotificationEmailResource defines the notification implementation.
 type NotificationEmailResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // NotificationEmail describes the notification data model.
@@ -50,7 +53,7 @@ type NotificationEmail struct {
 	Password                    types.String `tfsdk:"password"`
 	ID                          types.Int64  `tfsdk:"id"`
 	Port                        types.Int64  `tfsdk:"port"`
-	RequireEncryption           types.Bool   `tfsdk:"require_encryption"`
+	UseEncryption               types.Int64  `tfsdk:"use_encryption"`
 	OnGrab                      types.Bool   `tfsdk:"on_grab"`
 	OnMovieFileDeleteForUpgrade types.Bool   `tfsdk:"on_movie_file_delete_for_upgrade"`
 	OnMovieFileDelete           types.Bool   `tfsdk:"on_movie_file_delete"`
@@ -78,7 +81,7 @@ func (n NotificationEmail) toNotification() *Notification {
 		Password:                    n.Password,
 		Name:                        n.Name,
 		ID:                          n.ID,
-		RequireEncryption:           n.RequireEncryption,
+		UseEncryption:               n.UseEncryption,
 		OnGrab:                      n.OnGrab,
 		OnMovieFileDeleteForUpgrade: n.OnMovieFileDeleteForUpgrade,
 		OnMovieAdded:                n.OnMovieAdded,
@@ -108,7 +111,7 @@ func (n *NotificationEmail) fromNotification(notification *Notification) {
 	n.Password = notification.Password
 	n.Name = notification.Name
 	n.ID = notification.ID
-	n.RequireEncryption = notification.RequireEncryption
+	n.UseEncryption = notification.UseEncryption
 	n.OnGrab = notification.OnGrab
 	n.OnMovieFileDeleteForUpgrade = notification.OnMovieFileDeleteForUpgrade
 	n.OnMovieFileDelete = notification.OnMovieFileDelete
@@ -129,7 +132,7 @@ func (r *NotificationEmailResource) Metadata(_ context.Context, req resource.Met
 
 func (r *NotificationEmailResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Notifications -->Notification Email resource.\nFor more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Email](https://wiki.servarr.com/radarr/supported#email).",
+		MarkdownDescription: "<!-- subcategory:Notifications -->\nNotification Email resource.\nFor more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Email](https://wiki.servarr.com/radarr/supported#email).",
 		Attributes: map[string]schema.Attribute{
 			"on_grab": schema.BoolAttribute{
 				MarkdownDescription: "On grab flag.",
@@ -208,10 +211,13 @@ func (r *NotificationEmailResource) Schema(_ context.Context, _ resource.SchemaR
 				},
 			},
 			// Field values
-			"require_encryption": schema.BoolAttribute{
-				MarkdownDescription: "Require encryption flag.",
+			"use_encryption": schema.Int64Attribute{
+				MarkdownDescription: "Require encryption. `0` Preferred, `1` Always, `2` Never.",
 				Optional:            true,
 				Computed:            true,
+				Validators: []validator.Int64{
+					int64validator.OneOf(0, 1, 2),
+				},
 			},
 			"port": schema.Int64Attribute{
 				MarkdownDescription: "Port.",
@@ -259,8 +265,9 @@ func (r *NotificationEmailResource) Schema(_ context.Context, _ resource.SchemaR
 }
 
 func (r *NotificationEmailResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -277,7 +284,7 @@ func (r *NotificationEmailResource) Create(ctx context.Context, req resource.Cre
 	// Create new NotificationEmail
 	request := notification.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.NotificationApi.CreateNotification(ctx).NotificationResource(*request).Execute()
+	response, _, err := r.client.NotificationAPI.CreateNotification(r.auth).NotificationResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, notificationEmailResourceName, err))
 
@@ -301,7 +308,7 @@ func (r *NotificationEmailResource) Read(ctx context.Context, req resource.ReadR
 	}
 
 	// Get NotificationEmail current value
-	response, _, err := r.client.NotificationApi.GetNotificationById(ctx, int32(notification.ID.ValueInt64())).Execute()
+	response, _, err := r.client.NotificationAPI.GetNotificationById(r.auth, int32(notification.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, notificationEmailResourceName, err))
 
@@ -327,7 +334,7 @@ func (r *NotificationEmailResource) Update(ctx context.Context, req resource.Upd
 	// Update NotificationEmail
 	request := notification.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.NotificationApi.UpdateNotification(ctx, strconv.Itoa(int(request.GetId()))).NotificationResource(*request).Execute()
+	response, _, err := r.client.NotificationAPI.UpdateNotification(r.auth, strconv.Itoa(int(request.GetId()))).NotificationResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, notificationEmailResourceName, err))
 
@@ -350,7 +357,7 @@ func (r *NotificationEmailResource) Delete(ctx context.Context, req resource.Del
 	}
 
 	// Delete NotificationEmail current value
-	_, err := r.client.NotificationApi.DeleteNotification(ctx, int32(ID)).Execute()
+	_, err := r.client.NotificationAPI.DeleteNotification(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, notificationEmailResourceName, err))
 

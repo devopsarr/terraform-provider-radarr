@@ -9,7 +9,8 @@ description: |-
 
 # radarr_notification_notifiarr (Resource)
 
-<!-- subcategory:Notifications -->Notification Notifiarr resource.
+<!-- subcategory:Notifications -->
+Notification Notifiarr resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Notifiarr](https://wiki.servarr.com/radarr/supported#notifiarr).
 
 ## Example Usage

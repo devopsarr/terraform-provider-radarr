@@ -25,6 +25,7 @@ func NewHostDataSource() datasource.DataSource {
 // HostDataSource defines the host implementation.
 type HostDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *HostDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -34,7 +35,7 @@ func (d *HostDataSource) Metadata(_ context.Context, req datasource.MetadataRequ
 func (d *HostDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:System -->[Host](../resources/host).",
+		MarkdownDescription: "<!-- subcategory:System -->\n[Host](../resources/host).",
 		Attributes: map[string]schema.Attribute{
 			"launch_browser": schema.BoolAttribute{
 				MarkdownDescription: "Launch browser flag.",
@@ -144,6 +145,10 @@ func (d *HostDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 						Computed:            true,
 						Sensitive:           true,
 					},
+					"required": schema.StringAttribute{
+						MarkdownDescription: "Required for everyone or disabled for local addresses.",
+						Computed:            true,
+					},
 				},
 			},
 			"ssl": schema.SingleNestedAttribute{
@@ -217,8 +222,9 @@ func (d *HostDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 }
 
 func (d *HostDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
@@ -233,7 +239,7 @@ func (d *HostDataSource) Read(ctx context.Context, _ datasource.ReadRequest, res
 	resp.Diagnostics.Append(tempDiag...)
 
 	// Get host current value
-	response, _, err := d.client.HostConfigApi.GetHostConfig(ctx).Execute()
+	response, _, err := d.client.HostConfigAPI.GetHostConfig(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, hostDataSourceName, err))
 

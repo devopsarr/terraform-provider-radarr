@@ -24,6 +24,7 @@ func NewQualityProfilesDataSource() datasource.DataSource {
 // QualityProfilesDataSource defines the qyality profiles implementation.
 type QualityProfilesDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // QualityProfiles describes the qyality profiles data model.
@@ -39,7 +40,7 @@ func (d *QualityProfilesDataSource) Metadata(_ context.Context, req datasource.M
 func (d *QualityProfilesDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the quality server.
-		MarkdownDescription: "<!-- subcategory:Profiles -->List all available [Quality Profiles](../resources/quality_profile).",
+		MarkdownDescription: "<!-- subcategory:Profiles -->\nList all available [Quality Profiles](../resources/quality_profile).",
 		Attributes: map[string]schema.Attribute{
 			// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 			"id": schema.StringAttribute{
@@ -156,14 +157,15 @@ func (d *QualityProfilesDataSource) Schema(_ context.Context, _ datasource.Schem
 }
 
 func (d *QualityProfilesDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
 func (d *QualityProfilesDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get qualityprofiles current value
-	response, _, err := d.client.QualityProfileApi.ListQualityProfile(ctx).Execute()
+	response, _, err := d.client.QualityProfileAPI.ListQualityProfile(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.List, qualityProfilesDataSourceName, err))
 
@@ -174,7 +176,7 @@ func (d *QualityProfilesDataSource) Read(ctx context.Context, _ datasource.ReadR
 	// Map response body to resource schema attribute
 	profiles := make([]QualityProfile, len(response))
 	for i, p := range response {
-		profiles[i].write(ctx, p, &resp.Diagnostics)
+		profiles[i].write(ctx, &p, &resp.Diagnostics)
 	}
 
 	profileList, diags := types.SetValueFrom(ctx, QualityProfile{}.getType(), profiles)

@@ -24,6 +24,7 @@ func NewImportListExclusionDataSource() datasource.DataSource {
 // ImportListExclusionDataSource defines the importListExclusion implementation.
 type ImportListExclusionDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *ImportListExclusionDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -32,7 +33,7 @@ func (d *ImportListExclusionDataSource) Metadata(_ context.Context, req datasour
 
 func (d *ImportListExclusionDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Import Lists -->Single [ImportListExclusion](../resources/import_list_exclusion).",
+		MarkdownDescription: "<!-- subcategory:Import Lists -->\nSingle [ImportListExclusion](../resources/import_list_exclusion).",
 		Attributes: map[string]schema.Attribute{
 			"tmdb_id": schema.Int64Attribute{
 				MarkdownDescription: "Movie TMDB ID.",
@@ -55,8 +56,9 @@ func (d *ImportListExclusionDataSource) Schema(_ context.Context, _ datasource.S
 }
 
 func (d *ImportListExclusionDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
@@ -70,7 +72,7 @@ func (d *ImportListExclusionDataSource) Read(ctx context.Context, req datasource
 	}
 
 	// Get importListExclusions current value
-	response, _, err := d.client.ImportExclusionsApi.ListExclusions(ctx).Execute()
+	response, _, err := d.client.ImportExclusionsAPI.ListExclusions(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListExclusionDataSourceName, err))
 
@@ -83,10 +85,10 @@ func (d *ImportListExclusionDataSource) Read(ctx context.Context, req datasource
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func (i *ImportListExclusion) find(tmdbID int64, importListExclusions []*radarr.ImportExclusionsResource, diags *diag.Diagnostics) {
+func (i *ImportListExclusion) find(tmdbID int64, importListExclusions []radarr.ImportExclusionsResource, diags *diag.Diagnostics) {
 	for _, t := range importListExclusions {
 		if t.GetTmdbId() == int32(tmdbID) {
-			i.write(t)
+			i.write(&t)
 
 			return
 		}

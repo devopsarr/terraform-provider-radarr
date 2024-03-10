@@ -38,6 +38,7 @@ func NewDownloadClientTransmissionResource() resource.Resource {
 // DownloadClientTransmissionResource defines the download client implementation.
 type DownloadClientTransmissionResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // DownloadClientTransmission describes the download client data model.
@@ -115,7 +116,7 @@ func (r *DownloadClientTransmissionResource) Metadata(_ context.Context, req res
 
 func (r *DownloadClientTransmissionResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Download Clients -->Download Client Transmission resource.\nFor more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [Transmission](https://wiki.servarr.com/radarr/supported#transmission).",
+		MarkdownDescription: "<!-- subcategory:Download Clients -->\nDownload Client Transmission resource.\nFor more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [Transmission](https://wiki.servarr.com/radarr/supported#transmission).",
 		Attributes: map[string]schema.Attribute{
 			"enable": schema.BoolAttribute{
 				MarkdownDescription: "Enable flag.",
@@ -222,8 +223,9 @@ func (r *DownloadClientTransmissionResource) Schema(_ context.Context, _ resourc
 }
 
 func (r *DownloadClientTransmissionResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -240,7 +242,7 @@ func (r *DownloadClientTransmissionResource) Create(ctx context.Context, req res
 	// Create new DownloadClientTransmission
 	request := client.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.DownloadClientApi.CreateDownloadClient(ctx).DownloadClientResource(*request).Execute()
+	response, _, err := r.client.DownloadClientAPI.CreateDownloadClient(r.auth).DownloadClientResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, downloadClientTransmissionResourceName, err))
 
@@ -264,7 +266,7 @@ func (r *DownloadClientTransmissionResource) Read(ctx context.Context, req resou
 	}
 
 	// Get DownloadClientTransmission current value
-	response, _, err := r.client.DownloadClientApi.GetDownloadClientById(ctx, int32(client.ID.ValueInt64())).Execute()
+	response, _, err := r.client.DownloadClientAPI.GetDownloadClientById(r.auth, int32(client.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, downloadClientTransmissionResourceName, err))
 
@@ -290,7 +292,7 @@ func (r *DownloadClientTransmissionResource) Update(ctx context.Context, req res
 	// Update DownloadClientTransmission
 	request := client.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.DownloadClientApi.UpdateDownloadClient(ctx, strconv.Itoa(int(request.GetId()))).DownloadClientResource(*request).Execute()
+	response, _, err := r.client.DownloadClientAPI.UpdateDownloadClient(r.auth, strconv.Itoa(int(request.GetId()))).DownloadClientResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, downloadClientTransmissionResourceName, err))
 
@@ -313,7 +315,7 @@ func (r *DownloadClientTransmissionResource) Delete(ctx context.Context, req res
 	}
 
 	// Delete DownloadClientTransmission current value
-	_, err := r.client.DownloadClientApi.DeleteDownloadClient(ctx, int32(ID)).Execute()
+	_, err := r.client.DownloadClientAPI.DeleteDownloadClient(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, downloadClientTransmissionResourceName, err))
 

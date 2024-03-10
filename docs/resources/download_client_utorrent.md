@@ -9,7 +9,8 @@ description: |-
 
 # radarr_download_client_utorrent (Resource)
 
-<!-- subcategory:Download Clients -->Download Client uTorrent resource.
+<!-- subcategory:Download Clients -->
+Download Client uTorrent resource.
 For more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [uTorrent](https://wiki.servarr.com/radarr/supported#utorrent).
 
 ## Example Usage

@@ -24,6 +24,7 @@ func NewMetadataConsumersDataSource() datasource.DataSource {
 // MetadataConsumersDataSource defines the metadataConsumers implementation.
 type MetadataConsumersDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // MetadataConsumers describes the metadataConsumers data model.
@@ -39,7 +40,7 @@ func (d *MetadataConsumersDataSource) Metadata(_ context.Context, req datasource
 func (d *MetadataConsumersDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Metadata -->List all available [Metadata Consumers](../resources/metadata).",
+		MarkdownDescription: "<!-- subcategory:Metadata -->\nList all available [Metadata Consumers](../resources/metadata).",
 		Attributes: map[string]schema.Attribute{
 			// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 			"id": schema.StringAttribute{
@@ -108,14 +109,15 @@ func (d *MetadataConsumersDataSource) Schema(_ context.Context, _ datasource.Sch
 }
 
 func (d *MetadataConsumersDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
 func (d *MetadataConsumersDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get metadataConsumers current value
-	response, _, err := d.client.MetadataApi.ListMetadata(ctx).Execute()
+	response, _, err := d.client.MetadataAPI.ListMetadata(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.List, metadataConsumersDataSourceName, err))
 
@@ -126,7 +128,7 @@ func (d *MetadataConsumersDataSource) Read(ctx context.Context, _ datasource.Rea
 	// Map response body to resource schema attribute
 	consumers := make([]Metadata, len(response))
 	for i, p := range response {
-		consumers[i].write(ctx, p, &resp.Diagnostics)
+		consumers[i].write(ctx, &p, &resp.Diagnostics)
 	}
 
 	metadataList, diags := types.SetValueFrom(ctx, Metadata{}.getType(), consumers)

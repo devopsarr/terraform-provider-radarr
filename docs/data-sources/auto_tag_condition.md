@@ -5,12 +5,13 @@ subcategory: "Tags"
 description: |-
   Generic Auto Tag Condition data source. When possible use a specific data source instead.
   For more information refer to  Format Conditions https://wiki.servarr.com/radarr/settings#conditions.
-   To be used in conjunction with  Format ../resources/auto_tag.
+  To be used in conjunction with  Format ../resources/auto_tag.
 ---
 
 # radarr_auto_tag_condition (Data Source)
 
-<!-- subcategory:Tags --> Generic Auto Tag Condition data source. When possible use a specific data source instead.
+<!-- subcategory:Tags -->
+ Generic Auto Tag Condition data source. When possible use a specific data source instead.
 For more information refer to [ Format Conditions](https://wiki.servarr.com/radarr/settings#conditions).
  To be used in conjunction with [ Format](../resources/auto_tag).
 
@@ -54,5 +55,3 @@ resource "radarr_auto_tag" "example" {
 ### Read-Only
 
 - `id` (Number) format condition ID.
-
-

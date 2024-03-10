@@ -38,6 +38,7 @@ func NewImportListCustomResource() resource.Resource {
 // ImportListCustomResource defines the import list implementation.
 type ImportListCustomResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // ImportListCustom describes the import list data model.
@@ -97,7 +98,7 @@ func (r *ImportListCustomResource) Metadata(_ context.Context, req resource.Meta
 
 func (r *ImportListCustomResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List Custom resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Custom List](https://wiki.servarr.com/radarr/supported#radarrlistimport).",
+		MarkdownDescription: "<!-- subcategory:Import Lists -->\nImport List Custom resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Custom List](https://wiki.servarr.com/radarr/supported#radarrlistimport).",
 		Attributes: map[string]schema.Attribute{
 			"enable_auto": schema.BoolAttribute{
 				MarkdownDescription: "Enable automatic add flag.",
@@ -168,8 +169,9 @@ func (r *ImportListCustomResource) Schema(_ context.Context, _ resource.SchemaRe
 }
 
 func (r *ImportListCustomResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -186,7 +188,7 @@ func (r *ImportListCustomResource) Create(ctx context.Context, req resource.Crea
 	// Create new ImportListCustom
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListApi.CreateImportList(ctx).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.CreateImportList(r.auth).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, importListCustomResourceName, err))
 
@@ -210,7 +212,7 @@ func (r *ImportListCustomResource) Read(ctx context.Context, req resource.ReadRe
 	}
 
 	// Get ImportListCustom current value
-	response, _, err := r.client.ImportListApi.GetImportListById(ctx, int32(importList.ID.ValueInt64())).Execute()
+	response, _, err := r.client.ImportListAPI.GetImportListById(r.auth, int32(importList.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListCustomResourceName, err))
 
@@ -236,7 +238,7 @@ func (r *ImportListCustomResource) Update(ctx context.Context, req resource.Upda
 	// Update ImportListCustom
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListApi.UpdateImportList(ctx, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.UpdateImportList(r.auth, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, importListCustomResourceName, err))
 
@@ -259,7 +261,7 @@ func (r *ImportListCustomResource) Delete(ctx context.Context, req resource.Dele
 	}
 
 	// Delete ImportListCustom current value
-	_, err := r.client.ImportListApi.DeleteImportList(ctx, int32(ID)).Execute()
+	_, err := r.client.ImportListAPI.DeleteImportList(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListCustomResourceName, err))
 

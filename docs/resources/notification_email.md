@@ -9,7 +9,8 @@ description: |-
 
 # radarr_notification_email (Resource)
 
-<!-- subcategory:Notifications -->Notification Email resource.
+<!-- subcategory:Notifications -->
+Notification Email resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Email](https://wiki.servarr.com/radarr/supported#email).
 
 ## Example Usage
@@ -64,8 +65,8 @@ resource "radarr_notification_email" "example" {
 - `on_upgrade` (Boolean) On upgrade flag.
 - `password` (String, Sensitive) Password.
 - `port` (Number) Port.
-- `require_encryption` (Boolean) Require encryption flag.
 - `tags` (Set of Number) List of associated tags.
+- `use_encryption` (Number) Require encryption. `0` Preferred, `1` Always, `2` Never.
 - `username` (String) Username.
 
 ### Read-Only

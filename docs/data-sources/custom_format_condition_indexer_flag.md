@@ -9,7 +9,8 @@ description: |-
 
 # radarr_custom_format_condition_indexer_flag (Data Source)
 
-<!-- subcategory:Profiles --> Custom Format Condition Indexer Flag data source.
+<!-- subcategory:Profiles -->
+ Custom Format Condition Indexer Flag data source.
 For more information refer to [Custom Format Conditions](https://wiki.servarr.com/radarr/settings#conditions) and [Indexer Flag](https://wiki.servarr.com/radarr/settings#indexer-flags).
 
 ## Example Usage
@@ -44,5 +45,3 @@ resource "radarr_custom_format" "example" {
 
 - `id` (Number) Custom format condition indexer flag ID.
 - `implementation` (String) Implementation.
-
-

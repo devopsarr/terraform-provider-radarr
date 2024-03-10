@@ -24,6 +24,7 @@ func NewDownloadClientsDataSource() datasource.DataSource {
 // DownloadClientsDataSource defines the download clients implementation.
 type DownloadClientsDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // DownloadClients describes the download clients data model.
@@ -39,7 +40,7 @@ func (d *DownloadClientsDataSource) Metadata(_ context.Context, req datasource.M
 func (d *DownloadClientsDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Download Clients -->List all available [Download Clients](../resources/download_client).",
+		MarkdownDescription: "<!-- subcategory:Download Clients -->\nList all available [Download Clients](../resources/download_client).",
 		Attributes: map[string]schema.Attribute{
 			// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 			"id": schema.StringAttribute{
@@ -260,14 +261,15 @@ func (d *DownloadClientsDataSource) Schema(_ context.Context, _ datasource.Schem
 }
 
 func (d *DownloadClientsDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
 func (d *DownloadClientsDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get download clients current value
-	response, _, err := d.client.DownloadClientApi.ListDownloadClient(ctx).Execute()
+	response, _, err := d.client.DownloadClientAPI.ListDownloadClient(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.List, downloadClientsDataSourceName, err))
 
@@ -278,7 +280,7 @@ func (d *DownloadClientsDataSource) Read(ctx context.Context, _ datasource.ReadR
 	// Map response body to resource schema attribute
 	clients := make([]DownloadClient, len(response))
 	for i, d := range response {
-		clients[i].write(ctx, d, &resp.Diagnostics)
+		clients[i].write(ctx, &d, &resp.Diagnostics)
 	}
 
 	clientList, diags := types.SetValueFrom(ctx, DownloadClient{}.getType(), clients)

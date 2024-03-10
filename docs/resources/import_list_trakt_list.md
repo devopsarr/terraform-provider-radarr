@@ -9,7 +9,8 @@ description: |-
 
 # radarr_import_list_trakt_list (Resource)
 
-<!-- subcategory:Import Lists -->Import List TraktList resource.
+<!-- subcategory:Import Lists -->
+Import List TraktList resource.
 For more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Trakt List](https://wiki.servarr.com/radarr/supported#traktlistimport).
 
 ## Example Usage

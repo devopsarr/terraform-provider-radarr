@@ -9,7 +9,8 @@ description: |-
 
 # radarr_download_client_torrent_blackhole (Resource)
 
-<!-- subcategory:Download Clients -->Download Client Torrent Blackhole resource.
+<!-- subcategory:Download Clients -->
+Download Client Torrent Blackhole resource.
 For more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [TorrentBlackhole](https://wiki.servarr.com/radarr/supported#torrentblackhole).
 
 ## Example Usage

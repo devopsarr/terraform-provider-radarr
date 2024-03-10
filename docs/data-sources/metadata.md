@@ -8,7 +8,8 @@ description: |-
 
 # radarr_metadata (Data Source)
 
-<!-- subcategory:Metadata -->Single [Metadata](../resources/metadata).
+<!-- subcategory:Metadata -->
+Single [Metadata](../resources/metadata).
 
 ## Example Usage
 
@@ -38,5 +39,3 @@ data "radarr_metadata" "example" {
 - `movie_metadata_url` (Boolean) Movie metadata URL flag.
 - `tags` (Set of Number) List of associated tags.
 - `use_movie_nfo` (Boolean) Use movie nfo flag.
-
-

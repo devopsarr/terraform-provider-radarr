@@ -8,7 +8,8 @@ description: |-
 
 # radarr_import_lists (Data Source)
 
-<!-- subcategory:Import Lists -->List all available [Import Lists](../resources/import_list).
+<!-- subcategory:Import Lists -->
+List all available [Import Lists](../resources/import_list).
 
 ## Example Usage
 
@@ -86,5 +87,3 @@ Read-Only:
 - `user_list_type` (Number) User list type.
 - `username` (String) Username.
 - `years` (String) Years.
-
-

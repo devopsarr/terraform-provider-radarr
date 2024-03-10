@@ -8,7 +8,8 @@ description: |-
 
 # radarr_indexer (Data Source)
 
-<!-- subcategory:Indexers -->Single [Indexer](../resources/indexer).
+<!-- subcategory:Indexers -->
+Single [Indexer](../resources/indexer).
 
 ## Example Usage
 
@@ -59,5 +60,3 @@ data "radarr_indexer" "example" {
 - `tags` (Set of Number) List of associated tags.
 - `user` (String) Username.
 - `username` (String) Username.
-
-

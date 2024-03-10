@@ -24,6 +24,7 @@ func NewRemotePathMappingDataSource() datasource.DataSource {
 // RemotePathMappingDataSource defines the remote path mapping implementation.
 type RemotePathMappingDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *RemotePathMappingDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -33,7 +34,7 @@ func (d *RemotePathMappingDataSource) Metadata(_ context.Context, req datasource
 func (d *RemotePathMappingDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Download Clients -->Single [Remote Path Mapping](../resources/remote_path_mapping).",
+		MarkdownDescription: "<!-- subcategory:Download Clients -->\nSingle [Remote Path Mapping](../resources/remote_path_mapping).",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
 				MarkdownDescription: "Remote Path Mapping ID.",
@@ -56,8 +57,9 @@ func (d *RemotePathMappingDataSource) Schema(_ context.Context, _ datasource.Sch
 }
 
 func (d *RemotePathMappingDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
@@ -70,7 +72,7 @@ func (d *RemotePathMappingDataSource) Read(ctx context.Context, req datasource.R
 		return
 	}
 	// Get remote path mapping current value
-	response, _, err := d.client.RemotePathMappingApi.ListRemotePathMapping(ctx).Execute()
+	response, _, err := d.client.RemotePathMappingAPI.ListRemotePathMapping(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, remotePathMappingDataSourceName, err))
 
@@ -83,10 +85,10 @@ func (d *RemotePathMappingDataSource) Read(ctx context.Context, req datasource.R
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func (r *RemotePathMapping) find(id int64, mappings []*radarr.RemotePathMappingResource, diags *diag.Diagnostics) {
+func (r *RemotePathMapping) find(id int64, mappings []radarr.RemotePathMappingResource, diags *diag.Diagnostics) {
 	for _, m := range mappings {
 		if int64(m.GetId()) == id {
-			r.write(m)
+			r.write(&m)
 
 			return
 		}

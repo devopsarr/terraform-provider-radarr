@@ -2,9 +2,12 @@ package provider
 
 import (
 	"context"
+	"fmt"
+	"net/url"
 	"os"
 
 	"github.com/devopsarr/radarr-go/radarr"
+	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
@@ -18,7 +21,7 @@ import (
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ provider.Provider = &RadarrProvider{}
 
-// ScaffoldingProvider defines the provider implementation.
+// RadarrProvider defines the provider implementation.
 type RadarrProvider struct {
 	// version is set to the provider version on release, "dev" when the
 	// provider is built and ran locally, and "test" when running acceptance
@@ -63,54 +66,29 @@ func (p *RadarrProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		return
 	}
 
-	// User must provide URL to the provider
-	if data.URL.IsUnknown() {
-		// Cannot connect to client with an unknown value
-		resp.Diagnostics.AddWarning(
-			"Unable to create client",
-			"Cannot use unknown value as url",
-		)
-
-		return
+	// Extract URL
+	APIURL := data.URL.ValueString()
+	if APIURL == "" {
+		APIURL = os.Getenv("RADARR_URL")
 	}
 
-	var url string
-	if data.URL.IsNull() {
-		url = os.Getenv("RADARR_URL")
-	} else {
-		url = data.URL.ValueString()
-	}
-
-	if url == "" {
-		// Error vs warning - empty value must stop execution
+	parsedAPIURL, err := url.Parse(APIURL)
+	if err != nil {
 		resp.Diagnostics.AddError(
-			"Unable to find URL",
-			"URL cannot be an empty string",
+			"Unable to find valid URL",
+			"URL cannot parsed",
 		)
 
 		return
 	}
 
-	// User must provide API key to the provider
-	if data.APIKey.IsUnknown() {
-		// Cannot connect to client with an unknown value
-		resp.Diagnostics.AddWarning(
-			"Unable to create client",
-			"Cannot use unknown value as api_key",
-		)
-
-		return
-	}
-
-	var key string
-	if data.APIKey.IsNull() {
+	// Extract key
+	key := data.APIKey.ValueString()
+	if key == "" {
 		key = os.Getenv("RADARR_API_KEY")
-	} else {
-		key = data.APIKey.ValueString()
 	}
 
 	if key == "" {
-		// Error vs warning - empty value must stop execution
 		resp.Diagnostics.AddError(
 			"Unable to find API key",
 			"API key cannot be an empty string",
@@ -119,14 +97,20 @@ func (p *RadarrProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		return
 	}
 
-	// Configuring client. API Key management could be changed once new options avail in sdk.
-	config := radarr.NewConfiguration()
-	config.AddDefaultHeader("X-Api-Key", key)
-	config.Servers[0].URL = url
-	client := radarr.NewAPIClient(config)
-
-	resp.DataSourceData = client
-	resp.ResourceData = client
+	// Set context for API calls
+	auth := context.WithValue(
+		context.Background(),
+		radarr.ContextAPIKeys,
+		map[string]radarr.APIKey{
+			"X-Api-Key": {Key: key},
+		},
+	)
+	auth = context.WithValue(auth, radarr.ContextServerVariables, map[string]string{
+		"protocol": parsedAPIURL.Scheme,
+		"hostpath": parsedAPIURL.Host,
+	})
+	resp.DataSourceData = auth
+	resp.ResourceData = auth
 }
 
 func (p *RadarrProvider) Resources(_ context.Context) []func() resource.Resource {
@@ -208,7 +192,6 @@ func (p *RadarrProvider) Resources(_ context.Context) []func() resource.Resource
 		// Notifications
 		NewNotificationResource,
 		NewNotificationAppriseResource,
-		NewNotificationBoxcarResource,
 		NewNotificationCustomScriptResource,
 		NewNotificationDiscordResource,
 		NewNotificationEmailResource,
@@ -334,4 +317,43 @@ func New(version string) func() provider.Provider {
 			version: version,
 		}
 	}
+}
+
+// ResourceConfigure is a helper function to set the client for a specific resource.
+func resourceConfigure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) (context.Context, *radarr.APIClient) {
+	// Prevent panic if the provider has not been configured.
+	if req.ProviderData == nil {
+		return nil, nil
+	}
+
+	providerData, ok := req.ProviderData.(context.Context)
+	if !ok {
+		resp.Diagnostics.AddError(
+			helpers.UnexpectedResourceConfigureType,
+			fmt.Sprintf("Expected context.Context, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+		)
+
+		return nil, nil
+	}
+
+	return providerData, radarr.NewAPIClient(radarr.NewConfiguration())
+}
+
+func dataSourceConfigure(_ context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) (context.Context, *radarr.APIClient) {
+	// Prevent panic if the provider has not been configured.
+	if req.ProviderData == nil {
+		return nil, nil
+	}
+
+	providerData, ok := req.ProviderData.(context.Context)
+	if !ok {
+		resp.Diagnostics.AddError(
+			helpers.UnexpectedDataSourceConfigureType,
+			fmt.Sprintf("Expected context.Context, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+		)
+
+		return nil, nil
+	}
+
+	return providerData, radarr.NewAPIClient(radarr.NewConfiguration())
 }

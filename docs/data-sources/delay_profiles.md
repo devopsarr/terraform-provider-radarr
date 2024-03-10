@@ -8,7 +8,8 @@ description: |-
 
 # radarr_delay_profiles (Data Source)
 
-<!-- subcategory:Profiles -->List all available [Delay Profiles](../resources/delay_profile).
+<!-- subcategory:Profiles -->
+List all available [Delay Profiles](../resources/delay_profile).
 
 ## Example Usage
 
@@ -39,5 +40,3 @@ Read-Only:
 - `tags` (Set of Number) List of associated tags.
 - `torrent_delay` (Number) Torrent Delay.
 - `usenet_delay` (Number) Usenet delay.
-
-

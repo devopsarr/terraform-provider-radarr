@@ -8,7 +8,8 @@ description: |-
 
 # radarr_indexers (Data Source)
 
-<!-- subcategory:Indexers -->List all available [Indexers](../resources/indexer).
+<!-- subcategory:Indexers -->
+List all available [Indexers](../resources/indexer).
 
 ## Example Usage
 
@@ -63,5 +64,3 @@ Read-Only:
 - `tags` (Set of Number) List of associated tags.
 - `user` (String) Username.
 - `username` (String) Username.
-
-

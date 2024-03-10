@@ -9,7 +9,8 @@ description: |-
 
 # radarr_naming (Resource)
 
-<!-- subcategory:Media Management -->Naming resource.
+<!-- subcategory:Media Management -->
+Naming resource.
 For more information refer to [Naming](https://wiki.servarr.com/radarr/settings#community-naming-suggestions) documentation.
 
 ## Example Usage
@@ -44,11 +45,9 @@ resource "radarr_naming" "example" {
 ### Required
 
 - `colon_replacement_format` (String) Change how Radarr handles colon replacement. Valid values are: 'delete', 'dash', 'spaceDash', and 'spaceDashSpace'.
-- `include_quality` (Boolean) Include quality in file name.
 - `movie_folder_format` (String) Movie folder format.
 - `rename_movies` (Boolean) Radarr will use the existing file name if false.
 - `replace_illegal_characters` (Boolean) Replace illegal characters. They will be removed if false.
-- `replace_spaces` (Boolean) Replace spaces.
 - `standard_movie_format` (String) Standard movie formatss.
 
 ### Read-Only

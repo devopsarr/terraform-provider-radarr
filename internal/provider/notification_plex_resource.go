@@ -35,6 +35,7 @@ func NewNotificationPlexResource() resource.Resource {
 // NotificationPlexResource defines the notification implementation.
 type NotificationPlexResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // NotificationPlex describes the notification data model.
@@ -105,7 +106,7 @@ func (r *NotificationPlexResource) Metadata(_ context.Context, req resource.Meta
 
 func (r *NotificationPlexResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Notifications -->Notification Plex resource.\nFor more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Plex](https://wiki.servarr.com/radarr/supported#plexserver).",
+		MarkdownDescription: "<!-- subcategory:Notifications -->\nNotification Plex resource.\nFor more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Plex](https://wiki.servarr.com/radarr/supported#plexserver).",
 		Attributes: map[string]schema.Attribute{
 			"on_download": schema.BoolAttribute{
 				MarkdownDescription: "On download flag.",
@@ -193,8 +194,9 @@ func (r *NotificationPlexResource) Schema(_ context.Context, _ resource.SchemaRe
 }
 
 func (r *NotificationPlexResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -211,7 +213,7 @@ func (r *NotificationPlexResource) Create(ctx context.Context, req resource.Crea
 	// Create new NotificationPlex
 	request := notification.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.NotificationApi.CreateNotification(ctx).NotificationResource(*request).Execute()
+	response, _, err := r.client.NotificationAPI.CreateNotification(r.auth).NotificationResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, notificationPlexResourceName, err))
 
@@ -235,7 +237,7 @@ func (r *NotificationPlexResource) Read(ctx context.Context, req resource.ReadRe
 	}
 
 	// Get NotificationPlex current value
-	response, _, err := r.client.NotificationApi.GetNotificationById(ctx, int32(notification.ID.ValueInt64())).Execute()
+	response, _, err := r.client.NotificationAPI.GetNotificationById(r.auth, int32(notification.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, notificationPlexResourceName, err))
 
@@ -261,7 +263,7 @@ func (r *NotificationPlexResource) Update(ctx context.Context, req resource.Upda
 	// Update NotificationPlex
 	request := notification.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.NotificationApi.UpdateNotification(ctx, strconv.Itoa(int(request.GetId()))).NotificationResource(*request).Execute()
+	response, _, err := r.client.NotificationAPI.UpdateNotification(r.auth, strconv.Itoa(int(request.GetId()))).NotificationResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, notificationPlexResourceName, err))
 
@@ -284,7 +286,7 @@ func (r *NotificationPlexResource) Delete(ctx context.Context, req resource.Dele
 	}
 
 	// Delete NotificationPlex current value
-	_, err := r.client.NotificationApi.DeleteNotification(ctx, int32(ID)).Execute()
+	_, err := r.client.NotificationAPI.DeleteNotification(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, notificationPlexResourceName, err))
 

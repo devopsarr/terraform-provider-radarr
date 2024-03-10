@@ -22,6 +22,7 @@ func NewDownloadClientConfigDataSource() datasource.DataSource {
 // DownloadClientConfigDataSource defines the download client config implementation.
 type DownloadClientConfigDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *DownloadClientConfigDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -31,7 +32,7 @@ func (d *DownloadClientConfigDataSource) Metadata(_ context.Context, req datasou
 func (d *DownloadClientConfigDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Download Clients -->[Download Client Config](../resources/download_client_config).",
+		MarkdownDescription: "<!-- subcategory:Download Clients -->\n[Download Client Config](../resources/download_client_config).",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
 				MarkdownDescription: "Download Client Config ID.",
@@ -58,14 +59,15 @@ func (d *DownloadClientConfigDataSource) Schema(_ context.Context, _ datasource.
 }
 
 func (d *DownloadClientConfigDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
 func (d *DownloadClientConfigDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get indexer config current value
-	response, _, err := d.client.DownloadClientConfigApi.GetDownloadClientConfig(ctx).Execute()
+	response, _, err := d.client.DownloadClientConfigAPI.GetDownloadClientConfig(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, downloadClientConfigDataSourceName, err))
 

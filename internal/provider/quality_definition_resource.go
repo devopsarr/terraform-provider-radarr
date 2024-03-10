@@ -32,6 +32,7 @@ func NewQualityDefinitionResource() resource.Resource {
 // QualityDefinitionResource defines the quality definition implementation.
 type QualityDefinitionResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // QualityDefinition describes the quality definition data model.
@@ -68,7 +69,7 @@ func (r *QualityDefinitionResource) Metadata(_ context.Context, req resource.Met
 
 func (r *QualityDefinitionResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Profiles -->Quality Definition resource.\nFor more information refer to [Quality Definition](https://wiki.servarr.com/radarr/settings#quality-1) documentation.",
+		MarkdownDescription: "<!-- subcategory:Profiles -->\nQuality Definition resource.\nFor more information refer to [Quality Definition](https://wiki.servarr.com/radarr/settings#quality-1) documentation.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
 				MarkdownDescription: "Quality Definition ID.",
@@ -120,8 +121,9 @@ func (r *QualityDefinitionResource) Schema(_ context.Context, _ resource.SchemaR
 }
 
 func (r *QualityDefinitionResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -139,7 +141,7 @@ func (r *QualityDefinitionResource) Create(ctx context.Context, req resource.Cre
 	request := definition.read()
 
 	// Read to get the quality ID
-	read, _, err := r.client.QualityDefinitionApi.GetQualityDefinitionById(ctx, request.GetId()).Execute()
+	read, _, err := r.client.QualityDefinitionAPI.GetQualityDefinitionById(r.auth, request.GetId()).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, qualityDefinitionResourceName, err))
 
@@ -150,7 +152,7 @@ func (r *QualityDefinitionResource) Create(ctx context.Context, req resource.Cre
 	request.Quality.SetSource(read.Quality.GetSource())
 
 	// Create new QualityDefinition
-	response, _, err := r.client.QualityDefinitionApi.UpdateQualityDefinition(ctx, strconv.Itoa(int(request.GetId()))).QualityDefinitionResource(*request).Execute()
+	response, _, err := r.client.QualityDefinitionAPI.UpdateQualityDefinition(r.auth, strconv.Itoa(int(request.GetId()))).QualityDefinitionResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, qualityDefinitionResourceName, err))
 
@@ -174,7 +176,7 @@ func (r *QualityDefinitionResource) Read(ctx context.Context, req resource.ReadR
 	}
 
 	// Get qualitydefinition current value
-	response, _, err := r.client.QualityDefinitionApi.GetQualityDefinitionById(ctx, int32(definition.ID.ValueInt64())).Execute()
+	response, _, err := r.client.QualityDefinitionAPI.GetQualityDefinitionById(r.auth, int32(definition.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, qualityDefinitionResourceName, err))
 
@@ -201,7 +203,7 @@ func (r *QualityDefinitionResource) Update(ctx context.Context, req resource.Upd
 	request := definition.read()
 
 	// Update QualityDefinition
-	response, _, err := r.client.QualityDefinitionApi.UpdateQualityDefinition(ctx, strconv.Itoa(int(request.GetId()))).QualityDefinitionResource(*request).Execute()
+	response, _, err := r.client.QualityDefinitionAPI.UpdateQualityDefinition(r.auth, strconv.Itoa(int(request.GetId()))).QualityDefinitionResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, qualityDefinitionResourceName, err))
 

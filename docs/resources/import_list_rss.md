@@ -9,7 +9,8 @@ description: |-
 
 # radarr_import_list_rss (Resource)
 
-<!-- subcategory:Import Lists -->Import List RSS resource.
+<!-- subcategory:Import Lists -->
+Import List RSS resource.
 For more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [RSS](https://wiki.servarr.com/radarr/supported#rssimport).
 
 ## Example Usage

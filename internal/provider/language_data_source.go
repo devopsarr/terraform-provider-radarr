@@ -25,6 +25,7 @@ func NewLanguageDataSource() datasource.DataSource {
 // LanguageDataSource defines the language implementation.
 type LanguageDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // Language defines the language data model.
@@ -49,7 +50,7 @@ func (d *LanguageDataSource) Metadata(_ context.Context, req datasource.Metadata
 
 func (d *LanguageDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Profiles -->Single available Language.",
+		MarkdownDescription: "<!-- subcategory:Profiles -->\nSingle available Language.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
 				MarkdownDescription: "Language ID.",
@@ -68,8 +69,9 @@ func (d *LanguageDataSource) Schema(_ context.Context, _ datasource.SchemaReques
 }
 
 func (d *LanguageDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
@@ -83,7 +85,7 @@ func (d *LanguageDataSource) Read(ctx context.Context, req datasource.ReadReques
 	}
 
 	// Get languages current value
-	response, _, err := d.client.LanguageApi.ListLanguage(ctx).Execute()
+	response, _, err := d.client.LanguageAPI.ListLanguage(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, languageDataSourceName, err))
 
@@ -102,10 +104,10 @@ func (l *Language) write(language *radarr.LanguageResource) {
 	l.NameLower = types.StringValue(language.GetNameLower())
 }
 
-func (l *Language) find(name string, languages []*radarr.LanguageResource, diags *diag.Diagnostics) {
+func (l *Language) find(name string, languages []radarr.LanguageResource, diags *diag.Diagnostics) {
 	for _, language := range languages {
 		if language.GetName() == name {
-			l.write(language)
+			l.write(&language)
 
 			return
 		}

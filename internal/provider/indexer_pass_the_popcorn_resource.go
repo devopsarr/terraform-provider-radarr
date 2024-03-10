@@ -36,6 +36,7 @@ func NewIndexerPassThePopcornResource() resource.Resource {
 // IndexerPassThePopcornResource defines the PassThePopcorn indexer implementation.
 type IndexerPassThePopcornResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // IndexerPassThePopcorn describes the PassThePopcorn indexer data model.
@@ -107,7 +108,7 @@ func (r *IndexerPassThePopcornResource) Metadata(_ context.Context, req resource
 
 func (r *IndexerPassThePopcornResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Indexers -->Indexer PassThePopcorn resource.\nFor more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [PassThePopcorn](https://wiki.servarr.com/radarr/supported#passthepopcorn).",
+		MarkdownDescription: "<!-- subcategory:Indexers -->\nIndexer PassThePopcorn resource.\nFor more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [PassThePopcorn](https://wiki.servarr.com/radarr/supported#passthepopcorn).",
 		Attributes: map[string]schema.Attribute{
 			"enable_automatic_search": schema.BoolAttribute{
 				MarkdownDescription: "Enable automatic search flag.",
@@ -199,8 +200,9 @@ func (r *IndexerPassThePopcornResource) Schema(_ context.Context, _ resource.Sch
 }
 
 func (r *IndexerPassThePopcornResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -217,7 +219,7 @@ func (r *IndexerPassThePopcornResource) Create(ctx context.Context, req resource
 	// Create new IndexerPassThePopcorn
 	request := indexer.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.IndexerApi.CreateIndexer(ctx).IndexerResource(*request).Execute()
+	response, _, err := r.client.IndexerAPI.CreateIndexer(r.auth).IndexerResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, indexerPassThePopcornResourceName, err))
 
@@ -241,7 +243,7 @@ func (r *IndexerPassThePopcornResource) Read(ctx context.Context, req resource.R
 	}
 
 	// Get IndexerPassThePopcorn current value
-	response, _, err := r.client.IndexerApi.GetIndexerById(ctx, int32(indexer.ID.ValueInt64())).Execute()
+	response, _, err := r.client.IndexerAPI.GetIndexerById(r.auth, int32(indexer.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, indexerPassThePopcornResourceName, err))
 
@@ -267,7 +269,7 @@ func (r *IndexerPassThePopcornResource) Update(ctx context.Context, req resource
 	// Update IndexerPassThePopcorn
 	request := indexer.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.IndexerApi.UpdateIndexer(ctx, strconv.Itoa(int(request.GetId()))).IndexerResource(*request).Execute()
+	response, _, err := r.client.IndexerAPI.UpdateIndexer(r.auth, strconv.Itoa(int(request.GetId()))).IndexerResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, indexerPassThePopcornResourceName, err))
 
@@ -290,7 +292,7 @@ func (r *IndexerPassThePopcornResource) Delete(ctx context.Context, req resource
 	}
 
 	// Delete IndexerPassThePopcorn current value
-	_, err := r.client.IndexerApi.DeleteIndexer(ctx, int32(ID)).Execute()
+	_, err := r.client.IndexerAPI.DeleteIndexer(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, indexerPassThePopcornResourceName, err))
 

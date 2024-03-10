@@ -24,6 +24,7 @@ func NewImportListsDataSource() datasource.DataSource {
 // ImportListsDataSource defines the import lists implementation.
 type ImportListsDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // ImportLists describes the import lists data model.
@@ -39,7 +40,7 @@ func (d *ImportListsDataSource) Metadata(_ context.Context, req datasource.Metad
 func (d *ImportListsDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Import Lists -->List all available [Import Lists](../resources/import_list).",
+		MarkdownDescription: "<!-- subcategory:Import Lists -->\nList all available [Import Lists](../resources/import_list).",
 		Attributes: map[string]schema.Attribute{
 			// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 			"id": schema.StringAttribute{
@@ -289,14 +290,15 @@ func (d *ImportListsDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 }
 
 func (d *ImportListsDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
 func (d *ImportListsDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get import lists current value
-	response, _, err := d.client.ImportListApi.ListImportList(ctx).Execute()
+	response, _, err := d.client.ImportListAPI.ListImportList(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListsDataSourceName, err))
 
@@ -307,7 +309,7 @@ func (d *ImportListsDataSource) Read(ctx context.Context, _ datasource.ReadReque
 	// Map response body to resource schema attribute
 	importLists := make([]ImportList, len(response))
 	for i, d := range response {
-		importLists[i].write(ctx, d, &resp.Diagnostics)
+		importLists[i].write(ctx, &d, &resp.Diagnostics)
 	}
 
 	listList, diags := types.SetValueFrom(ctx, ImportList{}.getType(), importLists)

@@ -8,7 +8,8 @@ description: |-
 
 # radarr_host (Data Source)
 
-<!-- subcategory:System -->[Host](../resources/host).
+<!-- subcategory:System -->
+[Host](../resources/host).
 
 ## Example Usage
 
@@ -44,6 +45,7 @@ Read-Only:
 - `encrypted_password` (String, Sensitive) Needed for validation.
 - `method` (String) Authentication method.
 - `password` (String, Sensitive) Password.
+- `required` (String) Required for everyone or disabled for local addresses.
 - `username` (String) Username.
 
 
@@ -103,5 +105,3 @@ Read-Only:
 - `mechanism` (String) Update mechanism.
 - `script_path` (String) Script path.
 - `update_automatically` (Boolean) Update automatically flag.
-
-

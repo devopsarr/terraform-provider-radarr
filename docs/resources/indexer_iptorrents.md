@@ -9,7 +9,8 @@ description: |-
 
 # radarr_indexer_iptorrents (Resource)
 
-<!-- subcategory:Indexers -->Indexer IP Torrents resource.
+<!-- subcategory:Indexers -->
+Indexer IP Torrents resource.
 For more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [IP Torrents](https://wiki.servarr.com/radarr/supported#iptorrents).
 
 ## Example Usage

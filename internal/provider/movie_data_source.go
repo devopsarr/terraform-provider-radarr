@@ -25,6 +25,7 @@ func NewMovieDataSource() datasource.DataSource {
 // MovieDataSource defines the movie implementation.
 type MovieDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *MovieDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -34,7 +35,7 @@ func (d *MovieDataSource) Metadata(_ context.Context, req datasource.MetadataReq
 func (d *MovieDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "<!-- subcategory:Movies -->Single [Movie](../resources/movie).",
+		MarkdownDescription: "<!-- subcategory:Movies -->\nSingle [Movie](../resources/movie).",
 		Attributes: map[string]schema.Attribute{
 			"monitored": schema.BoolAttribute{
 				MarkdownDescription: "Monitored flag.",
@@ -125,8 +126,9 @@ func (d *MovieDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, 
 }
 
 func (d *MovieDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
@@ -140,7 +142,7 @@ func (d *MovieDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	}
 
 	// Get movies current value
-	response, _, err := d.client.MovieApi.ListMovie(ctx).Execute()
+	response, _, err := d.client.MovieAPI.ListMovie(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, movieDataSourceName, err))
 
@@ -153,10 +155,10 @@ func (d *MovieDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func (m *Movie) find(ctx context.Context, ID int64, movies []*radarr.MovieResource, diags *diag.Diagnostics) {
+func (m *Movie) find(ctx context.Context, ID int64, movies []radarr.MovieResource, diags *diag.Diagnostics) {
 	for _, t := range movies {
 		if t.GetTmdbId() == int32(ID) {
-			m.write(ctx, t, diags)
+			m.write(ctx, &t, diags)
 
 			return
 		}

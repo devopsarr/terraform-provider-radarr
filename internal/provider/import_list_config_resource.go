@@ -32,6 +32,7 @@ func NewImportListConfigResource() resource.Resource {
 // ImportListConfigResource defines the import list config implementation.
 type ImportListConfigResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // ImportListConfig describes the import list config data model.
@@ -46,7 +47,7 @@ func (r *ImportListConfigResource) Metadata(_ context.Context, req resource.Meta
 
 func (r *ImportListConfigResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List Config resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#completed-download-handling) documentation.",
+		MarkdownDescription: "<!-- subcategory:Import Lists -->\nImport List Config resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#completed-download-handling) documentation.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
 				MarkdownDescription: "Import List Config ID.",
@@ -67,8 +68,9 @@ func (r *ImportListConfigResource) Schema(_ context.Context, _ resource.SchemaRe
 }
 
 func (r *ImportListConfigResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -87,7 +89,7 @@ func (r *ImportListConfigResource) Create(ctx context.Context, req resource.Crea
 	request.SetId(1)
 
 	// Create new ImportListConfig
-	response, _, err := r.client.ImportListConfigApi.UpdateImportListConfig(ctx, strconv.Itoa(int(request.GetId()))).ImportListConfigResource(*request).Execute()
+	response, _, err := r.client.ImportListConfigAPI.UpdateImportListConfig(r.auth, strconv.Itoa(int(request.GetId()))).ImportListConfigResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, importListConfigResourceName, err))
 
@@ -111,7 +113,7 @@ func (r *ImportListConfigResource) Read(ctx context.Context, req resource.ReadRe
 	}
 
 	// Get importListConfig current value
-	response, _, err := r.client.ImportListConfigApi.GetImportListConfig(ctx).Execute()
+	response, _, err := r.client.ImportListConfigAPI.GetImportListConfig(r.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListConfigResourceName, err))
 
@@ -138,7 +140,7 @@ func (r *ImportListConfigResource) Update(ctx context.Context, req resource.Upda
 	request := config.read()
 
 	// Update ImportListConfig
-	response, _, err := r.client.ImportListConfigApi.UpdateImportListConfig(ctx, strconv.Itoa(int(request.GetId()))).ImportListConfigResource(*request).Execute()
+	response, _, err := r.client.ImportListConfigAPI.UpdateImportListConfig(r.auth, strconv.Itoa(int(request.GetId()))).ImportListConfigResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, importListConfigResourceName, err))
 

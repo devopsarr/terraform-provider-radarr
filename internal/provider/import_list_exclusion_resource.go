@@ -31,6 +31,7 @@ func NewImportListExclusionResource() resource.Resource {
 // ImportListExclusionResource defines the importListExclusion implementation.
 type ImportListExclusionResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // ImportListExclusion describes the importListExclusion data model.
@@ -57,7 +58,7 @@ func (r *ImportListExclusionResource) Metadata(_ context.Context, req resource.M
 
 func (r *ImportListExclusionResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List Exclusion resource.\nFor more information refer to [ImportListExclusions](https://wiki.servarr.com/radarr/settings#list-exclusions) documentation.",
+		MarkdownDescription: "<!-- subcategory:Import Lists -->\nImport List Exclusion resource.\nFor more information refer to [ImportListExclusions](https://wiki.servarr.com/radarr/settings#list-exclusions) documentation.",
 		Attributes: map[string]schema.Attribute{
 			"tmdb_id": schema.Int64Attribute{
 				MarkdownDescription: "Movie TMDB ID.",
@@ -83,8 +84,9 @@ func (r *ImportListExclusionResource) Schema(_ context.Context, _ resource.Schem
 }
 
 func (r *ImportListExclusionResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -101,7 +103,7 @@ func (r *ImportListExclusionResource) Create(ctx context.Context, req resource.C
 	// Create new ImportListExclusion
 	request := importListExclusion.read()
 
-	response, _, err := r.client.ImportExclusionsApi.CreateExclusions(ctx).ImportExclusionsResource(*request).Execute()
+	response, _, err := r.client.ImportExclusionsAPI.CreateExclusions(r.auth).ImportExclusionsResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, importListExclusionResourceName, err))
 
@@ -125,7 +127,7 @@ func (r *ImportListExclusionResource) Read(ctx context.Context, req resource.Rea
 	}
 
 	// Get importListExclusion current value
-	response, _, err := r.client.ImportExclusionsApi.GetExclusionsById(ctx, int32(importListExclusion.ID.ValueInt64())).Execute()
+	response, _, err := r.client.ImportExclusionsAPI.GetExclusionsById(r.auth, int32(importListExclusion.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListExclusionResourceName, err))
 
@@ -151,7 +153,7 @@ func (r *ImportListExclusionResource) Update(ctx context.Context, req resource.U
 	// Update ImportListExclusion
 	request := importListExclusion.read()
 
-	response, _, err := r.client.ImportExclusionsApi.UpdateExclusions(ctx, strconv.Itoa(int(request.GetId()))).ImportExclusionsResource(*request).Execute()
+	response, _, err := r.client.ImportExclusionsAPI.UpdateExclusions(r.auth, strconv.Itoa(int(request.GetId()))).ImportExclusionsResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, importListExclusionResourceName, err))
 
@@ -174,7 +176,7 @@ func (r *ImportListExclusionResource) Delete(ctx context.Context, req resource.D
 	}
 
 	// Delete importListExclusion current value
-	_, err := r.client.ImportExclusionsApi.DeleteExclusions(ctx, int32(ID)).Execute()
+	_, err := r.client.ImportExclusionsAPI.DeleteExclusions(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListExclusionResourceName, err))
 

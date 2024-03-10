@@ -22,6 +22,7 @@ func NewNamingDataSource() datasource.DataSource {
 // NamingDataSource defines the naming implementation.
 type NamingDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *NamingDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -31,14 +32,10 @@ func (d *NamingDataSource) Metadata(_ context.Context, req datasource.MetadataRe
 func (d *NamingDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Media Management -->[Naming](../resources/naming).",
+		MarkdownDescription: "<!-- subcategory:Media Management -->\n[Naming](../resources/naming).",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
 				MarkdownDescription: "Delay Profile ID.",
-				Computed:            true,
-			},
-			"include_quality": schema.BoolAttribute{
-				MarkdownDescription: "Include quality in file name.",
 				Computed:            true,
 			},
 			"rename_movies": schema.BoolAttribute{
@@ -47,10 +44,6 @@ func (d *NamingDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 			},
 			"replace_illegal_characters": schema.BoolAttribute{
 				MarkdownDescription: "Replace illegal characters. They will be removed if false.",
-				Computed:            true,
-			},
-			"replace_spaces": schema.BoolAttribute{
-				MarkdownDescription: "Replace spaces.",
 				Computed:            true,
 			},
 			"colon_replacement_format": schema.StringAttribute{
@@ -70,14 +63,15 @@ func (d *NamingDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 }
 
 func (d *NamingDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
 func (d *NamingDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get naming current value
-	response, _, err := d.client.NamingConfigApi.GetNamingConfig(ctx).Execute()
+	response, _, err := d.client.NamingConfigAPI.GetNamingConfig(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, namingDataSourceName, err))
 

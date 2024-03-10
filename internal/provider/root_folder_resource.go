@@ -33,6 +33,7 @@ func NewRootFolderResource() resource.Resource {
 // RootFolderResource defines the root folder implementation.
 type RootFolderResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // RootFolder describes the root folder data model.
@@ -73,7 +74,7 @@ func (r *RootFolderResource) Metadata(_ context.Context, req resource.MetadataRe
 
 func (r *RootFolderResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Media Management -->Root Folder resource.\nFor more information refer to [Root Folders](https://wiki.servarr.com/radarr/settings#root-folders) documentation.",
+		MarkdownDescription: "<!-- subcategory:Media Management -->\nRoot Folder resource.\nFor more information refer to [Root Folders](https://wiki.servarr.com/radarr/settings#root-folders) documentation.",
 		Attributes: map[string]schema.Attribute{
 			// TODO: add validator
 			"path": schema.StringAttribute{
@@ -121,8 +122,9 @@ func (r RootFolderResource) getUnmappedFolderSchema() schema.Schema {
 }
 
 func (r *RootFolderResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -140,7 +142,7 @@ func (r *RootFolderResource) Create(ctx context.Context, req resource.CreateRequ
 	request := *radarr.NewRootFolderResource()
 	request.SetPath(folder.Path.ValueString())
 
-	response, _, err := r.client.RootFolderApi.CreateRootFolder(ctx).RootFolderResource(request).Execute()
+	response, _, err := r.client.RootFolderAPI.CreateRootFolder(r.auth).RootFolderResource(request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, rootFolderResourceName, err))
 
@@ -164,7 +166,7 @@ func (r *RootFolderResource) Read(ctx context.Context, req resource.ReadRequest,
 	}
 
 	// Get rootFolder current value
-	response, _, err := r.client.RootFolderApi.GetRootFolderById(ctx, int32(folder.ID.ValueInt64())).Execute()
+	response, _, err := r.client.RootFolderAPI.GetRootFolderById(r.auth, int32(folder.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, rootFolderResourceName, err))
 
@@ -191,7 +193,7 @@ func (r *RootFolderResource) Delete(ctx context.Context, req resource.DeleteRequ
 	}
 
 	// Delete rootFolder current value
-	_, err := r.client.RootFolderApi.DeleteRootFolder(ctx, int32(ID)).Execute()
+	_, err := r.client.RootFolderAPI.DeleteRootFolder(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, rootFolderResourceName, err))
 
@@ -216,7 +218,7 @@ func (r *RootFolder) write(ctx context.Context, rootFolder *radarr.RootFolderRes
 
 	unmapped := make([]Path, len(rootFolder.GetUnmappedFolders()))
 	for i, f := range rootFolder.UnmappedFolders {
-		unmapped[i].write(f)
+		unmapped[i].write(&f)
 	}
 
 	r.UnmappedFolders, tempDiag = types.SetValueFrom(ctx, Path{}.getType(), unmapped)

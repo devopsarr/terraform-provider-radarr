@@ -35,6 +35,7 @@ func NewNotificationNotifiarrResource() resource.Resource {
 // NotificationNotifiarrResource defines the notification implementation.
 type NotificationNotifiarrResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // NotificationNotifiarr describes the notification data model.
@@ -105,7 +106,7 @@ func (r *NotificationNotifiarrResource) Metadata(_ context.Context, req resource
 
 func (r *NotificationNotifiarrResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Notifications -->Notification Notifiarr resource.\nFor more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Notifiarr](https://wiki.servarr.com/radarr/supported#notifiarr).",
+		MarkdownDescription: "<!-- subcategory:Notifications -->\nNotification Notifiarr resource.\nFor more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Notifiarr](https://wiki.servarr.com/radarr/supported#notifiarr).",
 		Attributes: map[string]schema.Attribute{
 			"on_grab": schema.BoolAttribute{
 				MarkdownDescription: "On grab flag.",
@@ -194,8 +195,9 @@ func (r *NotificationNotifiarrResource) Schema(_ context.Context, _ resource.Sch
 }
 
 func (r *NotificationNotifiarrResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -212,7 +214,7 @@ func (r *NotificationNotifiarrResource) Create(ctx context.Context, req resource
 	// Create new NotificationNotifiarr
 	request := notification.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.NotificationApi.CreateNotification(ctx).NotificationResource(*request).Execute()
+	response, _, err := r.client.NotificationAPI.CreateNotification(r.auth).NotificationResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, notificationNotifiarrResourceName, err))
 
@@ -236,7 +238,7 @@ func (r *NotificationNotifiarrResource) Read(ctx context.Context, req resource.R
 	}
 
 	// Get NotificationNotifiarr current value
-	response, _, err := r.client.NotificationApi.GetNotificationById(ctx, int32(notification.ID.ValueInt64())).Execute()
+	response, _, err := r.client.NotificationAPI.GetNotificationById(r.auth, int32(notification.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, notificationNotifiarrResourceName, err))
 
@@ -262,7 +264,7 @@ func (r *NotificationNotifiarrResource) Update(ctx context.Context, req resource
 	// Update NotificationNotifiarr
 	request := notification.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.NotificationApi.UpdateNotification(ctx, strconv.Itoa(int(request.GetId()))).NotificationResource(*request).Execute()
+	response, _, err := r.client.NotificationAPI.UpdateNotification(r.auth, strconv.Itoa(int(request.GetId()))).NotificationResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, notificationNotifiarrResourceName, err))
 
@@ -285,7 +287,7 @@ func (r *NotificationNotifiarrResource) Delete(ctx context.Context, req resource
 	}
 
 	// Delete NotificationNotifiarr current value
-	_, err := r.client.NotificationApi.DeleteNotification(ctx, int32(ID)).Execute()
+	_, err := r.client.NotificationAPI.DeleteNotification(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, notificationNotifiarrResourceName, err))
 

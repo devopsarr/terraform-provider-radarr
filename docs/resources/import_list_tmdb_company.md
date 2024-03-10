@@ -9,7 +9,8 @@ description: |-
 
 # radarr_import_list_tmdb_company (Resource)
 
-<!-- subcategory:Import Lists -->Import List TMDB Company resource.
+<!-- subcategory:Import Lists -->
+Import List TMDB Company resource.
 For more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [TMDB Company](https://wiki.servarr.com/radarr/supported#tmdbcompanyimport).
 
 ## Example Usage

@@ -8,7 +8,8 @@ description: |-
 
 # radarr_quality_profile (Data Source)
 
-<!-- subcategory:Profiles -->Single [Quality Profile](../resources/quality_profile).
+<!-- subcategory:Profiles -->
+Single [Quality Profile](../resources/quality_profile).
 
 ## Example Usage
 
@@ -76,5 +77,3 @@ Read-Only:
 - `name` (String) Quality name.
 - `resolution` (Number) Resolution.
 - `source` (String) Source.
-
-

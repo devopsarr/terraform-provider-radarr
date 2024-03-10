@@ -8,7 +8,8 @@ description: |-
 
 # radarr_auto_tags (Data Source)
 
-<!-- subcategory:Tags -->List all available [Auto Tags](../resources/auto_tag).
+<!-- subcategory:Tags -->
+List all available [Auto Tags](../resources/auto_tag).
 
 ## Example Usage
 
@@ -48,5 +49,3 @@ Read-Only:
 - `negate` (Boolean) Negate flag.
 - `required` (Boolean) Computed flag.
 - `value` (String) Value.
-
-

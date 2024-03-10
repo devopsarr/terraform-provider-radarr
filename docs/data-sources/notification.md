@@ -8,7 +8,8 @@ description: |-
 
 # radarr_notification (Data Source)
 
-<!-- subcategory:Notifications -->Single [Notification](../resources/notification).
+<!-- subcategory:Notifications -->
+Single [Notification](../resources/notification).
 
 ## Example Usage
 
@@ -94,7 +95,6 @@ data "radarr_notification" "example" {
 - `priority` (Number) Priority.
 - `recipients` (Set of String) Recipients.
 - `refresh_token` (String) Refresh token.
-- `require_encryption` (Boolean) Require encryption flag.
 - `retry` (Number) Retry.
 - `send_silently` (Boolean) Add silently flag.
 - `sender_domain` (String) Sender domain.
@@ -111,10 +111,9 @@ data "radarr_notification" "example" {
 - `topics` (Set of String) Topics.
 - `update_library` (Boolean) Update library flag.
 - `url` (String) URL.
+- `use_encryption` (Number) Use encryption.
 - `use_eu_endpoint` (Boolean) Use EU endpoint flag.
 - `use_ssl` (Boolean) Use SSL flag.
 - `user_key` (String) User key.
 - `username` (String) Username.
 - `web_hook_url` (String) Web hook url.
-
-

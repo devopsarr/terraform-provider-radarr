@@ -32,6 +32,7 @@ func NewAutoTagConditionDataSource() datasource.DataSource {
 // AutoTagConditionDataSource defines the auto tag condition implementation.
 type AutoTagConditionDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // AutoTagCondition describes the auto tag condition data model.
@@ -65,7 +66,7 @@ func (d *AutoTagConditionDataSource) Metadata(_ context.Context, req datasource.
 func (d *AutoTagConditionDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Tags --> Generic Auto Tag Condition data source. When possible use a specific data source instead.\nFor more information refer to [ Format Conditions](https://wiki.servarr.com/radarr/settings#conditions).\n To be used in conjunction with [ Format](../resources/auto_tag).",
+		MarkdownDescription: "<!-- subcategory:Tags -->\n Generic Auto Tag Condition data source. When possible use a specific data source instead.\nFor more information refer to [ Format Conditions](https://wiki.servarr.com/radarr/settings#conditions).\n To be used in conjunction with [ Format](../resources/auto_tag).",
 		Attributes: map[string]schema.Attribute{
 			"negate": schema.BoolAttribute{
 				MarkdownDescription: "Negate flag.",
@@ -109,8 +110,9 @@ func (d *AutoTagConditionDataSource) Schema(_ context.Context, _ datasource.Sche
 }
 
 func (d *AutoTagConditionDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 

@@ -9,7 +9,8 @@ description: |-
 
 # radarr_notification_ntfy (Resource)
 
-<!-- subcategory:Notifications -->Notification Ntfy resource.
+<!-- subcategory:Notifications -->
+Notification Ntfy resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Ntfy](https://wiki.servarr.com/radarr/supported#ntfy).
 
 ## Example Usage

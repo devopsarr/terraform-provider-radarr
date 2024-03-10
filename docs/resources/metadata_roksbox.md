@@ -9,7 +9,8 @@ description: |-
 
 # radarr_metadata_roksbox (Resource)
 
-<!-- subcategory:Metadata -->Metadata Roksbox resource.
+<!-- subcategory:Metadata -->
+Metadata Roksbox resource.
 For more information refer to [Metadata](https://wiki.servarr.com/radarr/settings#metadata) and [ROKSBOX](https://wiki.servarr.com/radarr/supported#roksboxmetadata).
 
 ## Example Usage

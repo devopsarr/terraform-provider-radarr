@@ -9,7 +9,8 @@ description: |-
 
 # radarr_indexer_hdbits (Resource)
 
-<!-- subcategory:Indexers -->Indexer HDBits resource.
+<!-- subcategory:Indexers -->
+Indexer HDBits resource.
 For more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [HDBits](https://wiki.servarr.com/radarr/supported#hdbits).
 
 ## Example Usage

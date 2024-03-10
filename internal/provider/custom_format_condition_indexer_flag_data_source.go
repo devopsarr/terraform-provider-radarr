@@ -27,6 +27,7 @@ func NewCustomFormatConditionIndexerFlagDataSource() datasource.DataSource {
 // CustomFormatConditionIndexerFlagDataSource defines the custom format condition indexer flag implementation.
 type CustomFormatConditionIndexerFlagDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *CustomFormatConditionIndexerFlagDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -36,7 +37,7 @@ func (d *CustomFormatConditionIndexerFlagDataSource) Metadata(_ context.Context,
 func (d *CustomFormatConditionIndexerFlagDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Profiles --> Custom Format Condition Indexer Flag data source.\nFor more information refer to [Custom Format Conditions](https://wiki.servarr.com/radarr/settings#conditions) and [Indexer Flag](https://wiki.servarr.com/radarr/settings#indexer-flags).",
+		MarkdownDescription: "<!-- subcategory:Profiles -->\n Custom Format Condition Indexer Flag data source.\nFor more information refer to [Custom Format Conditions](https://wiki.servarr.com/radarr/settings#conditions) and [Indexer Flag](https://wiki.servarr.com/radarr/settings#indexer-flags).",
 		Attributes: map[string]schema.Attribute{
 			"negate": schema.BoolAttribute{
 				MarkdownDescription: "Negate flag.",
@@ -69,8 +70,9 @@ func (d *CustomFormatConditionIndexerFlagDataSource) Schema(_ context.Context, _
 }
 
 func (d *CustomFormatConditionIndexerFlagDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 

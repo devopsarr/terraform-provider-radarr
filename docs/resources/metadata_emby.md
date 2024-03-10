@@ -9,7 +9,8 @@ description: |-
 
 # radarr_metadata_emby (Resource)
 
-<!-- subcategory:Metadata -->Metadata Emby resource.
+<!-- subcategory:Metadata -->
+Metadata Emby resource.
 For more information refer to [Metadata](https://wiki.servarr.com/radarr/settings#metadata) and [Emby](https://wiki.servarr.com/radarr/supported#mediabrowsermetadata).
 
 ## Example Usage

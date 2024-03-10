@@ -9,7 +9,8 @@ description: |-
 
 # radarr_download_client_pneumatic (Resource)
 
-<!-- subcategory:Download Clients -->Download Client Pneumatic resource.
+<!-- subcategory:Download Clients -->
+Download Client Pneumatic resource.
 For more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [Pneumatic](https://wiki.servarr.com/radarr/supported#pneumatic).
 
 ## Example Usage

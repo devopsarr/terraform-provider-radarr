@@ -24,6 +24,7 @@ func NewIndexerDataSource() datasource.DataSource {
 // IndexerDataSource defines the indexer implementation.
 type IndexerDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *IndexerDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -33,7 +34,7 @@ func (d *IndexerDataSource) Metadata(_ context.Context, req datasource.MetadataR
 func (d *IndexerDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Indexers -->Single [Indexer](../resources/indexer).",
+		MarkdownDescription: "<!-- subcategory:Indexers -->\nSingle [Indexer](../resources/indexer).",
 		Attributes: map[string]schema.Attribute{
 			"enable_automatic_search": schema.BoolAttribute{
 				MarkdownDescription: "Enable automatic search flag.",
@@ -179,8 +180,9 @@ func (d *IndexerDataSource) Schema(_ context.Context, _ datasource.SchemaRequest
 }
 
 func (d *IndexerDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
@@ -193,7 +195,7 @@ func (d *IndexerDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		return
 	}
 	// Get indexer current value
-	response, _, err := d.client.IndexerApi.ListIndexer(ctx).Execute()
+	response, _, err := d.client.IndexerAPI.ListIndexer(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, indexerDataSourceName, err))
 
@@ -206,10 +208,10 @@ func (d *IndexerDataSource) Read(ctx context.Context, req datasource.ReadRequest
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func (i *Indexer) find(ctx context.Context, name string, indexers []*radarr.IndexerResource, diags *diag.Diagnostics) {
+func (i *Indexer) find(ctx context.Context, name string, indexers []radarr.IndexerResource, diags *diag.Diagnostics) {
 	for _, indexer := range indexers {
 		if indexer.GetName() == name {
-			i.write(ctx, indexer, diags)
+			i.write(ctx, &indexer, diags)
 
 			return
 		}

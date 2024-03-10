@@ -8,7 +8,8 @@ description: |-
 
 # radarr_metadata_config (Data Source)
 
-<!-- subcategory:Metadata -->[Metadata Config](../resources/metadata_config).
+<!-- subcategory:Metadata -->
+[Metadata Config](../resources/metadata_config).
 
 ## Example Usage
 
@@ -24,5 +25,3 @@ data "radarr_metadata_config" "example" {
 
 - `certification_country` (String) Certification Country.
 - `id` (Number) Delay Profile ID.
-
-

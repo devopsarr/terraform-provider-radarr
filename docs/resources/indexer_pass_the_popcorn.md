@@ -9,7 +9,8 @@ description: |-
 
 # radarr_indexer_pass_the_popcorn (Resource)
 
-<!-- subcategory:Indexers -->Indexer PassThePopcorn resource.
+<!-- subcategory:Indexers -->
+Indexer PassThePopcorn resource.
 For more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [PassThePopcorn](https://wiki.servarr.com/radarr/supported#passthepopcorn).
 
 ## Example Usage

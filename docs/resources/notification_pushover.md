@@ -9,7 +9,8 @@ description: |-
 
 # radarr_notification_pushover (Resource)
 
-<!-- subcategory:Notifications -->Notification Pushover resource.
+<!-- subcategory:Notifications -->
+Notification Pushover resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Pushover](https://wiki.servarr.com/radarr/supported#pushover).
 
 ## Example Usage

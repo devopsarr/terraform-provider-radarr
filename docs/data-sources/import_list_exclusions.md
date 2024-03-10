@@ -8,7 +8,8 @@ description: |-
 
 # radarr_import_list_exclusions (Data Source)
 
-<!-- subcategory:Import Lists -->List all available [ImportListExclusions](../resources/importListExclusion).
+<!-- subcategory:Import Lists -->
+List all available [ImportListExclusions](../resources/importListExclusion).
 
 ## Example Usage
 
@@ -34,5 +35,3 @@ Read-Only:
 - `title` (String) Movie to be excluded.
 - `tmdb_id` (Number) Movie TMDB ID.
 - `year` (Number) Year.
-
-

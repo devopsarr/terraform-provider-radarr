@@ -24,6 +24,7 @@ func NewMetadataDataSource() datasource.DataSource {
 // MetadataDataSource defines the metadata implementation.
 type MetadataDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *MetadataDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -33,7 +34,7 @@ func (d *MetadataDataSource) Metadata(_ context.Context, req datasource.Metadata
 func (d *MetadataDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Metadata -->Single [Metadata](../resources/metadata).",
+		MarkdownDescription: "<!-- subcategory:Metadata -->\nSingle [Metadata](../resources/metadata).",
 		Attributes: map[string]schema.Attribute{
 			"enable": schema.BoolAttribute{
 				MarkdownDescription: "Enable flag.",
@@ -90,8 +91,9 @@ func (d *MetadataDataSource) Schema(_ context.Context, _ datasource.SchemaReques
 }
 
 func (d *MetadataDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
@@ -104,7 +106,7 @@ func (d *MetadataDataSource) Read(ctx context.Context, req datasource.ReadReques
 		return
 	}
 	// Get metadata current value
-	response, _, err := d.client.MetadataApi.ListMetadata(ctx).Execute()
+	response, _, err := d.client.MetadataAPI.ListMetadata(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, metadataDataSourceName, err))
 
@@ -117,10 +119,10 @@ func (d *MetadataDataSource) Read(ctx context.Context, req datasource.ReadReques
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func (m *Metadata) find(ctx context.Context, name string, metadatas []*radarr.MetadataResource, diags *diag.Diagnostics) {
+func (m *Metadata) find(ctx context.Context, name string, metadatas []radarr.MetadataResource, diags *diag.Diagnostics) {
 	for _, metadata := range metadatas {
 		if metadata.GetName() == name {
-			m.write(ctx, metadata, diags)
+			m.write(ctx, &metadata, diags)
 
 			return
 		}

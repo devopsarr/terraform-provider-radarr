@@ -9,7 +9,8 @@ description: |-
 
 # radarr_system_status (Data Source)
 
-<!-- subcategory:System -->System Status resource. User must have rights to read `config.xml`.
+<!-- subcategory:System -->
+System Status resource. User must have rights to read `config.xml`.
 For more information refer to [System Status](https://wiki.servarr.com/radarr/system#status) documentation.
 
 ## Example Usage
@@ -54,5 +55,3 @@ data "radarr_system_status" "example" {
 - `startup_path` (String) Startup path.
 - `url_base` (String) Base URL.
 - `version` (String) Version.
-
-

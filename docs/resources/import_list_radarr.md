@@ -9,7 +9,8 @@ description: |-
 
 # radarr_import_list_radarr (Resource)
 
-<!-- subcategory:Import Lists -->Import List Radarr resource.
+<!-- subcategory:Import Lists -->
+Import List Radarr resource.
 For more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Radarr](https://wiki.servarr.com/radarr/supported#radarrimport).
 
 ## Example Usage

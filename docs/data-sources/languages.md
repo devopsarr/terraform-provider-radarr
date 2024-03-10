@@ -8,7 +8,8 @@ description: |-
 
 # radarr_languages (Data Source)
 
-<!-- subcategory:Profiles -->List all available [Languages](../data-sources/language).
+<!-- subcategory:Profiles -->
+List all available [Languages](../data-sources/language).
 
 ## Example Usage
 
@@ -33,5 +34,3 @@ Read-Only:
 - `id` (Number) Language ID.
 - `name` (String) Language.
 - `name_lower` (String) Language in lowercase.
-
-

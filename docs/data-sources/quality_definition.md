@@ -8,7 +8,8 @@ description: |-
 
 # radarr_quality_definition (Data Source)
 
-<!-- subcategory:Profiles -->Single [Quality Definition](../resources/quality_definition).
+<!-- subcategory:Profiles -->
+Single [Quality Definition](../resources/quality_definition).
 
 ## Example Usage
 
@@ -38,5 +39,3 @@ data "radarr_quality_definition" "example" {
 - `resolution` (Number) Quality Resolution.
 - `source` (String) Quality source.
 - `title` (String) Quality Definition Title.
-
-

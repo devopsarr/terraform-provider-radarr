@@ -36,6 +36,7 @@ func NewIndexerHdbitsResource() resource.Resource {
 // IndexerHdbitsResource defines the Hdbits indexer implementation.
 type IndexerHdbitsResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // IndexerHdbits describes the Hdbits indexer data model.
@@ -116,7 +117,7 @@ func (r *IndexerHdbitsResource) Metadata(_ context.Context, req resource.Metadat
 
 func (r *IndexerHdbitsResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Indexers -->Indexer HDBits resource.\nFor more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [HDBits](https://wiki.servarr.com/radarr/supported#hdbits).",
+		MarkdownDescription: "<!-- subcategory:Indexers -->\nIndexer HDBits resource.\nFor more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [HDBits](https://wiki.servarr.com/radarr/supported#hdbits).",
 		Attributes: map[string]schema.Attribute{
 			"enable_automatic_search": schema.BoolAttribute{
 				MarkdownDescription: "Enable automatic search flag.",
@@ -225,8 +226,9 @@ func (r *IndexerHdbitsResource) Schema(_ context.Context, _ resource.SchemaReque
 }
 
 func (r *IndexerHdbitsResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -243,7 +245,7 @@ func (r *IndexerHdbitsResource) Create(ctx context.Context, req resource.CreateR
 	// Create new IndexerHdbits
 	request := indexer.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.IndexerApi.CreateIndexer(ctx).IndexerResource(*request).Execute()
+	response, _, err := r.client.IndexerAPI.CreateIndexer(r.auth).IndexerResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, indexerHdbitsResourceName, err))
 
@@ -267,7 +269,7 @@ func (r *IndexerHdbitsResource) Read(ctx context.Context, req resource.ReadReque
 	}
 
 	// Get IndexerHdbits current value
-	response, _, err := r.client.IndexerApi.GetIndexerById(ctx, int32(indexer.ID.ValueInt64())).Execute()
+	response, _, err := r.client.IndexerAPI.GetIndexerById(r.auth, int32(indexer.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, indexerHdbitsResourceName, err))
 
@@ -293,7 +295,7 @@ func (r *IndexerHdbitsResource) Update(ctx context.Context, req resource.UpdateR
 	// Update IndexerHdbits
 	request := indexer.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.IndexerApi.UpdateIndexer(ctx, strconv.Itoa(int(request.GetId()))).IndexerResource(*request).Execute()
+	response, _, err := r.client.IndexerAPI.UpdateIndexer(r.auth, strconv.Itoa(int(request.GetId()))).IndexerResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, indexerHdbitsResourceName, err))
 
@@ -316,7 +318,7 @@ func (r *IndexerHdbitsResource) Delete(ctx context.Context, req resource.DeleteR
 	}
 
 	// Delete IndexerHdbits current value
-	_, err := r.client.IndexerApi.DeleteIndexer(ctx, int32(ID)).Execute()
+	_, err := r.client.IndexerAPI.DeleteIndexer(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, indexerHdbitsResourceName, err))
 

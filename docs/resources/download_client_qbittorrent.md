@@ -9,7 +9,8 @@ description: |-
 
 # radarr_download_client_qbittorrent (Resource)
 
-<!-- subcategory:Download Clients -->Download Client qBittorrent resource.
+<!-- subcategory:Download Clients -->
+Download Client qBittorrent resource.
 For more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [qBittorrent](https://wiki.servarr.com/radarr/supported#qbittorrent).
 
 ## Example Usage

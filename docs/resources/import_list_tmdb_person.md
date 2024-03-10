@@ -9,7 +9,8 @@ description: |-
 
 # radarr_import_list_tmdb_person (Resource)
 
-<!-- subcategory:Import Lists -->Import List TMDB Person resource.
+<!-- subcategory:Import Lists -->
+Import List TMDB Person resource.
 For more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [TMDB Person](https://wiki.servarr.com/radarr/supported#tmdbpersonimport).
 
 ## Example Usage

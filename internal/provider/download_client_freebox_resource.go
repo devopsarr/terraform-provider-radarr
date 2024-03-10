@@ -38,6 +38,7 @@ func NewDownloadClientFreeboxResource() resource.Resource {
 // DownloadClientFreeboxResource defines the download client implementation.
 type DownloadClientFreeboxResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // DownloadClientFreebox describes the download client data model.
@@ -115,7 +116,7 @@ func (r *DownloadClientFreeboxResource) Metadata(_ context.Context, req resource
 
 func (r *DownloadClientFreeboxResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Download Clients -->Download Client Freebox resource.\nFor more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [Freebox](https://wiki.servarr.com/radarr/supported#torrentfreeboxdownload).",
+		MarkdownDescription: "<!-- subcategory:Download Clients -->\nDownload Client Freebox resource.\nFor more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [Freebox](https://wiki.servarr.com/radarr/supported#torrentfreeboxdownload).",
 		Attributes: map[string]schema.Attribute{
 			"enable": schema.BoolAttribute{
 				MarkdownDescription: "Enable flag.",
@@ -217,8 +218,9 @@ func (r *DownloadClientFreeboxResource) Schema(_ context.Context, _ resource.Sch
 }
 
 func (r *DownloadClientFreeboxResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -235,7 +237,7 @@ func (r *DownloadClientFreeboxResource) Create(ctx context.Context, req resource
 	// Create new DownloadClientFreebox
 	request := client.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.DownloadClientApi.CreateDownloadClient(ctx).DownloadClientResource(*request).Execute()
+	response, _, err := r.client.DownloadClientAPI.CreateDownloadClient(r.auth).DownloadClientResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, downloadClientFreeboxResourceName, err))
 
@@ -259,7 +261,7 @@ func (r *DownloadClientFreeboxResource) Read(ctx context.Context, req resource.R
 	}
 
 	// Get DownloadClientFreebox current value
-	response, _, err := r.client.DownloadClientApi.GetDownloadClientById(ctx, int32(client.ID.ValueInt64())).Execute()
+	response, _, err := r.client.DownloadClientAPI.GetDownloadClientById(r.auth, int32(client.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, downloadClientFreeboxResourceName, err))
 
@@ -285,7 +287,7 @@ func (r *DownloadClientFreeboxResource) Update(ctx context.Context, req resource
 	// Update DownloadClientFreebox
 	request := client.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.DownloadClientApi.UpdateDownloadClient(ctx, strconv.Itoa(int(request.GetId()))).DownloadClientResource(*request).Execute()
+	response, _, err := r.client.DownloadClientAPI.UpdateDownloadClient(r.auth, strconv.Itoa(int(request.GetId()))).DownloadClientResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, downloadClientFreeboxResourceName, err))
 
@@ -308,7 +310,7 @@ func (r *DownloadClientFreeboxResource) Delete(ctx context.Context, req resource
 	}
 
 	// Delete DownloadClientFreebox current value
-	_, err := r.client.DownloadClientApi.DeleteDownloadClient(ctx, int32(ID)).Execute()
+	_, err := r.client.DownloadClientAPI.DeleteDownloadClient(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, downloadClientFreeboxResourceName, err))
 

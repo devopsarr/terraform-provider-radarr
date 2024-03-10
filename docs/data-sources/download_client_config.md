@@ -8,7 +8,8 @@ description: |-
 
 # radarr_download_client_config (Data Source)
 
-<!-- subcategory:Download Clients -->[Download Client Config](../resources/download_client_config).
+<!-- subcategory:Download Clients -->
+[Download Client Config](../resources/download_client_config).
 
 ## Example Usage
 
@@ -27,5 +28,3 @@ data "radarr_download_client_config" "example" {
 - `download_client_working_folders` (String) Download Client Working Folders.
 - `enable_completed_download_handling` (Boolean) Enable Completed Download Handling flag.
 - `id` (Number) Download Client Config ID.
-
-

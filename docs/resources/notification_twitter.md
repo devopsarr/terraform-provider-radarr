@@ -9,7 +9,8 @@ description: |-
 
 # radarr_notification_twitter (Resource)
 
-<!-- subcategory:Notifications -->Notification Twitter resource.
+<!-- subcategory:Notifications -->
+Notification Twitter resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Twitter](https://wiki.servarr.com/radarr/supported#twitter).
 
 ## Example Usage

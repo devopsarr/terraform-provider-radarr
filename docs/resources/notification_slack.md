@@ -9,7 +9,8 @@ description: |-
 
 # radarr_notification_slack (Resource)
 
-<!-- subcategory:Notifications -->Notification Slack resource.
+<!-- subcategory:Notifications -->
+Notification Slack resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Slack](https://wiki.servarr.com/radarr/supported#slack).
 
 ## Example Usage

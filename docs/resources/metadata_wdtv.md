@@ -9,7 +9,8 @@ description: |-
 
 # radarr_metadata_wdtv (Resource)
 
-<!-- subcategory:Metadata -->Metadata Wdtv resource.
+<!-- subcategory:Metadata -->
+Metadata Wdtv resource.
 For more information refer to [Metadata](https://wiki.servarr.com/radarr/settings#metadata) and [WDTV](https://wiki.servarr.com/radarr/supported#wdtvmetadata).
 
 ## Example Usage

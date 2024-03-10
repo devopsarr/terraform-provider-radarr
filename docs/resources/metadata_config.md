@@ -9,7 +9,8 @@ description: |-
 
 # radarr_metadata_config (Resource)
 
-<!-- subcategory:Metadata -->Metadata Config resource.
+<!-- subcategory:Metadata -->
+Metadata Config resource.
 For more information refer to [Metadata](https://wiki.servarr.com/radarr/settings#options) documentation.
 
 ## Example Usage

@@ -23,6 +23,7 @@ func NewCustomFormatDataSource() datasource.DataSource {
 // CustomFormatDataSource defines the custom_format implementation.
 type CustomFormatDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *CustomFormatDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -32,7 +33,7 @@ func (d *CustomFormatDataSource) Metadata(_ context.Context, req datasource.Meta
 func (d *CustomFormatDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Profiles -->Single [Custom Format](../resources/custom_format).",
+		MarkdownDescription: "<!-- subcategory:Profiles -->\nSingle [Custom Format](../resources/custom_format).",
 		Attributes: map[string]schema.Attribute{
 			"include_custom_format_when_renaming": schema.BoolAttribute{
 				MarkdownDescription: "Include custom format when renaming flag.",
@@ -88,8 +89,9 @@ func (d *CustomFormatDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 }
 
 func (d *CustomFormatDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
@@ -102,7 +104,7 @@ func (d *CustomFormatDataSource) Read(ctx context.Context, req datasource.ReadRe
 		return
 	}
 	// Get customFormat current value
-	response, _, err := d.client.CustomFormatApi.ListCustomFormat(ctx).Execute()
+	response, _, err := d.client.CustomFormatAPI.ListCustomFormat(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, customFormatDataSourceName, err))
 
@@ -114,10 +116,10 @@ func (d *CustomFormatDataSource) Read(ctx context.Context, req datasource.ReadRe
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func (c *CustomFormat) find(ctx context.Context, name string, customFormats []*radarr.CustomFormatResource, diags *diag.Diagnostics) {
+func (c *CustomFormat) find(ctx context.Context, name string, customFormats []radarr.CustomFormatResource, diags *diag.Diagnostics) {
 	for _, i := range customFormats {
 		if i.GetName() == name {
-			c.write(ctx, i, diags)
+			c.write(ctx, &i, diags)
 
 			return
 		}

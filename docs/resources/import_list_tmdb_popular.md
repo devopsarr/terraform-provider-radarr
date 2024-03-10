@@ -9,7 +9,8 @@ description: |-
 
 # radarr_import_list_tmdb_popular (Resource)
 
-<!-- subcategory:Import Lists -->Import List TMDB Popular resource.
+<!-- subcategory:Import Lists -->
+Import List TMDB Popular resource.
 For more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [TMDB Popular](https://wiki.servarr.com/radarr/supported#tmdbpopularimport).
 
 ## Example Usage

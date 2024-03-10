@@ -27,6 +27,7 @@ func NewAutoTagConditionGenresDataSource() datasource.DataSource {
 // AutoTagConditionGenresDataSource defines the auto_tag_condition_genre implementation.
 type AutoTagConditionGenresDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *AutoTagConditionGenresDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -36,7 +37,7 @@ func (d *AutoTagConditionGenresDataSource) Metadata(_ context.Context, req datas
 func (d *AutoTagConditionGenresDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Tags --> Auto Tag Condition Genres data source.\nFor more intagion refer to [Auto Tag Conditions](https://wiki.servarr.com/radarr/settings#conditions).",
+		MarkdownDescription: "<!-- subcategory:Tags -->\n Auto Tag Condition Genres data source.\nFor more intagion refer to [Auto Tag Conditions](https://wiki.servarr.com/radarr/settings#conditions).",
 		Attributes: map[string]schema.Attribute{
 			"negate": schema.BoolAttribute{
 				MarkdownDescription: "Negate flag.",
@@ -69,8 +70,9 @@ func (d *AutoTagConditionGenresDataSource) Schema(_ context.Context, _ datasourc
 }
 
 func (d *AutoTagConditionGenresDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 

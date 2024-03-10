@@ -9,7 +9,8 @@ description: |-
 
 # radarr_import_list_exclusion (Resource)
 
-<!-- subcategory:Import Lists -->Import List Exclusion resource.
+<!-- subcategory:Import Lists -->
+Import List Exclusion resource.
 For more information refer to [ImportListExclusions](https://wiki.servarr.com/radarr/settings#list-exclusions) documentation.
 
 ## Example Usage

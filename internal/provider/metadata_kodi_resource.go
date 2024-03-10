@@ -35,6 +35,7 @@ func NewMetadataKodiResource() resource.Resource {
 // MetadataKodiResource defines the Kodi metadata implementation.
 type MetadataKodiResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // MetadataKodi describes the Kodi metadata data model.
@@ -87,7 +88,7 @@ func (r *MetadataKodiResource) Metadata(_ context.Context, req resource.Metadata
 
 func (r *MetadataKodiResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Metadata -->Metadata Kodi resource.\nFor more information refer to [Metadata](https://wiki.servarr.com/radarr/settings#metadata) and [KODI](https://wiki.servarr.com/radarr/supported#xbmcmetadata).",
+		MarkdownDescription: "<!-- subcategory:Metadata -->\nMetadata Kodi resource.\nFor more information refer to [Metadata](https://wiki.servarr.com/radarr/settings#metadata) and [KODI](https://wiki.servarr.com/radarr/supported#xbmcmetadata).",
 		Attributes: map[string]schema.Attribute{
 			"enable": schema.BoolAttribute{
 				MarkdownDescription: "Enable flag.",
@@ -141,8 +142,9 @@ func (r *MetadataKodiResource) Schema(_ context.Context, _ resource.SchemaReques
 }
 
 func (r *MetadataKodiResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -159,7 +161,7 @@ func (r *MetadataKodiResource) Create(ctx context.Context, req resource.CreateRe
 	// Create new MetadataKodi
 	request := metadata.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.MetadataApi.CreateMetadata(ctx).MetadataResource(*request).Execute()
+	response, _, err := r.client.MetadataAPI.CreateMetadata(r.auth).MetadataResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, metadataKodiResourceName, err))
 
@@ -183,7 +185,7 @@ func (r *MetadataKodiResource) Read(ctx context.Context, req resource.ReadReques
 	}
 
 	// Get MetadataKodi current value
-	response, _, err := r.client.MetadataApi.GetMetadataById(ctx, int32(metadata.ID.ValueInt64())).Execute()
+	response, _, err := r.client.MetadataAPI.GetMetadataById(r.auth, int32(metadata.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, metadataKodiResourceName, err))
 
@@ -209,7 +211,7 @@ func (r *MetadataKodiResource) Update(ctx context.Context, req resource.UpdateRe
 	// Update MetadataKodi
 	request := metadata.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.MetadataApi.UpdateMetadata(ctx, strconv.Itoa(int(request.GetId()))).MetadataResource(*request).Execute()
+	response, _, err := r.client.MetadataAPI.UpdateMetadata(r.auth, strconv.Itoa(int(request.GetId()))).MetadataResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, metadataKodiResourceName, err))
 
@@ -232,7 +234,7 @@ func (r *MetadataKodiResource) Delete(ctx context.Context, req resource.DeleteRe
 	}
 
 	// Delete MetadataKodi current value
-	_, err := r.client.MetadataApi.DeleteMetadata(ctx, int32(ID)).Execute()
+	_, err := r.client.MetadataAPI.DeleteMetadata(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, metadataKodiResourceName, err))
 

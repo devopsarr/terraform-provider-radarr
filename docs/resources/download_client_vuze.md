@@ -9,7 +9,8 @@ description: |-
 
 # radarr_download_client_vuze (Resource)
 
-<!-- subcategory:Download Clients -->Download Client Vuze resource.
+<!-- subcategory:Download Clients -->
+Download Client Vuze resource.
 For more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [Vuze](https://wiki.servarr.com/radarr/supported#vuze).
 
 ## Example Usage

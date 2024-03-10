@@ -24,6 +24,7 @@ func NewRemotePathMappingsDataSource() datasource.DataSource {
 // RemotePathMappingsDataSource defines the remote path mappings implementation.
 type RemotePathMappingsDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // RemotePathMappings describes the remote path mappings data model.
@@ -39,7 +40,7 @@ func (d *RemotePathMappingsDataSource) Metadata(_ context.Context, req datasourc
 func (d *RemotePathMappingsDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Download Clients -->List all available [Remote Path Mappings](../resources/remote_path_mapping).",
+		MarkdownDescription: "<!-- subcategory:Download Clients -->\nList all available [Remote Path Mappings](../resources/remote_path_mapping).",
 		Attributes: map[string]schema.Attribute{
 			// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 			"id": schema.StringAttribute{
@@ -74,14 +75,15 @@ func (d *RemotePathMappingsDataSource) Schema(_ context.Context, _ datasource.Sc
 }
 
 func (d *RemotePathMappingsDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
 func (d *RemotePathMappingsDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get remotePathMappings current value
-	response, _, err := d.client.RemotePathMappingApi.ListRemotePathMapping(ctx).Execute()
+	response, _, err := d.client.RemotePathMappingAPI.ListRemotePathMapping(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.List, remotePathMappingsDataSourceName, err))
 
@@ -92,7 +94,7 @@ func (d *RemotePathMappingsDataSource) Read(ctx context.Context, _ datasource.Re
 	// Map response body to resource schema attribute
 	mappings := make([]RemotePathMapping, len(response))
 	for i, p := range response {
-		mappings[i].write(p)
+		mappings[i].write(&p)
 	}
 
 	pathList, diags := types.SetValueFrom(ctx, RemotePathMapping{}.getType(), mappings)

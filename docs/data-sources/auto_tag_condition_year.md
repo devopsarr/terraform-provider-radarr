@@ -9,7 +9,8 @@ description: |-
 
 # radarr_auto_tag_condition_year (Data Source)
 
-<!-- subcategory:Tags --> Auto Tag Condition Series Type data source.
+<!-- subcategory:Tags -->
+ Auto Tag Condition Series Type data source.
 For more intagion refer to [Auto Tag Conditions](https://wiki.servarr.com/radarr/settings#conditions).
 
 ## Example Usage
@@ -48,5 +49,3 @@ resource "radarr_custom_format" "example" {
 
 - `id` (Number) Auto tag condition series type ID.
 - `implementation` (String) Implementation.
-
-

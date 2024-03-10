@@ -24,6 +24,7 @@ func NewNotificationDataSource() datasource.DataSource {
 // NotificationDataSource defines the notification implementation.
 type NotificationDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *NotificationDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -33,7 +34,7 @@ func (d *NotificationDataSource) Metadata(_ context.Context, req datasource.Meta
 func (d *NotificationDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Notifications -->Single [Notification](../resources/notification).",
+		MarkdownDescription: "<!-- subcategory:Notifications -->\nSingle [Notification](../resources/notification).",
 		Attributes: map[string]schema.Attribute{
 			"on_grab": schema.BoolAttribute{
 				MarkdownDescription: "On grab flag.",
@@ -125,10 +126,6 @@ func (d *NotificationDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 				MarkdownDescription: "Notify flag.",
 				Computed:            true,
 			},
-			"require_encryption": schema.BoolAttribute{
-				MarkdownDescription: "Require encryption flag.",
-				Computed:            true,
-			},
 			"send_silently": schema.BoolAttribute{
 				MarkdownDescription: "Add silently flag.",
 				Computed:            true,
@@ -143,6 +140,10 @@ func (d *NotificationDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 			},
 			"use_ssl": schema.BoolAttribute{
 				MarkdownDescription: "Use SSL flag.",
+				Computed:            true,
+			},
+			"use_encryption": schema.Int64Attribute{
+				MarkdownDescription: "Use encryption.",
 				Computed:            true,
 			},
 			"display_time": schema.Int64Attribute{
@@ -415,8 +416,9 @@ func (d *NotificationDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 }
 
 func (d *NotificationDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
@@ -429,7 +431,7 @@ func (d *NotificationDataSource) Read(ctx context.Context, req datasource.ReadRe
 		return
 	}
 	// Get notification current value
-	response, _, err := d.client.NotificationApi.ListNotification(ctx).Execute()
+	response, _, err := d.client.NotificationAPI.ListNotification(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, notificationDataSourceName, err))
 
@@ -442,10 +444,10 @@ func (d *NotificationDataSource) Read(ctx context.Context, req datasource.ReadRe
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func (n *Notification) find(ctx context.Context, name string, notifications []*radarr.NotificationResource, diags *diag.Diagnostics) {
+func (n *Notification) find(ctx context.Context, name string, notifications []radarr.NotificationResource, diags *diag.Diagnostics) {
 	for _, notification := range notifications {
 		if notification.GetName() == name {
-			n.write(ctx, notification, diags)
+			n.write(ctx, &notification, diags)
 
 			return
 		}

@@ -9,7 +9,8 @@ description: |-
 
 # radarr_custom_format_condition_language (Data Source)
 
-<!-- subcategory:Profiles --> Custom Format Condition Language data source.
+<!-- subcategory:Profiles -->
+ Custom Format Condition Language data source.
 For more information refer to [Custom Format Conditions](https://wiki.servarr.com/radarr/settings#conditions).
 
 ## Example Usage
@@ -44,5 +45,3 @@ resource "radarr_custom_format" "example" {
 
 - `id` (Number) Custom format condition language ID.
 - `implementation` (String) Implementation.
-
-

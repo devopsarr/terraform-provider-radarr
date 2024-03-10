@@ -38,6 +38,7 @@ func NewImportListTMDBKeywordResource() resource.Resource {
 // ImportListTMDBKeywordResource defines the import list implementation.
 type ImportListTMDBKeywordResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // ImportListTMDBKeyword describes the import list data model.
@@ -97,7 +98,7 @@ func (r *ImportListTMDBKeywordResource) Metadata(_ context.Context, req resource
 
 func (r *ImportListTMDBKeywordResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List TMDB Keyword resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [TMDB Keyword](https://wiki.servarr.com/radarr/supported#tmdbkeywordimport).",
+		MarkdownDescription: "<!-- subcategory:Import Lists -->\nImport List TMDB Keyword resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [TMDB Keyword](https://wiki.servarr.com/radarr/supported#tmdbkeywordimport).",
 		Attributes: map[string]schema.Attribute{
 			"enable_auto": schema.BoolAttribute{
 				MarkdownDescription: "Enable automatic add flag.",
@@ -168,8 +169,9 @@ func (r *ImportListTMDBKeywordResource) Schema(_ context.Context, _ resource.Sch
 }
 
 func (r *ImportListTMDBKeywordResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -186,7 +188,7 @@ func (r *ImportListTMDBKeywordResource) Create(ctx context.Context, req resource
 	// Create new ImportListTMDBKeyword
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListApi.CreateImportList(ctx).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.CreateImportList(r.auth).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, importListTMDBKeywordResourceName, err))
 
@@ -210,7 +212,7 @@ func (r *ImportListTMDBKeywordResource) Read(ctx context.Context, req resource.R
 	}
 
 	// Get ImportListTMDBKeyword current value
-	response, _, err := r.client.ImportListApi.GetImportListById(ctx, int32(importList.ID.ValueInt64())).Execute()
+	response, _, err := r.client.ImportListAPI.GetImportListById(r.auth, int32(importList.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListTMDBKeywordResourceName, err))
 
@@ -236,7 +238,7 @@ func (r *ImportListTMDBKeywordResource) Update(ctx context.Context, req resource
 	// Update ImportListTMDBKeyword
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListApi.UpdateImportList(ctx, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.UpdateImportList(r.auth, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, importListTMDBKeywordResourceName, err))
 
@@ -259,7 +261,7 @@ func (r *ImportListTMDBKeywordResource) Delete(ctx context.Context, req resource
 	}
 
 	// Delete ImportListTMDBKeyword current value
-	_, err := r.client.ImportListApi.DeleteImportList(ctx, int32(ID)).Execute()
+	_, err := r.client.ImportListAPI.DeleteImportList(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListTMDBKeywordResourceName, err))
 

@@ -32,6 +32,7 @@ func NewMediaManagementResource() resource.Resource {
 // MediaManagementResource defines the media management implementation.
 type MediaManagementResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // MediaManagement describes the media management data model.
@@ -64,7 +65,7 @@ func (r *MediaManagementResource) Metadata(_ context.Context, req resource.Metad
 
 func (r *MediaManagementResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Media Management -->Media Management resource.\nFor more information refer to [Naming](https://wiki.servarr.com/radarr/settings#file-management) documentation.",
+		MarkdownDescription: "<!-- subcategory:Media Management -->\nMedia Management resource.\nFor more information refer to [Naming](https://wiki.servarr.com/radarr/settings#file-management) documentation.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
 				MarkdownDescription: "Media Management ID.",
@@ -163,8 +164,9 @@ func (r *MediaManagementResource) Schema(_ context.Context, _ resource.SchemaReq
 }
 
 func (r *MediaManagementResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -183,7 +185,7 @@ func (r *MediaManagementResource) Create(ctx context.Context, req resource.Creat
 	request.SetId(1)
 
 	// Create new MediaManagement
-	response, _, err := r.client.MediaManagementConfigApi.UpdateMediaManagementConfig(ctx, strconv.Itoa(int(request.GetId()))).MediaManagementConfigResource(*request).Execute()
+	response, _, err := r.client.MediaManagementConfigAPI.UpdateMediaManagementConfig(r.auth, strconv.Itoa(int(request.GetId()))).MediaManagementConfigResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, mediaManagementResourceName, err))
 
@@ -207,7 +209,7 @@ func (r *MediaManagementResource) Read(ctx context.Context, req resource.ReadReq
 	}
 
 	// Get mediamanagement current value
-	response, _, err := r.client.MediaManagementConfigApi.GetMediaManagementConfig(ctx).Execute()
+	response, _, err := r.client.MediaManagementConfigAPI.GetMediaManagementConfig(r.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, mediaManagementResourceName, err))
 
@@ -234,7 +236,7 @@ func (r *MediaManagementResource) Update(ctx context.Context, req resource.Updat
 	request := management.read()
 
 	// Update MediaManagement
-	response, _, err := r.client.MediaManagementConfigApi.UpdateMediaManagementConfig(ctx, strconv.Itoa(int(request.GetId()))).MediaManagementConfigResource(*request).Execute()
+	response, _, err := r.client.MediaManagementConfigAPI.UpdateMediaManagementConfig(r.auth, strconv.Itoa(int(request.GetId()))).MediaManagementConfigResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, mediaManagementResourceName, err))
 

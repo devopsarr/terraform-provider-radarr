@@ -24,6 +24,7 @@ func NewNotificationsDataSource() datasource.DataSource {
 // NotificationsDataSource defines the notifications implementation.
 type NotificationsDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // Notifications describes the notifications data model.
@@ -39,7 +40,7 @@ func (d *NotificationsDataSource) Metadata(_ context.Context, req datasource.Met
 func (d *NotificationsDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Notifications -->List all available [Notifications](../resources/notification).",
+		MarkdownDescription: "<!-- subcategory:Notifications -->\nList all available [Notifications](../resources/notification).",
 		Attributes: map[string]schema.Attribute{
 			// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 			"id": schema.StringAttribute{
@@ -140,10 +141,6 @@ func (d *NotificationsDataSource) Schema(_ context.Context, _ datasource.SchemaR
 							MarkdownDescription: "Notify flag.",
 							Computed:            true,
 						},
-						"require_encryption": schema.BoolAttribute{
-							MarkdownDescription: "Require encryption flag.",
-							Computed:            true,
-						},
 						"send_silently": schema.BoolAttribute{
 							MarkdownDescription: "Add silently flag.",
 							Computed:            true,
@@ -158,6 +155,10 @@ func (d *NotificationsDataSource) Schema(_ context.Context, _ datasource.SchemaR
 						},
 						"use_ssl": schema.BoolAttribute{
 							MarkdownDescription: "Use SSL flag.",
+							Computed:            true,
+						},
+						"use_encryption": schema.Int64Attribute{
+							MarkdownDescription: "Use encryption.",
 							Computed:            true,
 						},
 						"display_time": schema.Int64Attribute{
@@ -433,14 +434,15 @@ func (d *NotificationsDataSource) Schema(_ context.Context, _ datasource.SchemaR
 }
 
 func (d *NotificationsDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
 func (d *NotificationsDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get notifications current value
-	response, _, err := d.client.NotificationApi.ListNotification(ctx).Execute()
+	response, _, err := d.client.NotificationAPI.ListNotification(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.List, notificationsDataSourceName, err))
 
@@ -451,7 +453,7 @@ func (d *NotificationsDataSource) Read(ctx context.Context, _ datasource.ReadReq
 	// Map response body to resource schema attribute
 	notifications := make([]Notification, len(response))
 	for i, n := range response {
-		notifications[i].write(ctx, n, &resp.Diagnostics)
+		notifications[i].write(ctx, &n, &resp.Diagnostics)
 	}
 
 	notificationList, diags := types.SetValueFrom(ctx, Notification{}.getType(), notifications)

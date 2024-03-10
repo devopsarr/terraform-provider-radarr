@@ -258,7 +258,7 @@ func TestReadStringField(t *testing.T) {
 	field.SetValue("string")
 
 	tests := map[string]struct {
-		expected  *radarr.Field
+		expected  radarr.Field
 		name      string
 		fieldCase Test
 	}{
@@ -267,12 +267,12 @@ func TestReadStringField(t *testing.T) {
 				Str: types.StringValue("string"),
 			},
 			name:     "str",
-			expected: field,
+			expected: *field,
 		},
 		"nil": {
 			fieldCase: Test{},
 			name:      "str",
-			expected:  nil,
+			expected:  *radarr.NewField(),
 		},
 	}
 	for name, test := range tests {
@@ -322,12 +322,10 @@ func TestReadIntField(t *testing.T) {
 	for name, test := range tests {
 		test := test
 
-		expected := radarr.NewField()
-		expected.SetName(test.name)
-		expected.SetValue(int64(test.value))
-
-		if test.value == 0 {
-			expected = nil
+		expected := *radarr.NewField()
+		if test.value != 0 {
+			expected.SetName(test.name)
+			expected.SetValue(int64(test.value))
 		}
 
 		t.Run(name, func(t *testing.T) {
@@ -347,7 +345,7 @@ func TestReadBoolField(t *testing.T) {
 	field.SetValue(true)
 
 	tests := map[string]struct {
-		expected  *radarr.Field
+		expected  radarr.Field
 		name      string
 		fieldCase Test
 	}{
@@ -356,12 +354,12 @@ func TestReadBoolField(t *testing.T) {
 				Boo: types.BoolValue(true),
 			},
 			name:     "boo",
-			expected: field,
+			expected: *field,
 		},
 		"nil": {
 			fieldCase: Test{},
 			name:      "boo",
-			expected:  nil,
+			expected:  *radarr.NewField(),
 		},
 	}
 	for name, test := range tests {
@@ -384,7 +382,7 @@ func TestReadFloatField(t *testing.T) {
 	field.SetValue(3.5)
 
 	tests := map[string]struct {
-		expected  *radarr.Field
+		expected  radarr.Field
 		name      string
 		fieldCase Test
 	}{
@@ -393,12 +391,12 @@ func TestReadFloatField(t *testing.T) {
 				Fl: types.Float64Value(3.5),
 			},
 			name:     "fl",
-			expected: field,
+			expected: *field,
 		},
 		"nil": {
 			fieldCase: Test{},
 			name:      "fl",
-			expected:  nil,
+			expected:  *radarr.NewField(),
 		},
 	}
 	for name, test := range tests {
@@ -421,7 +419,7 @@ func TestReadStringSliceField(t *testing.T) {
 	field.SetValue([]string{"test1", "test2"})
 
 	tests := map[string]struct {
-		expected  *radarr.Field
+		expected  radarr.Field
 		name      string
 		set       []string
 		fieldCase Test
@@ -431,7 +429,7 @@ func TestReadStringSliceField(t *testing.T) {
 				Set: types.SetValueMust(types.StringType, nil),
 			},
 			name:     "set",
-			expected: field,
+			expected: *field,
 			set:      []string{"test1", "test2"},
 		},
 		"nil": {
@@ -439,7 +437,7 @@ func TestReadStringSliceField(t *testing.T) {
 				Set: types.SetValueMust(types.StringType, nil),
 			},
 			name:     "set",
-			expected: nil,
+			expected: *radarr.NewField(),
 			set:      []string{},
 		},
 	}
@@ -464,7 +462,7 @@ func TestReadIntSliceField(t *testing.T) {
 	field.SetValue([]int64{1, 2})
 
 	tests := map[string]struct {
-		expected  *radarr.Field
+		expected  radarr.Field
 		name      string
 		set       []int64
 		fieldCase Test
@@ -474,7 +472,7 @@ func TestReadIntSliceField(t *testing.T) {
 				Set: types.SetValueMust(types.Int64Type, nil),
 			},
 			name:     "set",
-			expected: field,
+			expected: *field,
 			set:      []int64{1, 2},
 		},
 		"nil": {
@@ -482,7 +480,7 @@ func TestReadIntSliceField(t *testing.T) {
 				Set: types.SetValueMust(types.Int64Type, nil),
 			},
 			name:     "set",
-			expected: nil,
+			expected: *radarr.NewField(),
 			set:      []int64{},
 		},
 	}
@@ -555,8 +553,8 @@ func TestReadFields(t *testing.T) {
 				tfsdk.ValueFrom(context.Background(), test.value, test.testData.Set.Type(context.Background()), &test.testData.Set)
 			}
 
-			expectedFields := make([]*radarr.Field, 1)
-			expectedFields[0] = radarr.NewField()
+			expectedFields := make([]radarr.Field, 1)
+			expectedFields[0] = *radarr.NewField()
 			expectedFields[0].SetName(test.name)
 			expectedFields[0].SetValue(test.value)
 
@@ -630,6 +628,7 @@ func TestWriteFields(t *testing.T) {
 			fieldContainer: Test{Str: types.StringValue("String")},
 		},
 	}
+
 	for name, test := range tests {
 		test := test
 
@@ -640,8 +639,8 @@ func TestWriteFields(t *testing.T) {
 				tfsdk.ValueFrom(context.Background(), test.value, test.fieldContainer.Set.Type(context.Background()), &test.fieldContainer.Set)
 			}
 
-			fields := make([]*radarr.Field, 1)
-			fields[0] = radarr.NewField()
+			fields := make([]radarr.Field, 1)
+			fields[0] = *radarr.NewField()
 			fields[0].SetName(test.name)
 			fields[0].SetValue(test.value)
 

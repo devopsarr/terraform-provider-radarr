@@ -9,7 +9,8 @@ description: |-
 
 # radarr_indexer_torznab (Resource)
 
-<!-- subcategory:Indexers -->Indexer Torznab resource.
+<!-- subcategory:Indexers -->
+Indexer Torznab resource.
 For more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [Torznab](https://wiki.servarr.com/radarr/supported#torznab).
 
 ## Example Usage

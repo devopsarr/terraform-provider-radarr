@@ -24,6 +24,7 @@ func NewIndexersDataSource() datasource.DataSource {
 // IndexersDataSource defines the indexers implementation.
 type IndexersDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // Indexers describes the indexers data model.
@@ -39,7 +40,7 @@ func (d *IndexersDataSource) Metadata(_ context.Context, req datasource.Metadata
 func (d *IndexersDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Indexers -->List all available [Indexers](../resources/indexer).",
+		MarkdownDescription: "<!-- subcategory:Indexers -->\nList all available [Indexers](../resources/indexer).",
 		Attributes: map[string]schema.Attribute{
 			// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 			"id": schema.StringAttribute{
@@ -197,14 +198,15 @@ func (d *IndexersDataSource) Schema(_ context.Context, _ datasource.SchemaReques
 }
 
 func (d *IndexersDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
 func (d *IndexersDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get indexers current value
-	response, _, err := d.client.IndexerApi.ListIndexer(ctx).Execute()
+	response, _, err := d.client.IndexerAPI.ListIndexer(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.List, indexersDataSourceName, err))
 
@@ -215,7 +217,7 @@ func (d *IndexersDataSource) Read(ctx context.Context, _ datasource.ReadRequest,
 	// Map response body to resource schema attribute
 	indexers := make([]Indexer, len(response))
 	for i, p := range response {
-		indexers[i].write(ctx, p, &resp.Diagnostics)
+		indexers[i].write(ctx, &p, &resp.Diagnostics)
 	}
 
 	indexerList, diags := types.SetValueFrom(ctx, Indexer{}.getType(), indexers)

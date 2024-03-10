@@ -24,6 +24,7 @@ func NewImportListExclusionsDataSource() datasource.DataSource {
 // ImportListExclusionsDataSource defines the importListExclusions implementation.
 type ImportListExclusionsDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // ImportListExclusions describes the importListExclusions data model.
@@ -38,7 +39,7 @@ func (d *ImportListExclusionsDataSource) Metadata(_ context.Context, req datasou
 
 func (d *ImportListExclusionsDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Import Lists -->List all available [ImportListExclusions](../resources/importListExclusion).",
+		MarkdownDescription: "<!-- subcategory:Import Lists -->\nList all available [ImportListExclusions](../resources/importListExclusion).",
 		Attributes: map[string]schema.Attribute{
 			// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 			"id": schema.StringAttribute{
@@ -73,14 +74,15 @@ func (d *ImportListExclusionsDataSource) Schema(_ context.Context, _ datasource.
 }
 
 func (d *ImportListExclusionsDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
 func (d *ImportListExclusionsDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get importListExclusions current value
-	response, _, err := d.client.ImportExclusionsApi.ListExclusions(ctx).Execute()
+	response, _, err := d.client.ImportExclusionsAPI.ListExclusions(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListExclusionsDataSourceName, err))
 
@@ -91,7 +93,7 @@ func (d *ImportListExclusionsDataSource) Read(ctx context.Context, _ datasource.
 	// Map response body to resource schema attribute
 	importListExclusions := make([]ImportListExclusion, len(response))
 	for i, t := range response {
-		importListExclusions[i].write(t)
+		importListExclusions[i].write(&t)
 	}
 
 	exclusionList, diags := types.SetValueFrom(ctx, ImportListExclusion{}.getType(), importListExclusions)

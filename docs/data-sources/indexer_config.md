@@ -8,7 +8,8 @@ description: |-
 
 # radarr_indexer_config (Data Source)
 
-<!-- subcategory:Indexers -->[Indexer Config](../resources/indexer_config).
+<!-- subcategory:Indexers -->
+[Indexer Config](../resources/indexer_config).
 
 ## Example Usage
 
@@ -31,5 +32,3 @@ data "radarr_indexer_config" "example" {
 - `retention` (Number) Retention.
 - `rss_sync_interval` (Number) RSS sync interval.
 - `whitelisted_hardcoded_subs` (String) Whitelisted hardconded subs.
-
-

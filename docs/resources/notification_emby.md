@@ -9,7 +9,8 @@ description: |-
 
 # radarr_notification_emby (Resource)
 
-<!-- subcategory:Notifications -->Notification Emby resource.
+<!-- subcategory:Notifications -->
+Notification Emby resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Emby](https://wiki.servarr.com/radarr/supported#mediabrowser).
 
 ## Example Usage

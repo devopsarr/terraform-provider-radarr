@@ -8,7 +8,8 @@ description: |-
 
 # radarr_movies (Data Source)
 
-<!-- subcategory:Movies -->List all available [Movies](../resources/movie).
+<!-- subcategory:Movies -->
+List all available [Movies](../resources/movie).
 
 ## Example Usage
 
@@ -57,5 +58,3 @@ Read-Only:
 
 - `id` (Number) ID.
 - `name` (String) Name.
-
-

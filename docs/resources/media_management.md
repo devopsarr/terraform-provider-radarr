@@ -9,7 +9,8 @@ description: |-
 
 # radarr_media_management (Resource)
 
-<!-- subcategory:Media Management -->Media Management resource.
+<!-- subcategory:Media Management -->
+Media Management resource.
 For more information refer to [Naming](https://wiki.servarr.com/radarr/settings#file-management) documentation.
 
 ## Example Usage

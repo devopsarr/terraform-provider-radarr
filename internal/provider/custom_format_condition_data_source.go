@@ -31,6 +31,7 @@ func NewCustomFormatConditionDataSource() datasource.DataSource {
 // CustomFormatConditionDataSource defines the custom format condition implementation.
 type CustomFormatConditionDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // CustomFormatCondition describes the custom format condition data model.
@@ -81,7 +82,7 @@ func (d *CustomFormatConditionDataSource) Metadata(_ context.Context, req dataso
 func (d *CustomFormatConditionDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Profiles --> Generic Custom Format Condition data source. When possible use a specific data source instead.\nFor more information refer to [Custom Format Conditions](https://wiki.servarr.com/radarr/settings#conditions).\n To be used in conjunction with [Custom Format](../resources/custom_format).",
+		MarkdownDescription: "<!-- subcategory:Profiles -->\n Generic Custom Format Condition data source. When possible use a specific data source instead.\nFor more information refer to [Custom Format Conditions](https://wiki.servarr.com/radarr/settings#conditions).\n To be used in conjunction with [Custom Format](../resources/custom_format).",
 		Attributes: map[string]schema.Attribute{
 			"negate": schema.BoolAttribute{
 				MarkdownDescription: "Negate flag.",
@@ -125,8 +126,9 @@ func (d *CustomFormatConditionDataSource) Schema(_ context.Context, _ datasource
 }
 
 func (d *CustomFormatConditionDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 

@@ -9,7 +9,8 @@ description: |-
 
 # radarr_host (Resource)
 
-<!-- subcategory:System -->Host resource.
+<!-- subcategory:System -->
+Host resource.
 For more information refer to [Host](https://wiki.servarr.com/radarr/settings#general) documentation.
 
 ## Example Usage
@@ -82,6 +83,7 @@ Required:
 Optional:
 
 - `password` (String, Sensitive) Password.
+- `required` (String) Required for everyone or disabled for local addresses.
 - `username` (String) Username.
 
 Read-Only:

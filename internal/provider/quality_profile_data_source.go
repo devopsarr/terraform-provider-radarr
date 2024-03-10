@@ -23,6 +23,7 @@ func NewQualityProfileDataSource() datasource.DataSource {
 // QualityProfileDataSource defines the quality profiles implementation.
 type QualityProfileDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *QualityProfileDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -32,7 +33,7 @@ func (d *QualityProfileDataSource) Metadata(_ context.Context, req datasource.Me
 func (d *QualityProfileDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the quality server.
-		MarkdownDescription: "<!-- subcategory:Profiles -->Single [Quality Profile](../resources/quality_profile).",
+		MarkdownDescription: "<!-- subcategory:Profiles -->\nSingle [Quality Profile](../resources/quality_profile).",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
 				MarkdownDescription: "Quality Profile ID.",
@@ -137,8 +138,9 @@ func (d *QualityProfileDataSource) Schema(_ context.Context, _ datasource.Schema
 }
 
 func (d *QualityProfileDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
@@ -151,7 +153,7 @@ func (d *QualityProfileDataSource) Read(ctx context.Context, req datasource.Read
 		return
 	}
 	// Get qualityprofiles current value
-	response, _, err := d.client.QualityProfileApi.ListQualityProfile(ctx).Execute()
+	response, _, err := d.client.QualityProfileAPI.ListQualityProfile(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, qualityProfileDataSourceName, err))
 
@@ -165,10 +167,10 @@ func (d *QualityProfileDataSource) Read(ctx context.Context, req datasource.Read
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func (p *QualityProfile) find(ctx context.Context, name string, profiles []*radarr.QualityProfileResource, diags *diag.Diagnostics) {
+func (p *QualityProfile) find(ctx context.Context, name string, profiles []radarr.QualityProfileResource, diags *diag.Diagnostics) {
 	for _, profile := range profiles {
 		if profile.GetName() == name {
-			p.write(ctx, profile, diags)
+			p.write(ctx, &profile, diags)
 
 			return
 		}
