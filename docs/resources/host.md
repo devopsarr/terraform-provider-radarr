@@ -83,6 +83,7 @@ Required:
 Optional:
 
 - `password` (String, Sensitive) Password.
+- `required` (String) Required for everyone or disabled for local addresses.
 - `username` (String) Username.
 
 Read-Only:

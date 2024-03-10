@@ -45,6 +45,7 @@ Read-Only:
 - `encrypted_password` (String, Sensitive) Needed for validation.
 - `method` (String) Authentication method.
 - `password` (String, Sensitive) Password.
+- `required` (String) Required for everyone or disabled for local addresses.
 - `username` (String) Username.
 
 

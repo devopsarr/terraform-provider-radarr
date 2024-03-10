@@ -145,6 +145,10 @@ func (d *HostDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 						Computed:            true,
 						Sensitive:           true,
 					},
+					"required": schema.StringAttribute{
+						MarkdownDescription: "Required for everyone or disabled for local addresses.",
+						Computed:            true,
+					},
 				},
 			},
 			"ssl": schema.SingleNestedAttribute{

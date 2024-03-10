@@ -6,6 +6,7 @@ import (
 
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -16,6 +17,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -108,6 +110,7 @@ type AuthConfig struct {
 	Username          types.String `tfsdk:"username"`
 	Password          types.String `tfsdk:"password"`
 	EncryptedPassword types.String `tfsdk:"encrypted_password"`
+	Required          types.String `tfsdk:"required"`
 }
 
 func (a AuthConfig) getType() attr.Type {
@@ -117,6 +120,7 @@ func (a AuthConfig) getType() attr.Type {
 			"username":           types.StringType,
 			"password":           types.StringType,
 			"encrypted_password": types.StringType,
+			"required":           types.StringType,
 		})
 }
 
@@ -300,6 +304,15 @@ func (r *HostResource) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 						MarkdownDescription: "Needed for validation.",
 						Computed:            true,
 						Sensitive:           true,
+					},
+					"required": schema.StringAttribute{
+						MarkdownDescription: "Required for everyone or disabled for local addresses.",
+						Optional:            true,
+						Computed:            true,
+						Validators: []validator.String{
+							stringvalidator.OneOf("disabledForLocalAddresses", "enabled"),
+						},
+						Default: stringdefault.StaticString("disabledForLocalAddresses"),
 					},
 				},
 			},
@@ -546,6 +559,7 @@ func (a *AuthConfig) write(host *radarr.HostConfigResource) {
 	a.Method = types.StringValue(string(host.GetAuthenticationMethod()))
 	a.Username = types.StringValue(host.GetUsername())
 	a.EncryptedPassword = types.StringValue(host.GetPassword())
+	a.Required = types.StringValue(string(host.GetAuthenticationRequired()))
 }
 
 func (s *SSLConfig) write(host *radarr.HostConfigResource) {
@@ -627,7 +641,9 @@ func (b *BackupConfig) read(host *radarr.HostConfigResource) {
 func (a *AuthConfig) read(host *radarr.HostConfigResource) {
 	host.SetAuthenticationMethod(radarr.AuthenticationType(a.Method.ValueString()))
 	host.SetUsername(a.Username.ValueString())
+	host.SetAuthenticationRequired(radarr.AuthenticationRequiredType(a.Required.ValueString()))
 	host.SetPassword(a.Password.ValueString())
+	host.SetPasswordConfirmation(a.Password.ValueString())
 }
 
 func (s *SSLConfig) read(host *radarr.HostConfigResource) {
