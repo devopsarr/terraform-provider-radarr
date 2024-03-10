@@ -192,7 +192,6 @@ func (p *RadarrProvider) Resources(_ context.Context) []func() resource.Resource
 		// Notifications
 		NewNotificationResource,
 		NewNotificationAppriseResource,
-		NewNotificationBoxcarResource,
 		NewNotificationCustomScriptResource,
 		NewNotificationDiscordResource,
 		NewNotificationEmailResource,
