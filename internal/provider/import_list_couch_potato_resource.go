@@ -38,6 +38,7 @@ func NewImportListCouchPotatoResource() resource.Resource {
 // ImportListCouchPotatoResource defines the import list implementation.
 type ImportListCouchPotatoResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // ImportListCouchPotato describes the import list data model.
@@ -198,8 +199,9 @@ func (r *ImportListCouchPotatoResource) Schema(_ context.Context, _ resource.Sch
 }
 
 func (r *ImportListCouchPotatoResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -216,7 +218,7 @@ func (r *ImportListCouchPotatoResource) Create(ctx context.Context, req resource
 	// Create new ImportListCouchPotato
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListAPI.CreateImportList(ctx).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.CreateImportList(r.auth).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, importListCouchPotatoResourceName, err))
 
@@ -240,7 +242,7 @@ func (r *ImportListCouchPotatoResource) Read(ctx context.Context, req resource.R
 	}
 
 	// Get ImportListCouchPotato current value
-	response, _, err := r.client.ImportListAPI.GetImportListById(ctx, int32(importList.ID.ValueInt64())).Execute()
+	response, _, err := r.client.ImportListAPI.GetImportListById(r.auth, int32(importList.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListCouchPotatoResourceName, err))
 
@@ -266,7 +268,7 @@ func (r *ImportListCouchPotatoResource) Update(ctx context.Context, req resource
 	// Update ImportListCouchPotato
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListAPI.UpdateImportList(ctx, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.UpdateImportList(r.auth, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, importListCouchPotatoResourceName, err))
 
@@ -289,7 +291,7 @@ func (r *ImportListCouchPotatoResource) Delete(ctx context.Context, req resource
 	}
 
 	// Delete ImportListCouchPotato current value
-	_, err := r.client.ImportListAPI.DeleteImportList(ctx, int32(ID)).Execute()
+	_, err := r.client.ImportListAPI.DeleteImportList(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListCouchPotatoResourceName, err))
 

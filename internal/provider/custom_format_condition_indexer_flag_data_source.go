@@ -27,6 +27,7 @@ func NewCustomFormatConditionIndexerFlagDataSource() datasource.DataSource {
 // CustomFormatConditionIndexerFlagDataSource defines the custom format condition indexer flag implementation.
 type CustomFormatConditionIndexerFlagDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *CustomFormatConditionIndexerFlagDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -69,8 +70,9 @@ func (d *CustomFormatConditionIndexerFlagDataSource) Schema(_ context.Context, _
 }
 
 func (d *CustomFormatConditionIndexerFlagDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 

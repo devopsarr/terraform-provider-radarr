@@ -35,6 +35,7 @@ func NewMetadataEmbyResource() resource.Resource {
 // MetadataEmbyResource defines the Emby metadata implementation.
 type MetadataEmbyResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // MetadataEmby describes the Emby metadata data model.
@@ -106,8 +107,9 @@ func (r *MetadataEmbyResource) Schema(_ context.Context, _ resource.SchemaReques
 }
 
 func (r *MetadataEmbyResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -124,7 +126,7 @@ func (r *MetadataEmbyResource) Create(ctx context.Context, req resource.CreateRe
 	// Create new MetadataEmby
 	request := metadata.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.MetadataAPI.CreateMetadata(ctx).MetadataResource(*request).Execute()
+	response, _, err := r.client.MetadataAPI.CreateMetadata(r.auth).MetadataResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, metadataEmbyResourceName, err))
 
@@ -148,7 +150,7 @@ func (r *MetadataEmbyResource) Read(ctx context.Context, req resource.ReadReques
 	}
 
 	// Get MetadataEmby current value
-	response, _, err := r.client.MetadataAPI.GetMetadataById(ctx, int32(metadata.ID.ValueInt64())).Execute()
+	response, _, err := r.client.MetadataAPI.GetMetadataById(r.auth, int32(metadata.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, metadataEmbyResourceName, err))
 
@@ -174,7 +176,7 @@ func (r *MetadataEmbyResource) Update(ctx context.Context, req resource.UpdateRe
 	// Update MetadataEmby
 	request := metadata.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.MetadataAPI.UpdateMetadata(ctx, strconv.Itoa(int(request.GetId()))).MetadataResource(*request).Execute()
+	response, _, err := r.client.MetadataAPI.UpdateMetadata(r.auth, strconv.Itoa(int(request.GetId()))).MetadataResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, metadataEmbyResourceName, err))
 
@@ -197,7 +199,7 @@ func (r *MetadataEmbyResource) Delete(ctx context.Context, req resource.DeleteRe
 	}
 
 	// Delete MetadataEmby current value
-	_, err := r.client.MetadataAPI.DeleteMetadata(ctx, int32(ID)).Execute()
+	_, err := r.client.MetadataAPI.DeleteMetadata(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, metadataEmbyResourceName, err))
 

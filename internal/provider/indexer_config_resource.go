@@ -30,6 +30,7 @@ func NewIndexerConfigResource() resource.Resource {
 // IndexerConfigResource defines the indexer config implementation.
 type IndexerConfigResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // IndexerConfig describes the indexer config data model.
@@ -97,8 +98,9 @@ func (r *IndexerConfigResource) Schema(_ context.Context, _ resource.SchemaReque
 }
 
 func (r *IndexerConfigResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -117,7 +119,7 @@ func (r *IndexerConfigResource) Create(ctx context.Context, req resource.CreateR
 	request.SetId(1)
 
 	// Create new IndexerConfig
-	response, _, err := r.client.IndexerConfigAPI.UpdateIndexerConfig(ctx, strconv.Itoa(int(request.GetId()))).IndexerConfigResource(*request).Execute()
+	response, _, err := r.client.IndexerConfigAPI.UpdateIndexerConfig(r.auth, strconv.Itoa(int(request.GetId()))).IndexerConfigResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, indexerConfigResourceName, err))
 
@@ -141,7 +143,7 @@ func (r *IndexerConfigResource) Read(ctx context.Context, req resource.ReadReque
 	}
 
 	// Get indexerConfig current value
-	response, _, err := r.client.IndexerConfigAPI.GetIndexerConfig(ctx).Execute()
+	response, _, err := r.client.IndexerConfigAPI.GetIndexerConfig(r.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, indexerConfigResourceName, err))
 
@@ -168,7 +170,7 @@ func (r *IndexerConfigResource) Update(ctx context.Context, req resource.UpdateR
 	request := config.read()
 
 	// Update IndexerConfig
-	response, _, err := r.client.IndexerConfigAPI.UpdateIndexerConfig(ctx, strconv.Itoa(int(request.GetId()))).IndexerConfigResource(*request).Execute()
+	response, _, err := r.client.IndexerConfigAPI.UpdateIndexerConfig(r.auth, strconv.Itoa(int(request.GetId()))).IndexerConfigResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, indexerConfigResourceName, err))
 

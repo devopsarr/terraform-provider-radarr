@@ -37,6 +37,7 @@ func NewNotificationGotifyResource() resource.Resource {
 // NotificationGotifyResource defines the notification implementation.
 type NotificationGotifyResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // NotificationGotify describes the notification data model.
@@ -214,8 +215,9 @@ func (r *NotificationGotifyResource) Schema(_ context.Context, _ resource.Schema
 }
 
 func (r *NotificationGotifyResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -232,7 +234,7 @@ func (r *NotificationGotifyResource) Create(ctx context.Context, req resource.Cr
 	// Create new NotificationGotify
 	request := notification.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.NotificationAPI.CreateNotification(ctx).NotificationResource(*request).Execute()
+	response, _, err := r.client.NotificationAPI.CreateNotification(r.auth).NotificationResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, notificationGotifyResourceName, err))
 
@@ -256,7 +258,7 @@ func (r *NotificationGotifyResource) Read(ctx context.Context, req resource.Read
 	}
 
 	// Get NotificationGotify current value
-	response, _, err := r.client.NotificationAPI.GetNotificationById(ctx, int32(notification.ID.ValueInt64())).Execute()
+	response, _, err := r.client.NotificationAPI.GetNotificationById(r.auth, int32(notification.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, notificationGotifyResourceName, err))
 
@@ -282,7 +284,7 @@ func (r *NotificationGotifyResource) Update(ctx context.Context, req resource.Up
 	// Update NotificationGotify
 	request := notification.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.NotificationAPI.UpdateNotification(ctx, strconv.Itoa(int(request.GetId()))).NotificationResource(*request).Execute()
+	response, _, err := r.client.NotificationAPI.UpdateNotification(r.auth, strconv.Itoa(int(request.GetId()))).NotificationResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, notificationGotifyResourceName, err))
 
@@ -305,7 +307,7 @@ func (r *NotificationGotifyResource) Delete(ctx context.Context, req resource.De
 	}
 
 	// Delete NotificationGotify current value
-	_, err := r.client.NotificationAPI.DeleteNotification(ctx, int32(ID)).Execute()
+	_, err := r.client.NotificationAPI.DeleteNotification(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, notificationGotifyResourceName, err))
 

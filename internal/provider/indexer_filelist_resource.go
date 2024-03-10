@@ -36,6 +36,7 @@ func NewIndexerFilelistResource() resource.Resource {
 // IndexerFilelistResource defines the Filelist indexer implementation.
 type IndexerFilelistResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // IndexerFilelist describes the Filelist indexer data model.
@@ -207,8 +208,9 @@ func (r *IndexerFilelistResource) Schema(_ context.Context, _ resource.SchemaReq
 }
 
 func (r *IndexerFilelistResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -225,7 +227,7 @@ func (r *IndexerFilelistResource) Create(ctx context.Context, req resource.Creat
 	// Create new IndexerFilelist
 	request := indexer.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.IndexerAPI.CreateIndexer(ctx).IndexerResource(*request).Execute()
+	response, _, err := r.client.IndexerAPI.CreateIndexer(r.auth).IndexerResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, indexerFilelistResourceName, err))
 
@@ -249,7 +251,7 @@ func (r *IndexerFilelistResource) Read(ctx context.Context, req resource.ReadReq
 	}
 
 	// Get IndexerFilelist current value
-	response, _, err := r.client.IndexerAPI.GetIndexerById(ctx, int32(indexer.ID.ValueInt64())).Execute()
+	response, _, err := r.client.IndexerAPI.GetIndexerById(r.auth, int32(indexer.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, indexerFilelistResourceName, err))
 
@@ -275,7 +277,7 @@ func (r *IndexerFilelistResource) Update(ctx context.Context, req resource.Updat
 	// Update IndexerFilelist
 	request := indexer.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.IndexerAPI.UpdateIndexer(ctx, strconv.Itoa(int(request.GetId()))).IndexerResource(*request).Execute()
+	response, _, err := r.client.IndexerAPI.UpdateIndexer(r.auth, strconv.Itoa(int(request.GetId()))).IndexerResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, indexerFilelistResourceName, err))
 
@@ -298,7 +300,7 @@ func (r *IndexerFilelistResource) Delete(ctx context.Context, req resource.Delet
 	}
 
 	// Delete IndexerFilelist current value
-	_, err := r.client.IndexerAPI.DeleteIndexer(ctx, int32(ID)).Execute()
+	_, err := r.client.IndexerAPI.DeleteIndexer(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, indexerFilelistResourceName, err))
 

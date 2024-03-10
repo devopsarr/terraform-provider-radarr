@@ -27,6 +27,7 @@ func NewAutoTagConditionMonitoredDataSource() datasource.DataSource {
 // AutoTagConditionMonitoredDataSource defines the auto_tag_condition_genre implementation.
 type AutoTagConditionMonitoredDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *AutoTagConditionMonitoredDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -64,8 +65,9 @@ func (d *AutoTagConditionMonitoredDataSource) Schema(_ context.Context, _ dataso
 }
 
 func (d *AutoTagConditionMonitoredDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 

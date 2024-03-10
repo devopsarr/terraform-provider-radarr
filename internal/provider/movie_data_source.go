@@ -25,6 +25,7 @@ func NewMovieDataSource() datasource.DataSource {
 // MovieDataSource defines the movie implementation.
 type MovieDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *MovieDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -125,8 +126,9 @@ func (d *MovieDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, 
 }
 
 func (d *MovieDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
@@ -140,7 +142,7 @@ func (d *MovieDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	}
 
 	// Get movies current value
-	response, _, err := d.client.MovieAPI.ListMovie(ctx).Execute()
+	response, _, err := d.client.MovieAPI.ListMovie(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, movieDataSourceName, err))
 

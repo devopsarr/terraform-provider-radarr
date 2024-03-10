@@ -39,6 +39,7 @@ func NewImportListTMDBPopularResource() resource.Resource {
 // ImportListTMDBPopularResource defines the import list implementation.
 type ImportListTMDBPopularResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // ImportListTMDBPopular describes the import list data model.
@@ -219,8 +220,9 @@ func (r *ImportListTMDBPopularResource) Schema(_ context.Context, _ resource.Sch
 }
 
 func (r *ImportListTMDBPopularResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -237,7 +239,7 @@ func (r *ImportListTMDBPopularResource) Create(ctx context.Context, req resource
 	// Create new ImportListTMDBPopular
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListAPI.CreateImportList(ctx).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.CreateImportList(r.auth).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, importListTMDBPopularResourceName, err))
 
@@ -261,7 +263,7 @@ func (r *ImportListTMDBPopularResource) Read(ctx context.Context, req resource.R
 	}
 
 	// Get ImportListTMDBPopular current value
-	response, _, err := r.client.ImportListAPI.GetImportListById(ctx, int32(importList.ID.ValueInt64())).Execute()
+	response, _, err := r.client.ImportListAPI.GetImportListById(r.auth, int32(importList.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListTMDBPopularResourceName, err))
 
@@ -287,7 +289,7 @@ func (r *ImportListTMDBPopularResource) Update(ctx context.Context, req resource
 	// Update ImportListTMDBPopular
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListAPI.UpdateImportList(ctx, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.UpdateImportList(r.auth, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, importListTMDBPopularResourceName, err))
 
@@ -310,7 +312,7 @@ func (r *ImportListTMDBPopularResource) Delete(ctx context.Context, req resource
 	}
 
 	// Delete ImportListTMDBPopular current value
-	_, err := r.client.ImportListAPI.DeleteImportList(ctx, int32(ID)).Execute()
+	_, err := r.client.ImportListAPI.DeleteImportList(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListTMDBPopularResourceName, err))
 

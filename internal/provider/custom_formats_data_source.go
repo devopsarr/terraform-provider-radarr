@@ -24,6 +24,7 @@ func NewCustomFormatsDataSource() datasource.DataSource {
 // CustomFormatsDataSource defines the custom formats implementation.
 type CustomFormatsDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // CustomFormats describes the custom formats data model.
@@ -107,14 +108,15 @@ func (d *CustomFormatsDataSource) Schema(_ context.Context, _ datasource.SchemaR
 }
 
 func (d *CustomFormatsDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
 func (d *CustomFormatsDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get custom formatss current value
-	response, _, err := d.client.CustomFormatAPI.ListCustomFormat(ctx).Execute()
+	response, _, err := d.client.CustomFormatAPI.ListCustomFormat(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.List, customFormatsDataSourceName, err))
 

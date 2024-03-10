@@ -27,6 +27,7 @@ func NewCustomFormatConditionEditionDataSource() datasource.DataSource {
 // CustomFormatConditionEditionDataSource defines the custom format condition edition implementation.
 type CustomFormatConditionEditionDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *CustomFormatConditionEditionDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -69,8 +70,9 @@ func (d *CustomFormatConditionEditionDataSource) Schema(_ context.Context, _ dat
 }
 
 func (d *CustomFormatConditionEditionDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 

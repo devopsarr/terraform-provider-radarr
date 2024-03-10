@@ -34,6 +34,7 @@ func NewDelayProfileResource() resource.Resource {
 // DelayProfileResource defines the delay profile implementation.
 type DelayProfileResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // DelayProfile describes the delay profile data model.
@@ -127,8 +128,9 @@ func (r *DelayProfileResource) Schema(_ context.Context, _ resource.SchemaReques
 }
 
 func (r *DelayProfileResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -146,7 +148,7 @@ func (r *DelayProfileResource) Create(ctx context.Context, req resource.CreateRe
 	request := profile.read(ctx, &resp.Diagnostics)
 
 	// Create new DelayProfile
-	response, _, err := r.client.DelayProfileAPI.CreateDelayProfile(ctx).DelayProfileResource(*request).Execute()
+	response, _, err := r.client.DelayProfileAPI.CreateDelayProfile(r.auth).DelayProfileResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, delayProfileResourceName, err))
 
@@ -159,7 +161,7 @@ func (r *DelayProfileResource) Create(ctx context.Context, req resource.CreateRe
 	if !profile.Order.IsUnknown() {
 		response.Order = request.Order
 
-		response, _, err = r.client.DelayProfileAPI.UpdateDelayProfile(ctx, strconv.Itoa(int(response.GetId()))).DelayProfileResource(*response).Execute()
+		response, _, err = r.client.DelayProfileAPI.UpdateDelayProfile(r.auth, strconv.Itoa(int(response.GetId()))).DelayProfileResource(*response).Execute()
 		if err != nil {
 			resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, delayProfileResourceName, err))
 
@@ -183,7 +185,7 @@ func (r *DelayProfileResource) Read(ctx context.Context, req resource.ReadReques
 	}
 
 	// Get delayprofile current value
-	response, _, err := r.client.DelayProfileAPI.GetDelayProfileById(ctx, int32(profile.ID.ValueInt64())).Execute()
+	response, _, err := r.client.DelayProfileAPI.GetDelayProfileById(r.auth, int32(profile.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, delayProfileResourceName, err))
 
@@ -210,7 +212,7 @@ func (r *DelayProfileResource) Update(ctx context.Context, req resource.UpdateRe
 	request := profile.read(ctx, &resp.Diagnostics)
 
 	// Update DelayProfile
-	response, _, err := r.client.DelayProfileAPI.UpdateDelayProfile(ctx, strconv.Itoa(int(request.GetId()))).DelayProfileResource(*request).Execute()
+	response, _, err := r.client.DelayProfileAPI.UpdateDelayProfile(r.auth, strconv.Itoa(int(request.GetId()))).DelayProfileResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, delayProfileResourceName, err))
 
@@ -233,7 +235,7 @@ func (r *DelayProfileResource) Delete(ctx context.Context, req resource.DeleteRe
 	}
 
 	// Delete delayprofile current value
-	_, err := r.client.DelayProfileAPI.DeleteDelayProfile(ctx, int32(ID)).Execute()
+	_, err := r.client.DelayProfileAPI.DeleteDelayProfile(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, delayProfileResourceName, err))
 

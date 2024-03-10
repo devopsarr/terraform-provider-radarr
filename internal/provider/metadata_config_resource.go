@@ -32,6 +32,7 @@ func NewMetadataConfigResource() resource.Resource {
 // MetadataConfigResource defines the metadata config implementation.
 type MetadataConfigResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // MetadataConfig describes the metadata config data model.
@@ -67,8 +68,9 @@ func (r *MetadataConfigResource) Schema(_ context.Context, _ resource.SchemaRequ
 }
 
 func (r *MetadataConfigResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -87,7 +89,7 @@ func (r *MetadataConfigResource) Create(ctx context.Context, req resource.Create
 	request.SetId(1)
 
 	// Create new MetadataConfig
-	response, _, err := r.client.MetadataConfigAPI.UpdateMetadataConfig(ctx, strconv.Itoa(int(request.GetId()))).MetadataConfigResource(*request).Execute()
+	response, _, err := r.client.MetadataConfigAPI.UpdateMetadataConfig(r.auth, strconv.Itoa(int(request.GetId()))).MetadataConfigResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, metadataConfigResourceName, err))
 
@@ -111,7 +113,7 @@ func (r *MetadataConfigResource) Read(ctx context.Context, req resource.ReadRequ
 	}
 
 	// Get metadataConfig current value
-	response, _, err := r.client.MetadataConfigAPI.GetMetadataConfig(ctx).Execute()
+	response, _, err := r.client.MetadataConfigAPI.GetMetadataConfig(r.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, metadataConfigResourceName, err))
 
@@ -138,7 +140,7 @@ func (r *MetadataConfigResource) Update(ctx context.Context, req resource.Update
 	request := config.read()
 
 	// Update MetadataConfig
-	response, _, err := r.client.MetadataConfigAPI.UpdateMetadataConfig(ctx, strconv.Itoa(int(request.GetId()))).MetadataConfigResource(*request).Execute()
+	response, _, err := r.client.MetadataConfigAPI.UpdateMetadataConfig(r.auth, strconv.Itoa(int(request.GetId()))).MetadataConfigResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, metadataConfigResourceName, err))
 

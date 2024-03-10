@@ -35,6 +35,7 @@ func NewNotificationMailgunResource() resource.Resource {
 // NotificationMailgunResource defines the notification implementation.
 type NotificationMailgunResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // NotificationMailgun describes the notification data model.
@@ -226,8 +227,9 @@ func (r *NotificationMailgunResource) Schema(_ context.Context, _ resource.Schem
 }
 
 func (r *NotificationMailgunResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -244,7 +246,7 @@ func (r *NotificationMailgunResource) Create(ctx context.Context, req resource.C
 	// Create new NotificationMailgun
 	request := notification.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.NotificationAPI.CreateNotification(ctx).NotificationResource(*request).Execute()
+	response, _, err := r.client.NotificationAPI.CreateNotification(r.auth).NotificationResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, notificationMailgunResourceName, err))
 
@@ -268,7 +270,7 @@ func (r *NotificationMailgunResource) Read(ctx context.Context, req resource.Rea
 	}
 
 	// Get NotificationMailgun current value
-	response, _, err := r.client.NotificationAPI.GetNotificationById(ctx, int32(notification.ID.ValueInt64())).Execute()
+	response, _, err := r.client.NotificationAPI.GetNotificationById(r.auth, int32(notification.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, notificationMailgunResourceName, err))
 
@@ -294,7 +296,7 @@ func (r *NotificationMailgunResource) Update(ctx context.Context, req resource.U
 	// Update NotificationMailgun
 	request := notification.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.NotificationAPI.UpdateNotification(ctx, strconv.Itoa(int(request.GetId()))).NotificationResource(*request).Execute()
+	response, _, err := r.client.NotificationAPI.UpdateNotification(r.auth, strconv.Itoa(int(request.GetId()))).NotificationResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, notificationMailgunResourceName, err))
 
@@ -317,7 +319,7 @@ func (r *NotificationMailgunResource) Delete(ctx context.Context, req resource.D
 	}
 
 	// Delete NotificationMailgun current value
-	_, err := r.client.NotificationAPI.DeleteNotification(ctx, int32(ID)).Execute()
+	_, err := r.client.NotificationAPI.DeleteNotification(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, notificationMailgunResourceName, err))
 

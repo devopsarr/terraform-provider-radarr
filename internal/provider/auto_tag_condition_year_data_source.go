@@ -27,6 +27,7 @@ func NewAutoTagConditionYearDataSource() datasource.DataSource {
 // AutoTagConditionYearDataSource defines the auto_tag_condition_series type implementation.
 type AutoTagConditionYearDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *AutoTagConditionYearDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -73,8 +74,9 @@ func (d *AutoTagConditionYearDataSource) Schema(_ context.Context, _ datasource.
 }
 
 func (d *AutoTagConditionYearDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 

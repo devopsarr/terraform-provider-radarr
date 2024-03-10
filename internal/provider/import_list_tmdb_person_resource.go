@@ -38,6 +38,7 @@ func NewImportListTMDBPersonResource() resource.Resource {
 // ImportListTMDBPersonResource defines the import list implementation.
 type ImportListTMDBPersonResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // ImportListTMDBPerson describes the import list data model.
@@ -208,8 +209,9 @@ func (r *ImportListTMDBPersonResource) Schema(_ context.Context, _ resource.Sche
 }
 
 func (r *ImportListTMDBPersonResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -226,7 +228,7 @@ func (r *ImportListTMDBPersonResource) Create(ctx context.Context, req resource.
 	// Create new ImportListTMDBPerson
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListAPI.CreateImportList(ctx).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.CreateImportList(r.auth).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, importListTMDBPersonResourceName, err))
 
@@ -250,7 +252,7 @@ func (r *ImportListTMDBPersonResource) Read(ctx context.Context, req resource.Re
 	}
 
 	// Get ImportListTMDBPerson current value
-	response, _, err := r.client.ImportListAPI.GetImportListById(ctx, int32(importList.ID.ValueInt64())).Execute()
+	response, _, err := r.client.ImportListAPI.GetImportListById(r.auth, int32(importList.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListTMDBPersonResourceName, err))
 
@@ -276,7 +278,7 @@ func (r *ImportListTMDBPersonResource) Update(ctx context.Context, req resource.
 	// Update ImportListTMDBPerson
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListAPI.UpdateImportList(ctx, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.UpdateImportList(r.auth, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, importListTMDBPersonResourceName, err))
 
@@ -299,7 +301,7 @@ func (r *ImportListTMDBPersonResource) Delete(ctx context.Context, req resource.
 	}
 
 	// Delete ImportListTMDBPerson current value
-	_, err := r.client.ImportListAPI.DeleteImportList(ctx, int32(ID)).Execute()
+	_, err := r.client.ImportListAPI.DeleteImportList(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListTMDBPersonResourceName, err))
 

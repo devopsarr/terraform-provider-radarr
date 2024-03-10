@@ -36,6 +36,7 @@ func NewIndexerNyaaResource() resource.Resource {
 // IndexerNyaaResource defines the Nyaa indexer implementation.
 type IndexerNyaaResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // IndexerNyaa describes the Nyaa indexer data model.
@@ -190,8 +191,9 @@ func (r *IndexerNyaaResource) Schema(_ context.Context, _ resource.SchemaRequest
 }
 
 func (r *IndexerNyaaResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -208,7 +210,7 @@ func (r *IndexerNyaaResource) Create(ctx context.Context, req resource.CreateReq
 	// Create new IndexerNyaa
 	request := indexer.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.IndexerAPI.CreateIndexer(ctx).IndexerResource(*request).Execute()
+	response, _, err := r.client.IndexerAPI.CreateIndexer(r.auth).IndexerResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, indexerNyaaResourceName, err))
 
@@ -232,7 +234,7 @@ func (r *IndexerNyaaResource) Read(ctx context.Context, req resource.ReadRequest
 	}
 
 	// Get IndexerNyaa current value
-	response, _, err := r.client.IndexerAPI.GetIndexerById(ctx, int32(indexer.ID.ValueInt64())).Execute()
+	response, _, err := r.client.IndexerAPI.GetIndexerById(r.auth, int32(indexer.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, indexerNyaaResourceName, err))
 
@@ -258,7 +260,7 @@ func (r *IndexerNyaaResource) Update(ctx context.Context, req resource.UpdateReq
 	// Update IndexerNyaa
 	request := indexer.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.IndexerAPI.UpdateIndexer(ctx, strconv.Itoa(int(request.GetId()))).IndexerResource(*request).Execute()
+	response, _, err := r.client.IndexerAPI.UpdateIndexer(r.auth, strconv.Itoa(int(request.GetId()))).IndexerResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, indexerNyaaResourceName, err))
 
@@ -281,7 +283,7 @@ func (r *IndexerNyaaResource) Delete(ctx context.Context, req resource.DeleteReq
 	}
 
 	// Delete IndexerNyaa current value
-	_, err := r.client.IndexerAPI.DeleteIndexer(ctx, int32(ID)).Execute()
+	_, err := r.client.IndexerAPI.DeleteIndexer(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, indexerNyaaResourceName, err))
 

@@ -38,6 +38,7 @@ func NewImportListRSSResource() resource.Resource {
 // ImportListRSSResource defines the import list implementation.
 type ImportListRSSResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // ImportListRSS describes the import list data model.
@@ -168,8 +169,9 @@ func (r *ImportListRSSResource) Schema(_ context.Context, _ resource.SchemaReque
 }
 
 func (r *ImportListRSSResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -186,7 +188,7 @@ func (r *ImportListRSSResource) Create(ctx context.Context, req resource.CreateR
 	// Create new ImportListRSS
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListAPI.CreateImportList(ctx).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.CreateImportList(r.auth).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, importListRSSResourceName, err))
 
@@ -210,7 +212,7 @@ func (r *ImportListRSSResource) Read(ctx context.Context, req resource.ReadReque
 	}
 
 	// Get ImportListRSS current value
-	response, _, err := r.client.ImportListAPI.GetImportListById(ctx, int32(importList.ID.ValueInt64())).Execute()
+	response, _, err := r.client.ImportListAPI.GetImportListById(r.auth, int32(importList.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListRSSResourceName, err))
 
@@ -236,7 +238,7 @@ func (r *ImportListRSSResource) Update(ctx context.Context, req resource.UpdateR
 	// Update ImportListRSS
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListAPI.UpdateImportList(ctx, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.UpdateImportList(r.auth, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, importListRSSResourceName, err))
 
@@ -259,7 +261,7 @@ func (r *ImportListRSSResource) Delete(ctx context.Context, req resource.DeleteR
 	}
 
 	// Delete ImportListRSS current value
-	_, err := r.client.ImportListAPI.DeleteImportList(ctx, int32(ID)).Execute()
+	_, err := r.client.ImportListAPI.DeleteImportList(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListRSSResourceName, err))
 

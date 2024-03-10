@@ -22,6 +22,7 @@ func NewImportListConfigDataSource() datasource.DataSource {
 // ImportListConfigDataSource defines the import list config implementation.
 type ImportListConfigDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *ImportListConfigDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -46,14 +47,15 @@ func (d *ImportListConfigDataSource) Schema(_ context.Context, _ datasource.Sche
 }
 
 func (d *ImportListConfigDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
 func (d *ImportListConfigDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get indexer config current value
-	response, _, err := d.client.ImportListConfigAPI.GetImportListConfig(ctx).Execute()
+	response, _, err := d.client.ImportListConfigAPI.GetImportListConfig(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListConfigDataSourceName, err))
 

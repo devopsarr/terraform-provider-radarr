@@ -36,6 +36,7 @@ func NewDownloadClientUsenetDownloadStationResource() resource.Resource {
 // DownloadClientUsenetDownloadStationResource defines the download client implementation.
 type DownloadClientUsenetDownloadStationResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // DownloadClientUsenetDownloadStation describes the download client data model.
@@ -166,8 +167,9 @@ func (r *DownloadClientUsenetDownloadStationResource) Schema(_ context.Context, 
 }
 
 func (r *DownloadClientUsenetDownloadStationResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -184,7 +186,7 @@ func (r *DownloadClientUsenetDownloadStationResource) Create(ctx context.Context
 	// Create new DownloadClientUsenetDownloadStation
 	request := client.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.DownloadClientAPI.CreateDownloadClient(ctx).DownloadClientResource(*request).Execute()
+	response, _, err := r.client.DownloadClientAPI.CreateDownloadClient(r.auth).DownloadClientResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, downloadClientUsenetDownloadStationResourceName, err))
 
@@ -208,7 +210,7 @@ func (r *DownloadClientUsenetDownloadStationResource) Read(ctx context.Context, 
 	}
 
 	// Get DownloadClientUsenetDownloadStation current value
-	response, _, err := r.client.DownloadClientAPI.GetDownloadClientById(ctx, int32(client.ID.ValueInt64())).Execute()
+	response, _, err := r.client.DownloadClientAPI.GetDownloadClientById(r.auth, int32(client.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, downloadClientUsenetDownloadStationResourceName, err))
 
@@ -234,7 +236,7 @@ func (r *DownloadClientUsenetDownloadStationResource) Update(ctx context.Context
 	// Update DownloadClientUsenetDownloadStation
 	request := client.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.DownloadClientAPI.UpdateDownloadClient(ctx, strconv.Itoa(int(request.GetId()))).DownloadClientResource(*request).Execute()
+	response, _, err := r.client.DownloadClientAPI.UpdateDownloadClient(r.auth, strconv.Itoa(int(request.GetId()))).DownloadClientResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, downloadClientUsenetDownloadStationResourceName, err))
 
@@ -257,7 +259,7 @@ func (r *DownloadClientUsenetDownloadStationResource) Delete(ctx context.Context
 	}
 
 	// Delete DownloadClientUsenetDownloadStation current value
-	_, err := r.client.DownloadClientAPI.DeleteDownloadClient(ctx, int32(ID)).Execute()
+	_, err := r.client.DownloadClientAPI.DeleteDownloadClient(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, downloadClientUsenetDownloadStationResourceName, err))
 

@@ -27,6 +27,7 @@ func NewCustomFormatConditionQualityModifierDataSource() datasource.DataSource {
 // CustomFormatConditionQualityModifierDataSource defines the custom_format_condition_quality_modifier implementation.
 type CustomFormatConditionQualityModifierDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 func (d *CustomFormatConditionQualityModifierDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -69,8 +70,9 @@ func (d *CustomFormatConditionQualityModifierDataSource) Schema(_ context.Contex
 }
 
 func (d *CustomFormatConditionQualityModifierDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 

@@ -39,6 +39,7 @@ func NewImportListStevenlu2Resource() resource.Resource {
 // ImportListStevenlu2Resource defines the import list implementation.
 type ImportListStevenlu2Resource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // ImportListStevenlu2 describes the import list data model.
@@ -179,8 +180,9 @@ func (r *ImportListStevenlu2Resource) Schema(_ context.Context, _ resource.Schem
 }
 
 func (r *ImportListStevenlu2Resource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -197,7 +199,7 @@ func (r *ImportListStevenlu2Resource) Create(ctx context.Context, req resource.C
 	// Create new ImportListStevenlu2
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListAPI.CreateImportList(ctx).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.CreateImportList(r.auth).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, importListStevenlu2ResourceName, err))
 
@@ -221,7 +223,7 @@ func (r *ImportListStevenlu2Resource) Read(ctx context.Context, req resource.Rea
 	}
 
 	// Get ImportListStevenlu2 current value
-	response, _, err := r.client.ImportListAPI.GetImportListById(ctx, int32(importList.ID.ValueInt64())).Execute()
+	response, _, err := r.client.ImportListAPI.GetImportListById(r.auth, int32(importList.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListStevenlu2ResourceName, err))
 
@@ -247,7 +249,7 @@ func (r *ImportListStevenlu2Resource) Update(ctx context.Context, req resource.U
 	// Update ImportListStevenlu2
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListAPI.UpdateImportList(ctx, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.UpdateImportList(r.auth, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, importListStevenlu2ResourceName, err))
 
@@ -270,7 +272,7 @@ func (r *ImportListStevenlu2Resource) Delete(ctx context.Context, req resource.D
 	}
 
 	// Delete ImportListStevenlu2 current value
-	_, err := r.client.ImportListAPI.DeleteImportList(ctx, int32(ID)).Execute()
+	_, err := r.client.ImportListAPI.DeleteImportList(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListStevenlu2ResourceName, err))
 

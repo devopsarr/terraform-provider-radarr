@@ -37,6 +37,7 @@ func NewMetadataResource() resource.Resource {
 // MetadataResource defines the metadata implementation.
 type MetadataResource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // Metadata describes the metadata data model.
@@ -147,8 +148,9 @@ func (r *MetadataResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 }
 
 func (r *MetadataResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	if client := helpers.ResourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := resourceConfigure(ctx, req, resp); client != nil {
 		r.client = client
+		r.auth = auth
 	}
 }
 
@@ -165,7 +167,7 @@ func (r *MetadataResource) Create(ctx context.Context, req resource.CreateReques
 	// Create new Metadata
 	request := metadata.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.MetadataAPI.CreateMetadata(ctx).MetadataResource(*request).Execute()
+	response, _, err := r.client.MetadataAPI.CreateMetadata(r.auth).MetadataResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, metadataResourceName, err))
 
@@ -192,7 +194,7 @@ func (r *MetadataResource) Read(ctx context.Context, req resource.ReadRequest, r
 	}
 
 	// Get Metadata current value
-	response, _, err := r.client.MetadataAPI.GetMetadataById(ctx, int32(metadata.ID.ValueInt64())).Execute()
+	response, _, err := r.client.MetadataAPI.GetMetadataById(r.auth, int32(metadata.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, metadataResourceName, err))
 
@@ -221,7 +223,7 @@ func (r *MetadataResource) Update(ctx context.Context, req resource.UpdateReques
 	// Update Metadata
 	request := metadata.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.MetadataAPI.UpdateMetadata(ctx, strconv.Itoa(int(request.GetId()))).MetadataResource(*request).Execute()
+	response, _, err := r.client.MetadataAPI.UpdateMetadata(r.auth, strconv.Itoa(int(request.GetId()))).MetadataResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, metadataResourceName, err))
 
@@ -247,7 +249,7 @@ func (r *MetadataResource) Delete(ctx context.Context, req resource.DeleteReques
 	}
 
 	// Delete Metadata current value
-	_, err := r.client.MetadataAPI.DeleteMetadata(ctx, int32(ID)).Execute()
+	_, err := r.client.MetadataAPI.DeleteMetadata(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, metadataResourceName, err))
 

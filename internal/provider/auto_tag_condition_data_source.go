@@ -32,6 +32,7 @@ func NewAutoTagConditionDataSource() datasource.DataSource {
 // AutoTagConditionDataSource defines the auto tag condition implementation.
 type AutoTagConditionDataSource struct {
 	client *radarr.APIClient
+	auth   context.Context
 }
 
 // AutoTagCondition describes the auto tag condition data model.
@@ -109,8 +110,9 @@ func (d *AutoTagConditionDataSource) Schema(_ context.Context, _ datasource.Sche
 }
 
 func (d *AutoTagConditionDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	if client := helpers.DataSourceConfigure(ctx, req, resp); client != nil {
+	if auth, client := dataSourceConfigure(ctx, req, resp); client != nil {
 		d.client = client
+		d.auth = auth
 	}
 }
 
