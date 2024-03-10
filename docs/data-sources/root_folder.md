@@ -3,7 +3,7 @@
 page_title: "radarr_root_folder Data Source - terraform-provider-radarr"
 subcategory: "Media Management"
 description: |-
-  Single Root Folder ../resources/root_folder.
+  
 ---
 
 # radarr_root_folder (Data Source)
@@ -38,5 +38,3 @@ Read-Only:
 
 - `name` (String) Name of unmapped folder.
 - `path` (String) Path of unmapped folder.
-
-

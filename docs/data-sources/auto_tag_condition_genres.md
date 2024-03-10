@@ -3,7 +3,6 @@
 page_title: "radarr_auto_tag_condition_genres Data Source - terraform-provider-radarr"
 subcategory: "Tags"
 description: |-
-  Auto Tag Condition Genres data source.
   For more intagion refer to Auto Tag Conditions https://wiki.servarr.com/radarr/settings#conditions.
 ---
 
@@ -28,5 +27,3 @@ For more intagion refer to [Auto Tag Conditions](https://wiki.servarr.com/radarr
 
 - `id` (Number) Auto tag condition series type ID.
 - `implementation` (String) Implementation.
-
-

@@ -3,7 +3,6 @@
 page_title: "radarr_system_status Data Source - terraform-provider-radarr"
 subcategory: "System"
 description: |-
-  System Status resource. User must have rights to read config.xml.
   For more information refer to System Status https://wiki.servarr.com/radarr/system#status documentation.
 ---
 
@@ -54,5 +53,3 @@ data "radarr_system_status" "example" {
 - `startup_path` (String) Startup path.
 - `url_base` (String) Base URL.
 - `version` (String) Version.
-
-

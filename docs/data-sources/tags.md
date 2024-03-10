@@ -3,7 +3,7 @@
 page_title: "radarr_tags Data Source - terraform-provider-radarr"
 subcategory: "Tags"
 description: |-
-  List all available Tags ../resources/tag.
+  
 ---
 
 # radarr_tags (Data Source)
@@ -32,5 +32,3 @@ Read-Only:
 
 - `id` (Number) Tag ID.
 - `label` (String) Tag label.
-
-

@@ -37,20 +37,12 @@ func (d *NamingDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 				MarkdownDescription: "Delay Profile ID.",
 				Computed:            true,
 			},
-			"include_quality": schema.BoolAttribute{
-				MarkdownDescription: "Include quality in file name.",
-				Computed:            true,
-			},
 			"rename_movies": schema.BoolAttribute{
 				MarkdownDescription: "Radarr will use the existing file name if false.",
 				Computed:            true,
 			},
 			"replace_illegal_characters": schema.BoolAttribute{
 				MarkdownDescription: "Replace illegal characters. They will be removed if false.",
-				Computed:            true,
-			},
-			"replace_spaces": schema.BoolAttribute{
-				MarkdownDescription: "Replace spaces.",
 				Computed:            true,
 			},
 			"colon_replacement_format": schema.StringAttribute{
@@ -77,7 +69,7 @@ func (d *NamingDataSource) Configure(ctx context.Context, req datasource.Configu
 
 func (d *NamingDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get naming current value
-	response, _, err := d.client.NamingConfigApi.GetNamingConfig(ctx).Execute()
+	response, _, err := d.client.NamingConfigAPI.GetNamingConfig(ctx).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, namingDataSourceName, err))
 

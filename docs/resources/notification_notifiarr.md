@@ -3,7 +3,6 @@
 page_title: "radarr_notification_notifiarr Resource - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
-  Notification Notifiarr resource.
   For more information refer to Notification https://wiki.servarr.com/radarr/settings#connect and Notifiarr https://wiki.servarr.com/radarr/supported#notifiarr.
 ---
 

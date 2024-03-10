@@ -3,7 +3,6 @@
 page_title: "radarr_import_list_radarr Resource - terraform-provider-radarr"
 subcategory: "Import Lists"
 description: |-
-  Import List Radarr resource.
   For more information refer to Import List https://wiki.servarr.com/radarr/settings#import-lists and Radarr https://wiki.servarr.com/radarr/supported#radarrimport.
 ---
 

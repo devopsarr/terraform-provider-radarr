@@ -221,7 +221,7 @@ func (r *MovieResource) Create(ctx context.Context, req resource.CreateRequest, 
 	options.SetMonitor(radarr.MONITORTYPES_MOVIE_ONLY)
 	options.SetSearchForMovie(true)
 
-	response, _, err := r.client.MovieApi.CreateMovie(ctx).MovieResource(*request).Execute()
+	response, _, err := r.client.MovieAPI.CreateMovie(ctx).MovieResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, movieResourceName, err))
 
@@ -245,7 +245,7 @@ func (r *MovieResource) Read(ctx context.Context, req resource.ReadRequest, resp
 	}
 
 	// Get movie current value
-	response, _, err := r.client.MovieApi.GetMovieById(ctx, int32(movie.ID.ValueInt64())).Execute()
+	response, _, err := r.client.MovieAPI.GetMovieById(ctx, int32(movie.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, movieResourceName, err))
 
@@ -271,7 +271,7 @@ func (r *MovieResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	// Update Movie
 	request := movie.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.MovieApi.UpdateMovie(ctx, fmt.Sprint(request.GetId())).MovieResource(*request).Execute()
+	response, _, err := r.client.MovieAPI.UpdateMovie(ctx, fmt.Sprint(request.GetId())).MovieResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, movieResourceName, err))
 
@@ -294,7 +294,7 @@ func (r *MovieResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 	}
 
 	// Delete movie current value
-	_, err := r.client.MovieApi.DeleteMovie(ctx, int32(ID)).Execute()
+	_, err := r.client.MovieAPI.DeleteMovie(ctx, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, movieResourceName, err))
 

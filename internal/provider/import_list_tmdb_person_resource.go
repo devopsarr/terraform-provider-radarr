@@ -226,7 +226,7 @@ func (r *ImportListTMDBPersonResource) Create(ctx context.Context, req resource.
 	// Create new ImportListTMDBPerson
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListApi.CreateImportList(ctx).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.CreateImportList(ctx).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, importListTMDBPersonResourceName, err))
 
@@ -250,7 +250,7 @@ func (r *ImportListTMDBPersonResource) Read(ctx context.Context, req resource.Re
 	}
 
 	// Get ImportListTMDBPerson current value
-	response, _, err := r.client.ImportListApi.GetImportListById(ctx, int32(importList.ID.ValueInt64())).Execute()
+	response, _, err := r.client.ImportListAPI.GetImportListById(ctx, int32(importList.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListTMDBPersonResourceName, err))
 
@@ -276,7 +276,7 @@ func (r *ImportListTMDBPersonResource) Update(ctx context.Context, req resource.
 	// Update ImportListTMDBPerson
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListApi.UpdateImportList(ctx, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.UpdateImportList(ctx, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, importListTMDBPersonResourceName, err))
 
@@ -299,7 +299,7 @@ func (r *ImportListTMDBPersonResource) Delete(ctx context.Context, req resource.
 	}
 
 	// Delete ImportListTMDBPerson current value
-	_, err := r.client.ImportListApi.DeleteImportList(ctx, int32(ID)).Execute()
+	_, err := r.client.ImportListAPI.DeleteImportList(ctx, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListTMDBPersonResourceName, err))
 

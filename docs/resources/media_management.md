@@ -3,7 +3,6 @@
 page_title: "radarr_media_management Resource - terraform-provider-radarr"
 subcategory: "Media Management"
 description: |-
-  Media Management resource.
   For more information refer to Naming https://wiki.servarr.com/radarr/settings#file-management documentation.
 ---
 

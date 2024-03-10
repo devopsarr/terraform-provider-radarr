@@ -186,7 +186,7 @@ func (r *ImportListTMDBCompanyResource) Create(ctx context.Context, req resource
 	// Create new ImportListTMDBCompany
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListApi.CreateImportList(ctx).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.CreateImportList(ctx).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, importListTMDBCompanyResourceName, err))
 
@@ -210,7 +210,7 @@ func (r *ImportListTMDBCompanyResource) Read(ctx context.Context, req resource.R
 	}
 
 	// Get ImportListTMDBCompany current value
-	response, _, err := r.client.ImportListApi.GetImportListById(ctx, int32(importList.ID.ValueInt64())).Execute()
+	response, _, err := r.client.ImportListAPI.GetImportListById(ctx, int32(importList.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListTMDBCompanyResourceName, err))
 
@@ -236,7 +236,7 @@ func (r *ImportListTMDBCompanyResource) Update(ctx context.Context, req resource
 	// Update ImportListTMDBCompany
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListApi.UpdateImportList(ctx, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.UpdateImportList(ctx, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, importListTMDBCompanyResourceName, err))
 
@@ -259,7 +259,7 @@ func (r *ImportListTMDBCompanyResource) Delete(ctx context.Context, req resource
 	}
 
 	// Delete ImportListTMDBCompany current value
-	_, err := r.client.ImportListApi.DeleteImportList(ctx, int32(ID)).Execute()
+	_, err := r.client.ImportListAPI.DeleteImportList(ctx, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListTMDBCompanyResourceName, err))
 

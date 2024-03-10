@@ -3,7 +3,6 @@
 page_title: "radarr_download_client_torrent_download_station Resource - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
-  Download Client TorrentDownloadStation resource.
   For more information refer to Download Client https://wiki.servarr.com/radarr/settings#download-clients and TorrentDownloadStation https://wiki.servarr.com/radarr/supported#torrentdownloadstation.
 ---
 

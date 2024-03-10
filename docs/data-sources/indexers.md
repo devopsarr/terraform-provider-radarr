@@ -3,7 +3,7 @@
 page_title: "radarr_indexers Data Source - terraform-provider-radarr"
 subcategory: "Indexers"
 description: |-
-  List all available Indexers ../resources/indexer.
+  
 ---
 
 # radarr_indexers (Data Source)
@@ -63,5 +63,3 @@ Read-Only:
 - `tags` (Set of Number) List of associated tags.
 - `user` (String) Username.
 - `username` (String) Username.
-
-

@@ -3,7 +3,7 @@
 page_title: "radarr_delay_profile Data Source - terraform-provider-radarr"
 subcategory: "Profiles"
 description: |-
-  Single Delay Profile ../resources/delay_profile.
+  
 ---
 
 # radarr_delay_profile (Data Source)
@@ -35,5 +35,3 @@ data "radarr_delay_profile" "example" {
 - `tags` (Set of Number) List of associated tags.
 - `torrent_delay` (Number) Torrent Delay.
 - `usenet_delay` (Number) Usenet delay.
-
-

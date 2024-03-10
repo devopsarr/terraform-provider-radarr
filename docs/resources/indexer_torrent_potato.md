@@ -3,7 +3,6 @@
 page_title: "radarr_indexer_torrent_potato Resource - terraform-provider-radarr"
 subcategory: "Indexers"
 description: |-
-  Indexer TorrentPotato resource.
   For more information refer to Indexer https://wiki.servarr.com/radarr/settings#indexers and TorrentPotato https://wiki.servarr.com/radarr/supported#torrentpotato.
 ---
 

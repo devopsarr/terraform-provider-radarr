@@ -3,7 +3,6 @@
 page_title: "radarr_host Resource - terraform-provider-radarr"
 subcategory: "System"
 description: |-
-  Host resource.
   For more information refer to Host https://wiki.servarr.com/radarr/settings#general documentation.
 ---
 

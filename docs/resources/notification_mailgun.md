@@ -3,7 +3,6 @@
 page_title: "radarr_notification_mailgun Resource - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
-  Notification Mailgun resource.
   For more information refer to Notification https://wiki.servarr.com/radarr/settings#connect and Mailgun https://wiki.servarr.com/radarr/supported#mailgun.
 ---
 

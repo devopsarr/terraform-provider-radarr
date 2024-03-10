@@ -40,10 +40,8 @@ type Naming struct {
 	StandardMovieFormat      types.String `tfsdk:"standard_movie_format"`
 	MovieFolderFormat        types.String `tfsdk:"movie_folder_format"`
 	ID                       types.Int64  `tfsdk:"id"`
-	IncludeQuality           types.Bool   `tfsdk:"include_quality"`
 	RenameMovies             types.Bool   `tfsdk:"rename_movies"`
 	ReplaceIllegalCharacters types.Bool   `tfsdk:"replace_illegal_characters"`
-	ReplaceSpaces            types.Bool   `tfsdk:"replace_spaces"`
 }
 
 func (r *NamingResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -61,20 +59,12 @@ func (r *NamingResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 					int64planmodifier.UseStateForUnknown(),
 				},
 			},
-			"include_quality": schema.BoolAttribute{
-				MarkdownDescription: "Include quality in file name.",
-				Required:            true,
-			},
 			"rename_movies": schema.BoolAttribute{
 				MarkdownDescription: "Radarr will use the existing file name if false.",
 				Required:            true,
 			},
 			"replace_illegal_characters": schema.BoolAttribute{
 				MarkdownDescription: "Replace illegal characters. They will be removed if false.",
-				Required:            true,
-			},
-			"replace_spaces": schema.BoolAttribute{
-				MarkdownDescription: "Replace spaces.",
 				Required:            true,
 			},
 			"colon_replacement_format": schema.StringAttribute{
@@ -113,7 +103,7 @@ func (r *NamingResource) Create(ctx context.Context, req resource.CreateRequest,
 	}
 
 	// Init call if we remove this it the very first update on a brand new instance will fail
-	if _, _, err := r.client.NamingConfigApi.GetNamingConfig(ctx).Execute(); err != nil {
+	if _, _, err := r.client.NamingConfigAPI.GetNamingConfig(ctx).Execute(); err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, namingResourceName, err))
 
 		return
@@ -124,7 +114,7 @@ func (r *NamingResource) Create(ctx context.Context, req resource.CreateRequest,
 	request.SetId(1)
 
 	// Create new Naming
-	response, _, err := r.client.NamingConfigApi.UpdateNamingConfig(ctx, strconv.Itoa(int(request.GetId()))).NamingConfigResource(*request).Execute()
+	response, _, err := r.client.NamingConfigAPI.UpdateNamingConfig(ctx, strconv.Itoa(int(request.GetId()))).NamingConfigResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, namingResourceName, err))
 
@@ -148,7 +138,7 @@ func (r *NamingResource) Read(ctx context.Context, req resource.ReadRequest, res
 	}
 
 	// Get naming current value
-	response, _, err := r.client.NamingConfigApi.GetNamingConfig(ctx).Execute()
+	response, _, err := r.client.NamingConfigAPI.GetNamingConfig(ctx).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, namingResourceName, err))
 
@@ -175,7 +165,7 @@ func (r *NamingResource) Update(ctx context.Context, req resource.UpdateRequest,
 	request := naming.read()
 
 	// Update Naming
-	response, _, err := r.client.NamingConfigApi.UpdateNamingConfig(ctx, strconv.Itoa(int(request.GetId()))).NamingConfigResource(*request).Execute()
+	response, _, err := r.client.NamingConfigAPI.UpdateNamingConfig(ctx, strconv.Itoa(int(request.GetId()))).NamingConfigResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, namingResourceName, err))
 
@@ -200,10 +190,8 @@ func (r *NamingResource) ImportState(ctx context.Context, _ resource.ImportState
 }
 
 func (n *Naming) write(naming *radarr.NamingConfigResource) {
-	n.IncludeQuality = types.BoolValue(naming.GetIncludeQuality())
 	n.RenameMovies = types.BoolValue(naming.GetRenameMovies())
 	n.ReplaceIllegalCharacters = types.BoolValue(naming.GetReplaceIllegalCharacters())
-	n.ReplaceSpaces = types.BoolValue(naming.GetReplaceSpaces())
 	n.ID = types.Int64Value(int64(naming.GetId()))
 	n.ColonReplacementFormat = types.StringValue(string(naming.GetColonReplacementFormat()))
 	n.StandardMovieFormat = types.StringValue(naming.GetStandardMovieFormat())
@@ -214,11 +202,9 @@ func (n *Naming) read() *radarr.NamingConfigResource {
 	naming := radarr.NewNamingConfigResource()
 	naming.SetColonReplacementFormat(radarr.ColonReplacementFormat(n.ColonReplacementFormat.ValueString()))
 	naming.SetId(int32(n.ID.ValueInt64()))
-	naming.SetIncludeQuality(n.IncludeQuality.ValueBool())
 	naming.SetMovieFolderFormat(n.MovieFolderFormat.ValueString())
 	naming.SetRenameMovies(n.RenameMovies.ValueBool())
 	naming.SetReplaceIllegalCharacters(n.ReplaceIllegalCharacters.ValueBool())
-	naming.SetReplaceSpaces(n.ReplaceSpaces.ValueBool())
 	naming.SetStandardMovieFormat(n.StandardMovieFormat.ValueString())
 
 	return naming

@@ -3,7 +3,6 @@
 page_title: "radarr_download_client_torrent_blackhole Resource - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
-  Download Client Torrent Blackhole resource.
   For more information refer to Download Client https://wiki.servarr.com/radarr/settings#download-clients and TorrentBlackhole https://wiki.servarr.com/radarr/supported#torrentblackhole.
 ---
 

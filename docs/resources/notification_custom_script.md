@@ -3,7 +3,6 @@
 page_title: "radarr_notification_custom_script Resource - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
-  Notification Custom Script resource.
   For more information refer to Notification https://wiki.servarr.com/radarr/settings#connect and Custom Script https://wiki.servarr.com/radarr/supported#customscript.
 ---
 

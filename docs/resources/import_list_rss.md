@@ -3,7 +3,6 @@
 page_title: "radarr_import_list_rss Resource - terraform-provider-radarr"
 subcategory: "Import Lists"
 description: |-
-  Import List RSS resource.
   For more information refer to Import List https://wiki.servarr.com/radarr/settings#import-lists and RSS https://wiki.servarr.com/radarr/supported#rssimport.
 ---
 

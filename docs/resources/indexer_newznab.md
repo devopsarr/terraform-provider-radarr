@@ -3,7 +3,6 @@
 page_title: "radarr_indexer_newznab Resource - terraform-provider-radarr"
 subcategory: "Indexers"
 description: |-
-  Indexer Newznab resource.
   For more information refer to Indexer https://wiki.servarr.com/radarr/settings#indexers and Newznab https://wiki.servarr.com/radarr/supported#newznab.
 ---
 

@@ -3,7 +3,6 @@
 page_title: "radarr_custom_format Resource - terraform-provider-radarr"
 subcategory: "Profiles"
 description: |-
-  Custom Format resource.
   For more information refer to Custom Format https://wiki.servarr.com/radarr/settings#custom-formats.
 ---
 

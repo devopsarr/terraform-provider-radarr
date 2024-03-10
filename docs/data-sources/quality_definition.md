@@ -3,7 +3,7 @@
 page_title: "radarr_quality_definition Data Source - terraform-provider-radarr"
 subcategory: "Profiles"
 description: |-
-  Single Quality Definition ../resources/quality_definition.
+  
 ---
 
 # radarr_quality_definition (Data Source)
@@ -38,5 +38,3 @@ data "radarr_quality_definition" "example" {
 - `resolution` (Number) Quality Resolution.
 - `source` (String) Quality source.
 - `title` (String) Quality Definition Title.
-
-

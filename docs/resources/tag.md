@@ -3,7 +3,6 @@
 page_title: "radarr_tag Resource - terraform-provider-radarr"
 subcategory: "Tags"
 description: |-
-  Tag resource.
   For more information refer to Tags https://wiki.servarr.com/radarr/settings#tags documentation.
 ---
 

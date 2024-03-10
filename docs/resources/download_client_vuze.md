@@ -3,7 +3,6 @@
 page_title: "radarr_download_client_vuze Resource - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
-  Download Client Vuze resource.
   For more information refer to Download Client https://wiki.servarr.com/radarr/settings#download-clients and Vuze https://wiki.servarr.com/radarr/supported#vuze.
 ---
 

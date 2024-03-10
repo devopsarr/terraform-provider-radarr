@@ -80,7 +80,7 @@ func (d *ImportListExclusionsDataSource) Configure(ctx context.Context, req data
 
 func (d *ImportListExclusionsDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get importListExclusions current value
-	response, _, err := d.client.ImportExclusionsApi.ListExclusions(ctx).Execute()
+	response, _, err := d.client.ImportExclusionsAPI.ListExclusions(ctx).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListExclusionsDataSourceName, err))
 
@@ -91,7 +91,7 @@ func (d *ImportListExclusionsDataSource) Read(ctx context.Context, _ datasource.
 	// Map response body to resource schema attribute
 	importListExclusions := make([]ImportListExclusion, len(response))
 	for i, t := range response {
-		importListExclusions[i].write(t)
+		importListExclusions[i].write(&t)
 	}
 
 	exclusionList, diags := types.SetValueFrom(ctx, ImportListExclusion{}.getType(), importListExclusions)

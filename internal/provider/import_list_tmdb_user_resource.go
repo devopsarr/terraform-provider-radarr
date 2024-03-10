@@ -205,7 +205,7 @@ func (r *ImportListTMDBUserResource) Create(ctx context.Context, req resource.Cr
 	// Create new ImportListTMDBUser
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListApi.CreateImportList(ctx).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.CreateImportList(ctx).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, importListTMDBUserResourceName, err))
 
@@ -229,7 +229,7 @@ func (r *ImportListTMDBUserResource) Read(ctx context.Context, req resource.Read
 	}
 
 	// Get ImportListTMDBUser current value
-	response, _, err := r.client.ImportListApi.GetImportListById(ctx, int32(importList.ID.ValueInt64())).Execute()
+	response, _, err := r.client.ImportListAPI.GetImportListById(ctx, int32(importList.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListTMDBUserResourceName, err))
 
@@ -255,7 +255,7 @@ func (r *ImportListTMDBUserResource) Update(ctx context.Context, req resource.Up
 	// Update ImportListTMDBUser
 	request := importList.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.ImportListApi.UpdateImportList(ctx, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
+	response, _, err := r.client.ImportListAPI.UpdateImportList(ctx, strconv.Itoa(int(request.GetId()))).ImportListResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, importListTMDBUserResourceName, err))
 
@@ -278,7 +278,7 @@ func (r *ImportListTMDBUserResource) Delete(ctx context.Context, req resource.De
 	}
 
 	// Delete ImportListTMDBUser current value
-	_, err := r.client.ImportListApi.DeleteImportList(ctx, int32(ID)).Execute()
+	_, err := r.client.ImportListAPI.DeleteImportList(ctx, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListTMDBUserResourceName, err))
 

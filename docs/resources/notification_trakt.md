@@ -3,7 +3,6 @@
 page_title: "radarr_notification_trakt Resource - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
-  Notification Trakt resource.
   For more information refer to Notification https://wiki.servarr.com/radarr/settings#connect and Trakt https://wiki.servarr.com/radarr/supported#trakt.
 ---
 

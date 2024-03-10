@@ -3,7 +3,7 @@
 page_title: "radarr_host Data Source - terraform-provider-radarr"
 subcategory: "System"
 description: |-
-  Host ../resources/host.
+  
 ---
 
 # radarr_host (Data Source)
@@ -103,5 +103,3 @@ Read-Only:
 - `mechanism` (String) Update mechanism.
 - `script_path` (String) Script path.
 - `update_automatically` (Boolean) Update automatically flag.
-
-

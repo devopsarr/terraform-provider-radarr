@@ -3,7 +3,6 @@
 page_title: "radarr_download_client_pneumatic Resource - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
-  Download Client Pneumatic resource.
   For more information refer to Download Client https://wiki.servarr.com/radarr/settings#download-clients and Pneumatic https://wiki.servarr.com/radarr/supported#pneumatic.
 ---
 

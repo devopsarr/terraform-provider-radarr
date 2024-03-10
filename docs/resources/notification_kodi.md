@@ -3,7 +3,6 @@
 page_title: "radarr_notification_kodi Resource - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
-  Notification Kodi resource.
   For more information refer to Notification https://wiki.servarr.com/radarr/settings#connect and Kodi https://wiki.servarr.com/radarr/supported#xbmc.
 ---
 

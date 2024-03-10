@@ -3,7 +3,6 @@
 page_title: "radarr_indexer_config Resource - terraform-provider-radarr"
 subcategory: "Indexers"
 description: |-
-  Indexer Config resource.
   For more information refer to Indexer https://wiki.servarr.com/radarr/settings#options documentation.
 ---
 

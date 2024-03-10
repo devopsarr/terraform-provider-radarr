@@ -3,7 +3,6 @@
 page_title: "radarr_download_client_deluge Resource - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
-  Download Client Deluge resource.
   For more information refer to Download Client https://wiki.servarr.com/radarr/settings#download-clients and Deluge https://wiki.servarr.com/radarr/supported#deluge.
 ---
 

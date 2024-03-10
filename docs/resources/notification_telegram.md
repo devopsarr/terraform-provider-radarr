@@ -3,7 +3,6 @@
 page_title: "radarr_notification_telegram Resource - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
-  Notification Telegram resource.
   For more information refer to Notification https://wiki.servarr.com/radarr/settings#connect and Telegram https://wiki.servarr.com/radarr/supported#telegram.
 ---
 

@@ -149,7 +149,7 @@ func (r *CustomFormatResource) Create(ctx context.Context, req resource.CreateRe
 	// Create new CustomFormat
 	request := client.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.CustomFormatApi.CreateCustomFormat(ctx).CustomFormatResource(*request).Execute()
+	response, _, err := r.client.CustomFormatAPI.CreateCustomFormat(ctx).CustomFormatResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, customFormatResourceName, err))
 
@@ -176,7 +176,7 @@ func (r *CustomFormatResource) Read(ctx context.Context, req resource.ReadReques
 	}
 
 	// Get CustomFormat current value
-	response, _, err := r.client.CustomFormatApi.GetCustomFormatById(ctx, int32(client.ID.ValueInt64())).Execute()
+	response, _, err := r.client.CustomFormatAPI.GetCustomFormatById(ctx, int32(client.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, customFormatResourceName, err))
 
@@ -205,7 +205,7 @@ func (r *CustomFormatResource) Update(ctx context.Context, req resource.UpdateRe
 	// Update CustomFormat
 	request := client.read(ctx, &resp.Diagnostics)
 
-	response, _, err := r.client.CustomFormatApi.UpdateCustomFormat(ctx, strconv.Itoa(int(request.GetId()))).CustomFormatResource(*request).Execute()
+	response, _, err := r.client.CustomFormatAPI.UpdateCustomFormat(ctx, strconv.Itoa(int(request.GetId()))).CustomFormatResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, customFormatResourceName, err))
 
@@ -231,7 +231,7 @@ func (r *CustomFormatResource) Delete(ctx context.Context, req resource.DeleteRe
 	}
 
 	// Delete CustomFormat current value
-	_, err := r.client.CustomFormatApi.DeleteCustomFormat(ctx, int32(ID)).Execute()
+	_, err := r.client.CustomFormatAPI.DeleteCustomFormat(ctx, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, customFormatResourceName, err))
 
@@ -252,7 +252,7 @@ func (c *CustomFormat) write(ctx context.Context, customFormat *radarr.CustomFor
 
 	specs := make([]CustomFormatCondition, len(customFormat.Specifications))
 	for n, s := range customFormat.Specifications {
-		specs[n].write(ctx, s)
+		specs[n].write(ctx, &s)
 	}
 
 	c.ID = types.Int64Value(int64(customFormat.GetId()))
@@ -265,10 +265,10 @@ func (c *CustomFormat) write(ctx context.Context, customFormat *radarr.CustomFor
 func (c *CustomFormat) read(ctx context.Context, diags *diag.Diagnostics) *radarr.CustomFormatResource {
 	specifications := make([]CustomFormatCondition, len(c.Specifications.Elements()))
 	diags.Append(c.Specifications.ElementsAs(ctx, &specifications, false)...)
-	specs := make([]*radarr.CustomFormatSpecificationSchema, len(specifications))
+	specs := make([]radarr.CustomFormatSpecificationSchema, len(specifications))
 
 	for n, s := range specifications {
-		specs[n] = s.read(ctx)
+		specs[n] = *s.read(ctx)
 	}
 
 	format := radarr.NewCustomFormatResource()

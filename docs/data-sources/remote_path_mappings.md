@@ -3,7 +3,7 @@
 page_title: "radarr_remote_path_mappings Data Source - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
-  List all available Remote Path Mappings ../resources/remote_path_mapping.
+  
 ---
 
 # radarr_remote_path_mappings (Data Source)
@@ -34,5 +34,3 @@ Read-Only:
 - `id` (Number) RemotePathMapping ID.
 - `local_path` (String) Local path.
 - `remote_path` (String) Download Client remote path.
-
-

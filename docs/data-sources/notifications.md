@@ -3,7 +3,7 @@
 page_title: "radarr_notifications Data Source - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
-  List all available Notifications ../resources/notification.
+  
 ---
 
 # radarr_notifications (Data Source)
@@ -120,5 +120,3 @@ Read-Only:
 - `user_key` (String) User key.
 - `username` (String) Username.
 - `web_hook_url` (String) Web hook url.
-
-

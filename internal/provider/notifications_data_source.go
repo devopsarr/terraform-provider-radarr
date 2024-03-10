@@ -440,7 +440,7 @@ func (d *NotificationsDataSource) Configure(ctx context.Context, req datasource.
 
 func (d *NotificationsDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get notifications current value
-	response, _, err := d.client.NotificationApi.ListNotification(ctx).Execute()
+	response, _, err := d.client.NotificationAPI.ListNotification(ctx).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.List, notificationsDataSourceName, err))
 
@@ -451,7 +451,7 @@ func (d *NotificationsDataSource) Read(ctx context.Context, _ datasource.ReadReq
 	// Map response body to resource schema attribute
 	notifications := make([]Notification, len(response))
 	for i, n := range response {
-		notifications[i].write(ctx, n, &resp.Diagnostics)
+		notifications[i].write(ctx, &n, &resp.Diagnostics)
 	}
 
 	notificationList, diags := types.SetValueFrom(ctx, Notification{}.getType(), notifications)

@@ -3,7 +3,6 @@
 page_title: "radarr_import_list_couch_potato Resource - terraform-provider-radarr"
 subcategory: "Import Lists"
 description: |-
-  Import List Couch Potato resource.
   For more information refer to Import List https://wiki.servarr.com/radarr/settings#import-lists and Couch Potato https://wiki.servarr.com/radarr/supported#couchpotatoimport.
 ---
 

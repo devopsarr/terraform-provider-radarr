@@ -3,7 +3,6 @@
 page_title: "radarr_import_list_exclusion Resource - terraform-provider-radarr"
 subcategory: "Import Lists"
 description: |-
-  Import List Exclusion resource.
   For more information refer to ImportListExclusions https://wiki.servarr.com/radarr/settings#list-exclusions documentation.
 ---
 

@@ -3,7 +3,6 @@
 page_title: "radarr_notification_emby Resource - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
-  Notification Emby resource.
   For more information refer to Notification https://wiki.servarr.com/radarr/settings#connect and Emby https://wiki.servarr.com/radarr/supported#mediabrowser.
 ---
 

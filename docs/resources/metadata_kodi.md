@@ -3,7 +3,6 @@
 page_title: "radarr_metadata_kodi Resource - terraform-provider-radarr"
 subcategory: "Metadata"
 description: |-
-  Metadata Kodi resource.
   For more information refer to Metadata https://wiki.servarr.com/radarr/settings#metadata and KODI https://wiki.servarr.com/radarr/supported#xbmcmetadata.
 ---
 

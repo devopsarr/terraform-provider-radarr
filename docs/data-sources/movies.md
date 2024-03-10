@@ -3,7 +3,7 @@
 page_title: "radarr_movies Data Source - terraform-provider-radarr"
 subcategory: "Movies"
 description: |-
-  List all available Movies ../resources/movie.
+  
 ---
 
 # radarr_movies (Data Source)
@@ -57,5 +57,3 @@ Read-Only:
 
 - `id` (Number) ID.
 - `name` (String) Name.
-
-

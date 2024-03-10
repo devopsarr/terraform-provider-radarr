@@ -3,7 +3,6 @@
 page_title: "radarr_auto_tag_condition_root_folder Data Source - terraform-provider-radarr"
 subcategory: "Tags"
 description: |-
-  Auto Tag Condition Root Folder data source.
   For more intagion refer to Auto Tag Conditions https://wiki.servarr.com/radarr/settings#conditions.
 ---
 
@@ -46,5 +45,3 @@ resource "radarr_custom_format" "example" {
 
 - `id` (Number) Auto tag condition root folder ID.
 - `implementation` (String) Implementation.
-
-

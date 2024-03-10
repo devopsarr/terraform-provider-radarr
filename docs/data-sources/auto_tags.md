@@ -3,7 +3,7 @@
 page_title: "radarr_auto_tags Data Source - terraform-provider-radarr"
 subcategory: "Tags"
 description: |-
-  List all available Auto Tags ../resources/auto_tag.
+  
 ---
 
 # radarr_auto_tags (Data Source)
@@ -48,5 +48,3 @@ Read-Only:
 - `negate` (Boolean) Negate flag.
 - `required` (Boolean) Computed flag.
 - `value` (String) Value.
-
-

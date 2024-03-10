@@ -3,7 +3,7 @@
 page_title: "radarr_download_client Data Source - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
-  Single Download Client ../resources/download_client.
+  
 ---
 
 # radarr_download_client (Data Source)
@@ -75,5 +75,3 @@ data "radarr_download_client" "example" {
 - `use_ssl` (Boolean) Use SSL flag.
 - `username` (String) Username.
 - `watch_folder` (String) Watch folder flag.
-
-

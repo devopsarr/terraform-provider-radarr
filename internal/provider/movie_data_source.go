@@ -140,7 +140,7 @@ func (d *MovieDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	}
 
 	// Get movies current value
-	response, _, err := d.client.MovieApi.ListMovie(ctx).Execute()
+	response, _, err := d.client.MovieAPI.ListMovie(ctx).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, movieDataSourceName, err))
 
@@ -153,10 +153,10 @@ func (d *MovieDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
-func (m *Movie) find(ctx context.Context, ID int64, movies []*radarr.MovieResource, diags *diag.Diagnostics) {
+func (m *Movie) find(ctx context.Context, ID int64, movies []radarr.MovieResource, diags *diag.Diagnostics) {
 	for _, t := range movies {
 		if t.GetTmdbId() == int32(ID) {
-			m.write(ctx, t, diags)
+			m.write(ctx, &t, diags)
 
 			return
 		}

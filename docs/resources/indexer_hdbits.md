@@ -3,7 +3,6 @@
 page_title: "radarr_indexer_hdbits Resource - terraform-provider-radarr"
 subcategory: "Indexers"
 description: |-
-  Indexer HDBits resource.
   For more information refer to Indexer https://wiki.servarr.com/radarr/settings#indexers and HDBits https://wiki.servarr.com/radarr/supported#hdbits.
 ---
 

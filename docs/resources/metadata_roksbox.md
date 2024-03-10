@@ -3,7 +3,6 @@
 page_title: "radarr_metadata_roksbox Resource - terraform-provider-radarr"
 subcategory: "Metadata"
 description: |-
-  Metadata Roksbox resource.
   For more information refer to Metadata https://wiki.servarr.com/radarr/settings#metadata and ROKSBOX https://wiki.servarr.com/radarr/supported#roksboxmetadata.
 ---
 

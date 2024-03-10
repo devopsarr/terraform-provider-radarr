@@ -3,7 +3,6 @@
 page_title: "radarr_notification_simplepush Resource - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
-  Notification Simplepush resource.
   For more information refer to Notification https://wiki.servarr.com/radarr/settings#connect and Simplepush https://wiki.servarr.com/radarr/supported#simplepush.
 ---
 

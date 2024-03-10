@@ -3,7 +3,7 @@
 page_title: "radarr_naming Data Source - terraform-provider-radarr"
 subcategory: "Media Management"
 description: |-
-  Naming ../resources/naming.
+  
 ---
 
 # radarr_naming (Data Source)
@@ -24,11 +24,7 @@ data "radarr_naming" "example" {
 
 - `colon_replacement_format` (String) Change how Radarr handles colon replacement. Valid values are: 'delete', 'dash', 'spaceDash', and 'spaceDashSpace'.
 - `id` (Number) Delay Profile ID.
-- `include_quality` (Boolean) Include quality in file name.
 - `movie_folder_format` (String) Movie folder format.
 - `rename_movies` (Boolean) Radarr will use the existing file name if false.
 - `replace_illegal_characters` (Boolean) Replace illegal characters. They will be removed if false.
-- `replace_spaces` (Boolean) Replace spaces.
 - `standard_movie_format` (String) Standard movie formatss.
-
-

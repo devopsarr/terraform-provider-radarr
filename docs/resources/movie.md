@@ -3,7 +3,6 @@
 page_title: "radarr_movie Resource - terraform-provider-radarr"
 subcategory: "Movies"
 description: |-
-  Movie resource.
   For more information refer to Movies https://wiki.servarr.com/radarr/library#movies documentation.
 ---
 

@@ -3,7 +3,6 @@
 page_title: "radarr_metadata_wdtv Resource - terraform-provider-radarr"
 subcategory: "Metadata"
 description: |-
-  Metadata Wdtv resource.
   For more information refer to Metadata https://wiki.servarr.com/radarr/settings#metadata and WDTV https://wiki.servarr.com/radarr/supported#wdtvmetadata.
 ---
 

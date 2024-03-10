@@ -3,7 +3,6 @@
 page_title: "radarr_indexer_torznab Resource - terraform-provider-radarr"
 subcategory: "Indexers"
 description: |-
-  Indexer Torznab resource.
   For more information refer to Indexer https://wiki.servarr.com/radarr/settings#indexers and Torznab https://wiki.servarr.com/radarr/supported#torznab.
 ---
 

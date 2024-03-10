@@ -3,7 +3,6 @@
 page_title: "radarr_indexer Resource - terraform-provider-radarr"
 subcategory: "Indexers"
 description: |-
-  Generic Indexer resource. When possible use a specific resource instead.
   For more information refer to Indexer https://wiki.servarr.com/radarr/settings#indexers documentation.
 ---
 

@@ -3,7 +3,7 @@
 page_title: "radarr_metadata_consumers Data Source - terraform-provider-radarr"
 subcategory: "Metadata"
 description: |-
-  List all available Metadata Consumers ../resources/metadata.
+  
 ---
 
 # radarr_metadata_consumers (Data Source)
@@ -42,5 +42,3 @@ Read-Only:
 - `name` (String) Metadata name.
 - `tags` (Set of Number) List of associated tags.
 - `use_movie_nfo` (Boolean) Use movie nfo flag.
-
-

@@ -149,7 +149,7 @@ func (d *MoviesDataSource) Configure(ctx context.Context, req datasource.Configu
 
 func (d *MoviesDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get movies current value
-	response, _, err := d.client.MovieApi.ListMovie(ctx).Execute()
+	response, _, err := d.client.MovieAPI.ListMovie(ctx).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.List, moviesDataSourceName, err))
 
@@ -160,7 +160,7 @@ func (d *MoviesDataSource) Read(ctx context.Context, _ datasource.ReadRequest, r
 	// Map response body to resource schema attribute
 	movies := make([]Movie, len(response))
 	for i, m := range response {
-		movies[i].write(ctx, m, &resp.Diagnostics)
+		movies[i].write(ctx, &m, &resp.Diagnostics)
 	}
 
 	movieList, diags := types.SetValueFrom(ctx, Movie{}.getType(), movies)

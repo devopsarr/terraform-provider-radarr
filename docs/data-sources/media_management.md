@@ -3,7 +3,7 @@
 page_title: "radarr_media_management Data Source - terraform-provider-radarr"
 subcategory: "Media Management"
 description: |-
-  Media Management ../resources/media_management.
+  
 ---
 
 # radarr_media_management (Data Source)
@@ -42,5 +42,3 @@ data "radarr_media_management" "example" {
 - `rescan_after_refresh` (String) Rescan after refresh policy. valid inputs are: 'always', 'afterManual' and 'never'.
 - `set_permissions_linux` (Boolean) Set permission for imported files.
 - `skip_free_space_check_when_importing` (Boolean) Skip free space check before importing.
-
-

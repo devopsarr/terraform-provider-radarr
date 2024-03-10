@@ -3,7 +3,7 @@
 page_title: "radarr_import_list Data Source - terraform-provider-radarr"
 subcategory: "Import Lists"
 description: |-
-  Single Import List ../resources/import_list.
+  
 ---
 
 # radarr_import_list (Data Source)
@@ -82,5 +82,3 @@ data "radarr_import_list" "example" {
 - `user_list_type` (Number) User list type.
 - `username` (String) Username.
 - `years` (String) Years.
-
-

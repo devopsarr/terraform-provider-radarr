@@ -3,7 +3,7 @@
 page_title: "radarr_download_client_config Data Source - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
-  Download Client Config ../resources/download_client_config.
+  
 ---
 
 # radarr_download_client_config (Data Source)
@@ -27,5 +27,3 @@ data "radarr_download_client_config" "example" {
 - `download_client_working_folders` (String) Download Client Working Folders.
 - `enable_completed_download_handling` (Boolean) Enable Completed Download Handling flag.
 - `id` (Number) Download Client Config ID.
-
-

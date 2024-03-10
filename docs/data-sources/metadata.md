@@ -3,7 +3,7 @@
 page_title: "radarr_metadata Data Source - terraform-provider-radarr"
 subcategory: "Metadata"
 description: |-
-  Single Metadata ../resources/metadata.
+  
 ---
 
 # radarr_metadata (Data Source)
@@ -38,5 +38,3 @@ data "radarr_metadata" "example" {
 - `movie_metadata_url` (Boolean) Movie metadata URL flag.
 - `tags` (Set of Number) List of associated tags.
 - `use_movie_nfo` (Boolean) Use movie nfo flag.
-
-

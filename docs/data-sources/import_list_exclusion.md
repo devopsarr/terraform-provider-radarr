@@ -3,7 +3,7 @@
 page_title: "radarr_import_list_exclusion Data Source - terraform-provider-radarr"
 subcategory: "Import Lists"
 description: |-
-  Single ImportListExclusion ../resources/import_list_exclusion.
+  
 ---
 
 # radarr_import_list_exclusion (Data Source)
@@ -30,5 +30,3 @@ data "radarr_import_list_exclusion" "example" {
 - `id` (Number) Import List Exclusion ID.
 - `title` (String) Movie to be excluded.
 - `year` (Number) Year.
-
-

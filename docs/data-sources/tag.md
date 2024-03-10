@@ -3,7 +3,7 @@
 page_title: "radarr_tag Data Source - terraform-provider-radarr"
 subcategory: "Tags"
 description: |-
-  Single Tag ../resources/tag.
+  
 ---
 
 # radarr_tag (Data Source)
@@ -28,5 +28,3 @@ data "radarr_tag" "example" {
 ### Read-Only
 
 - `id` (Number) Tag ID.
-
-

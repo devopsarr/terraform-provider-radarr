@@ -3,7 +3,7 @@
 page_title: "radarr_quality_profile Data Source - terraform-provider-radarr"
 subcategory: "Profiles"
 description: |-
-  Single Quality Profile ../resources/quality_profile.
+  
 ---
 
 # radarr_quality_profile (Data Source)
@@ -76,5 +76,3 @@ Read-Only:
 - `name` (String) Quality name.
 - `resolution` (Number) Resolution.
 - `source` (String) Source.
-
-

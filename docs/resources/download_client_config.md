@@ -3,7 +3,6 @@
 page_title: "radarr_download_client_config Resource - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
-  Download Client Config resource.
   For more information refer to Download Client https://wiki.servarr.com/radarr/settings#completed-download-handling documentation.
 ---
 

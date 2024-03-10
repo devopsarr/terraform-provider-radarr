@@ -3,7 +3,6 @@
 page_title: "radarr_metadata Resource - terraform-provider-radarr"
 subcategory: "Metadata"
 description: |-
-  Generic Metadata resource. When possible use a specific resource instead.
   For more information refer to Metadata https://wiki.servarr.com/radarr/settings#metadata documentation.
 ---
 

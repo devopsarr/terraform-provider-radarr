@@ -3,7 +3,6 @@
 page_title: "radarr_import_list_trakt_popular Resource - terraform-provider-radarr"
 subcategory: "Import Lists"
 description: |-
-  Import List Trakt Popular resource.
   For more information refer to Import List https://wiki.servarr.com/radarr/settings#import-lists and Trakt Popular https://wiki.servarr.com/radarr/supported#traktpopularimport.
 ---
 

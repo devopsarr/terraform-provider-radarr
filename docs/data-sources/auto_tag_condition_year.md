@@ -3,7 +3,6 @@
 page_title: "radarr_auto_tag_condition_year Data Source - terraform-provider-radarr"
 subcategory: "Tags"
 description: |-
-  Auto Tag Condition Series Type data source.
   For more intagion refer to Auto Tag Conditions https://wiki.servarr.com/radarr/settings#conditions.
 ---
 
@@ -48,5 +47,3 @@ resource "radarr_custom_format" "example" {
 
 - `id` (Number) Auto tag condition series type ID.
 - `implementation` (String) Implementation.
-
-

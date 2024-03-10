@@ -3,7 +3,7 @@
 page_title: "radarr_metadata_config Data Source - terraform-provider-radarr"
 subcategory: "Metadata"
 description: |-
-  Metadata Config ../resources/metadata_config.
+  
 ---
 
 # radarr_metadata_config (Data Source)
@@ -24,5 +24,3 @@ data "radarr_metadata_config" "example" {
 
 - `certification_country` (String) Certification Country.
 - `id` (Number) Delay Profile ID.
-
-

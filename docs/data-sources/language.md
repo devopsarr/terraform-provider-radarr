@@ -3,7 +3,7 @@
 page_title: "radarr_language Data Source - terraform-provider-radarr"
 subcategory: "Profiles"
 description: |-
-  Single available Language.
+  
 ---
 
 # radarr_language (Data Source)
@@ -29,5 +29,3 @@ data "radarr_language" "example" {
 
 - `id` (Number) Language ID.
 - `name_lower` (String) Language in lowercase.
-
-

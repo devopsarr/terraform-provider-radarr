@@ -3,7 +3,7 @@
 page_title: "radarr_indexer_config Data Source - terraform-provider-radarr"
 subcategory: "Indexers"
 description: |-
-  Indexer Config ../resources/indexer_config.
+  
 ---
 
 # radarr_indexer_config (Data Source)
@@ -31,5 +31,3 @@ data "radarr_indexer_config" "example" {
 - `retention` (Number) Retention.
 - `rss_sync_interval` (Number) RSS sync interval.
 - `whitelisted_hardcoded_subs` (String) Whitelisted hardconded subs.
-
-

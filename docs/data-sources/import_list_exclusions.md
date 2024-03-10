@@ -3,7 +3,7 @@
 page_title: "radarr_import_list_exclusions Data Source - terraform-provider-radarr"
 subcategory: "Import Lists"
 description: |-
-  List all available ImportListExclusions ../resources/importListExclusion.
+  
 ---
 
 # radarr_import_list_exclusions (Data Source)
@@ -34,5 +34,3 @@ Read-Only:
 - `title` (String) Movie to be excluded.
 - `tmdb_id` (Number) Movie TMDB ID.
 - `year` (Number) Year.
-
-

@@ -3,7 +3,6 @@
 page_title: "radarr_notification_pushover Resource - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
-  Notification Pushover resource.
   For more information refer to Notification https://wiki.servarr.com/radarr/settings#connect and Pushover https://wiki.servarr.com/radarr/supported#pushover.
 ---
 

@@ -3,7 +3,6 @@
 page_title: "radarr_indexer_iptorrents Resource - terraform-provider-radarr"
 subcategory: "Indexers"
 description: |-
-  Indexer IP Torrents resource.
   For more information refer to Indexer https://wiki.servarr.com/radarr/settings#indexers and IP Torrents https://wiki.servarr.com/radarr/supported#iptorrents.
 ---
 

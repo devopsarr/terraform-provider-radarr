@@ -53,7 +53,7 @@ func (d *MetadataConfigDataSource) Configure(ctx context.Context, req datasource
 
 func (d *MetadataConfigDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get metadata config current value
-	response, _, err := d.client.MetadataConfigApi.GetMetadataConfig(ctx).Execute()
+	response, _, err := d.client.MetadataConfigAPI.GetMetadataConfig(ctx).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, metadataConfigDataSourceName, err))
 

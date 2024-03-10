@@ -3,7 +3,7 @@
 page_title: "radarr_quality_definitions Data Source - terraform-provider-radarr"
 subcategory: "Profiles"
 description: |-
-  List all available Quality Definitions ../resources/quality_definition.
+  
 ---
 
 # radarr_quality_definitions (Data Source)
@@ -42,5 +42,3 @@ Read-Only:
 - `resolution` (Number) Quality Resolution.
 - `source` (String) Quality source.
 - `title` (String) Quality Definition Title.
-
-

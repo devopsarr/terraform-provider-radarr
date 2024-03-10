@@ -3,7 +3,6 @@
 page_title: "radarr_import_list_tmdb_company Resource - terraform-provider-radarr"
 subcategory: "Import Lists"
 description: |-
-  Import List TMDB Company resource.
   For more information refer to Import List https://wiki.servarr.com/radarr/settings#import-lists and TMDB Company https://wiki.servarr.com/radarr/supported#tmdbcompanyimport.
 ---
 

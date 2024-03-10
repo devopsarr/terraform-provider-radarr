@@ -3,7 +3,6 @@
 page_title: "radarr_notification_join Resource - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
-  Notification Join resource.
   For more information refer to Notification https://wiki.servarr.com/radarr/settings#connect and Join https://wiki.servarr.com/radarr/supported#join.
 ---
 

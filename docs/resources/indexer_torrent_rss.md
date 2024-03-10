@@ -3,7 +3,6 @@
 page_title: "radarr_indexer_torrent_rss Resource - terraform-provider-radarr"
 subcategory: "Indexers"
 description: |-
-  Indexer Torrent RSS resource.
   For more information refer to Indexer https://wiki.servarr.com/radarr/settings#indexers and Torrent RSS https://wiki.servarr.com/radarr/supported#torrentrssindexer.
 ---
 

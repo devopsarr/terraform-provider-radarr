@@ -3,7 +3,6 @@
 page_title: "radarr_quality_definition Resource - terraform-provider-radarr"
 subcategory: "Profiles"
 description: |-
-  Quality Definition resource.
   For more information refer to Quality Definition https://wiki.servarr.com/radarr/settings#quality-1 documentation.
 ---
 

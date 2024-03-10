@@ -3,7 +3,6 @@
 page_title: "radarr_download_client_aria2 Resource - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
-  Download Client Aria2 resource.
   For more information refer to Download Client https://wiki.servarr.com/radarr/settings#download-clients and Aria2 https://wiki.servarr.com/radarr/supported#aria2.
 ---
 

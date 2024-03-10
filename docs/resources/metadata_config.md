@@ -3,7 +3,6 @@
 page_title: "radarr_metadata_config Resource - terraform-provider-radarr"
 subcategory: "Metadata"
 description: |-
-  Metadata Config resource.
   For more information refer to Metadata https://wiki.servarr.com/radarr/settings#options documentation.
 ---
 

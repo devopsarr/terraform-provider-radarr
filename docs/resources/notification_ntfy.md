@@ -3,7 +3,6 @@
 page_title: "radarr_notification_ntfy Resource - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
-  Notification Ntfy resource.
   For more information refer to Notification https://wiki.servarr.com/radarr/settings#connect and Ntfy https://wiki.servarr.com/radarr/supported#ntfy.
 ---
 

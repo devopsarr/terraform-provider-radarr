@@ -3,7 +3,7 @@
 page_title: "radarr_custom_format Data Source - terraform-provider-radarr"
 subcategory: "Profiles"
 description: |-
-  Single Custom Format ../resources/custom_format.
+  
 ---
 
 # radarr_custom_format (Data Source)
@@ -43,5 +43,3 @@ Read-Only:
 - `negate` (Boolean) Negate flag.
 - `required` (Boolean) Computed flag.
 - `value` (String) Value.
-
-

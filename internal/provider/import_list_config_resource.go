@@ -87,7 +87,7 @@ func (r *ImportListConfigResource) Create(ctx context.Context, req resource.Crea
 	request.SetId(1)
 
 	// Create new ImportListConfig
-	response, _, err := r.client.ImportListConfigApi.UpdateImportListConfig(ctx, strconv.Itoa(int(request.GetId()))).ImportListConfigResource(*request).Execute()
+	response, _, err := r.client.ImportListConfigAPI.UpdateImportListConfig(ctx, strconv.Itoa(int(request.GetId()))).ImportListConfigResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, importListConfigResourceName, err))
 
@@ -111,7 +111,7 @@ func (r *ImportListConfigResource) Read(ctx context.Context, req resource.ReadRe
 	}
 
 	// Get importListConfig current value
-	response, _, err := r.client.ImportListConfigApi.GetImportListConfig(ctx).Execute()
+	response, _, err := r.client.ImportListConfigAPI.GetImportListConfig(ctx).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListConfigResourceName, err))
 
@@ -138,7 +138,7 @@ func (r *ImportListConfigResource) Update(ctx context.Context, req resource.Upda
 	request := config.read()
 
 	// Update ImportListConfig
-	response, _, err := r.client.ImportListConfigApi.UpdateImportListConfig(ctx, strconv.Itoa(int(request.GetId()))).ImportListConfigResource(*request).Execute()
+	response, _, err := r.client.ImportListConfigAPI.UpdateImportListConfig(ctx, strconv.Itoa(int(request.GetId()))).ImportListConfigResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, importListConfigResourceName, err))
 
