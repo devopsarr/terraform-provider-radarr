@@ -106,7 +106,7 @@ func (r *NotificationNotifiarrResource) Metadata(_ context.Context, req resource
 
 func (r *NotificationNotifiarrResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Notifications -->Notification Notifiarr resource.\nFor more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Notifiarr](https://wiki.servarr.com/radarr/supported#notifiarr).",
+		MarkdownDescription: "<!-- subcategory:Notifications -->\nNotification Notifiarr resource.\nFor more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Notifiarr](https://wiki.servarr.com/radarr/supported#notifiarr).",
 		Attributes: map[string]schema.Attribute{
 			"on_grab": schema.BoolAttribute{
 				MarkdownDescription: "On grab flag.",

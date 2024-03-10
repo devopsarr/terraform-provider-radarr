@@ -3,12 +3,14 @@
 page_title: "radarr_download_client_rtorrent Resource - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
+  Download Client RTorrent resource.
   For more information refer to Download Client https://wiki.servarr.com/radarr/settings#download-clients and RTorrent https://wiki.servarr.com/radarr/supported#rtorrent.
 ---
 
 # radarr_download_client_rtorrent (Resource)
 
-<!-- subcategory:Download Clients -->Download Client RTorrent resource.
+<!-- subcategory:Download Clients -->
+Download Client RTorrent resource.
 For more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [RTorrent](https://wiki.servarr.com/radarr/supported#rtorrent).
 
 ## Example Usage

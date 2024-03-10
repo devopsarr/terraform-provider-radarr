@@ -3,12 +3,14 @@
 page_title: "radarr_remote_path_mapping Resource - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
+  Remote Path Mapping resource.
   For more information refer to Remote Path Mapping https://wiki.servarr.com/radarr/settings#remote-path-mappings documentation.
 ---
 
 # radarr_remote_path_mapping (Resource)
 
-<!-- subcategory:Download Clients -->Remote Path Mapping resource.
+<!-- subcategory:Download Clients -->
+Remote Path Mapping resource.
 For more information refer to [Remote Path Mapping](https://wiki.servarr.com/radarr/settings#remote-path-mappings) documentation.
 
 ## Example Usage

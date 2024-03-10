@@ -3,12 +3,14 @@
 page_title: "radarr_notification_email Resource - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
+  Notification Email resource.
   For more information refer to Notification https://wiki.servarr.com/radarr/settings#connect and Email https://wiki.servarr.com/radarr/supported#email.
 ---
 
 # radarr_notification_email (Resource)
 
-<!-- subcategory:Notifications -->Notification Email resource.
+<!-- subcategory:Notifications -->
+Notification Email resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Email](https://wiki.servarr.com/radarr/supported#email).
 
 ## Example Usage

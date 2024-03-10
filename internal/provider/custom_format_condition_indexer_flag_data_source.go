@@ -37,7 +37,7 @@ func (d *CustomFormatConditionIndexerFlagDataSource) Metadata(_ context.Context,
 func (d *CustomFormatConditionIndexerFlagDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Profiles --> Custom Format Condition Indexer Flag data source.\nFor more information refer to [Custom Format Conditions](https://wiki.servarr.com/radarr/settings#conditions) and [Indexer Flag](https://wiki.servarr.com/radarr/settings#indexer-flags).",
+		MarkdownDescription: "<!-- subcategory:Profiles -->\n Custom Format Condition Indexer Flag data source.\nFor more information refer to [Custom Format Conditions](https://wiki.servarr.com/radarr/settings#conditions) and [Indexer Flag](https://wiki.servarr.com/radarr/settings#indexer-flags).",
 		Attributes: map[string]schema.Attribute{
 			"negate": schema.BoolAttribute{
 				MarkdownDescription: "Negate flag.",

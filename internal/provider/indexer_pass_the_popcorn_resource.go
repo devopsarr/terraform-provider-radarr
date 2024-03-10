@@ -108,7 +108,7 @@ func (r *IndexerPassThePopcornResource) Metadata(_ context.Context, req resource
 
 func (r *IndexerPassThePopcornResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Indexers -->Indexer PassThePopcorn resource.\nFor more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [PassThePopcorn](https://wiki.servarr.com/radarr/supported#passthepopcorn).",
+		MarkdownDescription: "<!-- subcategory:Indexers -->\nIndexer PassThePopcorn resource.\nFor more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [PassThePopcorn](https://wiki.servarr.com/radarr/supported#passthepopcorn).",
 		Attributes: map[string]schema.Attribute{
 			"enable_automatic_search": schema.BoolAttribute{
 				MarkdownDescription: "Enable automatic search flag.",

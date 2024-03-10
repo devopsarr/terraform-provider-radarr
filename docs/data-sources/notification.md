@@ -3,12 +3,13 @@
 page_title: "radarr_notification Data Source - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
-  
+  Single Notification ../resources/notification.
 ---
 
 # radarr_notification (Data Source)
 
-<!-- subcategory:Notifications -->Single [Notification](../resources/notification).
+<!-- subcategory:Notifications -->
+Single [Notification](../resources/notification).
 
 ## Example Usage
 

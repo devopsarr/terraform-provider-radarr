@@ -3,12 +3,13 @@
 page_title: "radarr_import_list_exclusion Data Source - terraform-provider-radarr"
 subcategory: "Import Lists"
 description: |-
-  
+  Single ImportListExclusion ../resources/import_list_exclusion.
 ---
 
 # radarr_import_list_exclusion (Data Source)
 
-<!-- subcategory:Import Lists -->Single [ImportListExclusion](../resources/import_list_exclusion).
+<!-- subcategory:Import Lists -->
+Single [ImportListExclusion](../resources/import_list_exclusion).
 
 ## Example Usage
 

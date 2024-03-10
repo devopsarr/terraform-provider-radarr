@@ -3,12 +3,13 @@
 page_title: "radarr_languages Data Source - terraform-provider-radarr"
 subcategory: "Profiles"
 description: |-
-  
+  List all available Languages ../data-sources/language.
 ---
 
 # radarr_languages (Data Source)
 
-<!-- subcategory:Profiles -->List all available [Languages](../data-sources/language).
+<!-- subcategory:Profiles -->
+List all available [Languages](../data-sources/language).
 
 ## Example Usage
 

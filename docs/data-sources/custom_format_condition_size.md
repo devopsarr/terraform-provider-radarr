@@ -3,12 +3,14 @@
 page_title: "radarr_custom_format_condition_size Data Source - terraform-provider-radarr"
 subcategory: "Profiles"
 description: |-
+  Custom Format Condition Size data source.
   For more information refer to Custom Format Conditions https://wiki.servarr.com/radarr/settings#conditions.
 ---
 
 # radarr_custom_format_condition_size (Data Source)
 
-<!-- subcategory:Profiles --> Custom Format Condition Size data source.
+<!-- subcategory:Profiles -->
+ Custom Format Condition Size data source.
 For more information refer to [Custom Format Conditions](https://wiki.servarr.com/radarr/settings#conditions).
 
 ## Example Usage

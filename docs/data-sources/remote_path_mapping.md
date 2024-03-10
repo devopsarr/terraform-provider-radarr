@@ -3,12 +3,13 @@
 page_title: "radarr_remote_path_mapping Data Source - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
-  
+  Single Remote Path Mapping ../resources/remote_path_mapping.
 ---
 
 # radarr_remote_path_mapping (Data Source)
 
-<!-- subcategory:Download Clients -->Single [Remote Path Mapping](../resources/remote_path_mapping).
+<!-- subcategory:Download Clients -->
+Single [Remote Path Mapping](../resources/remote_path_mapping).
 
 ## Example Usage
 

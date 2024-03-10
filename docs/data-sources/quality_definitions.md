@@ -3,12 +3,13 @@
 page_title: "radarr_quality_definitions Data Source - terraform-provider-radarr"
 subcategory: "Profiles"
 description: |-
-  
+  List all available Quality Definitions ../resources/quality_definition.
 ---
 
 # radarr_quality_definitions (Data Source)
 
-<!-- subcategory:Profiles -->List all available [Quality Definitions](../resources/quality_definition).
+<!-- subcategory:Profiles -->
+List all available [Quality Definitions](../resources/quality_definition).
 
 ## Example Usage
 

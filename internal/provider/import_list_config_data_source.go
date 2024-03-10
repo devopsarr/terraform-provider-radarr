@@ -32,7 +32,7 @@ func (d *ImportListConfigDataSource) Metadata(_ context.Context, req datasource.
 func (d *ImportListConfigDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the delay server.
-		MarkdownDescription: "<!-- subcategory:Import Lists -->[Import List Config](../resources/import_list_config).",
+		MarkdownDescription: "<!-- subcategory:Import Lists -->\n[Import List Config](../resources/import_list_config).",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
 				MarkdownDescription: "Import List Config ID.",

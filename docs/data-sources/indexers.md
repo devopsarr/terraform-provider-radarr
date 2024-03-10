@@ -3,12 +3,13 @@
 page_title: "radarr_indexers Data Source - terraform-provider-radarr"
 subcategory: "Indexers"
 description: |-
-  
+  List all available Indexers ../resources/indexer.
 ---
 
 # radarr_indexers (Data Source)
 
-<!-- subcategory:Indexers -->List all available [Indexers](../resources/indexer).
+<!-- subcategory:Indexers -->
+List all available [Indexers](../resources/indexer).
 
 ## Example Usage
 

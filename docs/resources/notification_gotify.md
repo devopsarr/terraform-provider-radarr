@@ -3,12 +3,14 @@
 page_title: "radarr_notification_gotify Resource - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
+  Notification Gotify resource.
   For more information refer to Notification https://wiki.servarr.com/radarr/settings#connect and Gotify https://wiki.servarr.com/radarr/supported#gotify.
 ---
 
 # radarr_notification_gotify (Resource)
 
-<!-- subcategory:Notifications -->Notification Gotify resource.
+<!-- subcategory:Notifications -->
+Notification Gotify resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Gotify](https://wiki.servarr.com/radarr/supported#gotify).
 
 ## Example Usage

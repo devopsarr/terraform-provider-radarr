@@ -3,12 +3,14 @@
 page_title: "radarr_download_client_freebox Resource - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
+  Download Client Freebox resource.
   For more information refer to Download Client https://wiki.servarr.com/radarr/settings#download-clients and Freebox https://wiki.servarr.com/radarr/supported#torrentfreeboxdownload.
 ---
 
 # radarr_download_client_freebox (Resource)
 
-<!-- subcategory:Download Clients -->Download Client Freebox resource.
+<!-- subcategory:Download Clients -->
+Download Client Freebox resource.
 For more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [Freebox](https://wiki.servarr.com/radarr/supported#torrentfreeboxdownload).
 
 ## Example Usage

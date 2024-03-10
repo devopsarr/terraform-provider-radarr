@@ -3,12 +3,14 @@
 page_title: "radarr_notification_synology_indexer Resource - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
+  Notification Synology Indexer resource.
   For more information refer to Notification https://wiki.servarr.com/radarr/settings#connect and Synology https://wiki.servarr.com/radarr/supported#synologyindexer.
 ---
 
 # radarr_notification_synology_indexer (Resource)
 
-<!-- subcategory:Notifications -->Notification Synology Indexer resource.
+<!-- subcategory:Notifications -->
+Notification Synology Indexer resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Synology](https://wiki.servarr.com/radarr/supported#synologyindexer).
 
 ## Example Usage

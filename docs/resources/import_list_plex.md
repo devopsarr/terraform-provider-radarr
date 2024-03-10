@@ -3,12 +3,14 @@
 page_title: "radarr_import_list_plex Resource - terraform-provider-radarr"
 subcategory: "Import Lists"
 description: |-
+  Import List Plex resource.
   For more information refer to Import List https://wiki.servarr.com/radarr/settings#import-lists and Plex https://wiki.servarr.com/radarr/supported#pleximport.
 ---
 
 # radarr_import_list_plex (Resource)
 
-<!-- subcategory:Import Lists -->Import List Plex resource.
+<!-- subcategory:Import Lists -->
+Import List Plex resource.
 For more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Plex](https://wiki.servarr.com/radarr/supported#pleximport).
 
 ## Example Usage

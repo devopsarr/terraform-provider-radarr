@@ -98,7 +98,7 @@ func (r *ImportListPlexResource) Metadata(_ context.Context, req resource.Metada
 
 func (r *ImportListPlexResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List Plex resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Plex](https://wiki.servarr.com/radarr/supported#pleximport).",
+		MarkdownDescription: "<!-- subcategory:Import Lists -->\nImport List Plex resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Plex](https://wiki.servarr.com/radarr/supported#pleximport).",
 		Attributes: map[string]schema.Attribute{
 			"enable_auto": schema.BoolAttribute{
 				MarkdownDescription: "Enable automatic add flag.",

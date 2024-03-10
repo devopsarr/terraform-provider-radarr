@@ -3,12 +3,14 @@
 page_title: "radarr_import_list_stevenlu Resource - terraform-provider-radarr"
 subcategory: "Import Lists"
 description: |-
+  Import List Stevenlu resource.
   For more information refer to Import List https://wiki.servarr.com/radarr/settings#import-lists and Stevenlu https://wiki.servarr.com/radarr/supported#stevenluimport.
 ---
 
 # radarr_import_list_stevenlu (Resource)
 
-<!-- subcategory:Import Lists -->Import List Stevenlu resource.
+<!-- subcategory:Import Lists -->
+Import List Stevenlu resource.
 For more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Stevenlu](https://wiki.servarr.com/radarr/supported#stevenluimport).
 
 ## Example Usage

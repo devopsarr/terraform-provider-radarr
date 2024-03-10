@@ -3,12 +3,13 @@
 page_title: "radarr_auto_tags Data Source - terraform-provider-radarr"
 subcategory: "Tags"
 description: |-
-  
+  List all available Auto Tags ../resources/auto_tag.
 ---
 
 # radarr_auto_tags (Data Source)
 
-<!-- subcategory:Tags -->List all available [Auto Tags](../resources/auto_tag).
+<!-- subcategory:Tags -->
+List all available [Auto Tags](../resources/auto_tag).
 
 ## Example Usage
 

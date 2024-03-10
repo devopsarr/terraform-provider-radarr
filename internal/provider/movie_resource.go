@@ -110,7 +110,7 @@ func (r *MovieResource) Metadata(_ context.Context, req resource.MetadataRequest
 
 func (r *MovieResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Movies -->Movie resource.\nFor more information refer to [Movies](https://wiki.servarr.com/radarr/library#movies) documentation.",
+		MarkdownDescription: "<!-- subcategory:Movies -->\nMovie resource.\nFor more information refer to [Movies](https://wiki.servarr.com/radarr/library#movies) documentation.",
 		Attributes: map[string]schema.Attribute{
 			"monitored": schema.BoolAttribute{
 				MarkdownDescription: "Monitored flag.",

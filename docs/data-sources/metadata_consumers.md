@@ -3,12 +3,13 @@
 page_title: "radarr_metadata_consumers Data Source - terraform-provider-radarr"
 subcategory: "Metadata"
 description: |-
-  
+  List all available Metadata Consumers ../resources/metadata.
 ---
 
 # radarr_metadata_consumers (Data Source)
 
-<!-- subcategory:Metadata -->List all available [Metadata Consumers](../resources/metadata).
+<!-- subcategory:Metadata -->
+List all available [Metadata Consumers](../resources/metadata).
 
 ## Example Usage
 

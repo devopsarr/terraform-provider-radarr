@@ -9,6 +9,7 @@ description: |-
 # radarr_auto_tag (Data Source)
 
 <!-- subcategory:Tags -->
+
 Single [Auto Tag](../resources/auto_tag).
 
 ## Example Usage

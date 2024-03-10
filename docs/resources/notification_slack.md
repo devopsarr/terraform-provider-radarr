@@ -3,12 +3,14 @@
 page_title: "radarr_notification_slack Resource - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
+  Notification Slack resource.
   For more information refer to Notification https://wiki.servarr.com/radarr/settings#connect and Slack https://wiki.servarr.com/radarr/supported#slack.
 ---
 
 # radarr_notification_slack (Resource)
 
-<!-- subcategory:Notifications -->Notification Slack resource.
+<!-- subcategory:Notifications -->
+Notification Slack resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Slack](https://wiki.servarr.com/radarr/supported#slack).
 
 ## Example Usage

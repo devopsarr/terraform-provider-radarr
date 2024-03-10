@@ -3,12 +3,14 @@
 page_title: "radarr_download_client_hadouken Resource - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
+  Download Client Hadouken resource.
   For more information refer to Download Client https://wiki.servarr.com/radarr/settings#download-clients and Hadouken https://wiki.servarr.com/radarr/supported#hadouken.
 ---
 
 # radarr_download_client_hadouken (Resource)
 
-<!-- subcategory:Download Clients -->Download Client Hadouken resource.
+<!-- subcategory:Download Clients -->
+Download Client Hadouken resource.
 For more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [Hadouken](https://wiki.servarr.com/radarr/supported#hadouken).
 
 ## Example Usage

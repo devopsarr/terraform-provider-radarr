@@ -47,7 +47,7 @@ func (r *MetadataConfigResource) Metadata(_ context.Context, req resource.Metada
 
 func (r *MetadataConfigResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Metadata -->Metadata Config resource.\nFor more information refer to [Metadata](https://wiki.servarr.com/radarr/settings#options) documentation.",
+		MarkdownDescription: "<!-- subcategory:Metadata -->\nMetadata Config resource.\nFor more information refer to [Metadata](https://wiki.servarr.com/radarr/settings#options) documentation.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
 				MarkdownDescription: "Metadata Config ID.",

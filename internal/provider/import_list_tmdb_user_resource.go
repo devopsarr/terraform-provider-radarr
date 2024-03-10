@@ -105,7 +105,7 @@ func (r *ImportListTMDBUserResource) Metadata(_ context.Context, req resource.Me
 
 func (r *ImportListTMDBUserResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List TMDB User resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [TMDB User](https://wiki.servarr.com/radarr/supported#tmdbuserimport).",
+		MarkdownDescription: "<!-- subcategory:Import Lists -->\nImport List TMDB User resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [TMDB User](https://wiki.servarr.com/radarr/supported#tmdbuserimport).",
 		Attributes: map[string]schema.Attribute{
 			"enable_auto": schema.BoolAttribute{
 				MarkdownDescription: "Enable automatic add flag.",

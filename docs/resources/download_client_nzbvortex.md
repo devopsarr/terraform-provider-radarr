@@ -3,12 +3,14 @@
 page_title: "radarr_download_client_nzbvortex Resource - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
+  Download Client Nzbvortex resource.
   For more information refer to Download Client https://wiki.servarr.com/radarr/settings#download-clients and Nzbvortex https://wiki.servarr.com/radarr/supported#nzbvortex.
 ---
 
 # radarr_download_client_nzbvortex (Resource)
 
-<!-- subcategory:Download Clients -->Download Client Nzbvortex resource.
+<!-- subcategory:Download Clients -->
+Download Client Nzbvortex resource.
 For more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [Nzbvortex](https://wiki.servarr.com/radarr/supported#nzbvortex).
 
 ## Example Usage

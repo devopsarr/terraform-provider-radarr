@@ -3,12 +3,14 @@
 page_title: "radarr_download_client Resource - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
+  Generic Download Client resource. When possible use a specific resource instead.
   For more information refer to Download Client https://wiki.servarr.com/radarr/settings#download-clients.
 ---
 
 # radarr_download_client (Resource)
 
-<!-- subcategory:Download Clients -->Generic Download Client resource. When possible use a specific resource instead.
+<!-- subcategory:Download Clients -->
+Generic Download Client resource. When possible use a specific resource instead.
 For more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients).
 
 ## Example Usage

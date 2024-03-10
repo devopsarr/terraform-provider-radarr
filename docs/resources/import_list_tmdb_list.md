@@ -3,12 +3,14 @@
 page_title: "radarr_import_list_tmdb_list Resource - terraform-provider-radarr"
 subcategory: "Import Lists"
 description: |-
+  Import List TMDB List resource.
   For more information refer to Import List https://wiki.servarr.com/radarr/settings#import-lists and TMDB List https://wiki.servarr.com/radarr/supported#tmdblistimport.
 ---
 
 # radarr_import_list_tmdb_list (Resource)
 
-<!-- subcategory:Import Lists -->Import List TMDB List resource.
+<!-- subcategory:Import Lists -->
+Import List TMDB List resource.
 For more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [TMDB List](https://wiki.servarr.com/radarr/supported#tmdblistimport).
 
 ## Example Usage

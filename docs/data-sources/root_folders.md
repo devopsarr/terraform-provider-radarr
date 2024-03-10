@@ -3,12 +3,13 @@
 page_title: "radarr_root_folders Data Source - terraform-provider-radarr"
 subcategory: "Media Management"
 description: |-
-  
+  List all available Root Folders ../resources/root_folder.
 ---
 
 # radarr_root_folders (Data Source)
 
-<!-- subcategory:Media Management -->List all available [Root Folders](../resources/root_folder).
+<!-- subcategory:Media Management -->
+List all available [Root Folders](../resources/root_folder).
 
 ## Example Usage
 

@@ -3,12 +3,13 @@
 page_title: "radarr_media_management Data Source - terraform-provider-radarr"
 subcategory: "Media Management"
 description: |-
-  
+  Media Management ../resources/media_management.
 ---
 
 # radarr_media_management (Data Source)
 
-<!-- subcategory:Media Management -->[Media Management](../resources/media_management).
+<!-- subcategory:Media Management -->
+[Media Management](../resources/media_management).
 
 ## Example Usage
 

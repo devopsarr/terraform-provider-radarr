@@ -3,12 +3,13 @@
 page_title: "radarr_download_client Data Source - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
-  
+  Single Download Client ../resources/download_client.
 ---
 
 # radarr_download_client (Data Source)
 
-<!-- subcategory:Download Clients -->Single [Download Client](../resources/download_client).
+<!-- subcategory:Download Clients -->
+Single [Download Client](../resources/download_client).
 
 ## Example Usage
 

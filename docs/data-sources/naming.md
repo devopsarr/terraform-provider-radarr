@@ -3,12 +3,13 @@
 page_title: "radarr_naming Data Source - terraform-provider-radarr"
 subcategory: "Media Management"
 description: |-
-  
+  Naming ../resources/naming.
 ---
 
 # radarr_naming (Data Source)
 
-<!-- subcategory:Media Management -->[Naming](../resources/naming).
+<!-- subcategory:Media Management -->
+[Naming](../resources/naming).
 
 ## Example Usage
 

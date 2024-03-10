@@ -3,12 +3,14 @@
 page_title: "radarr_system_status Data Source - terraform-provider-radarr"
 subcategory: "System"
 description: |-
+  System Status resource. User must have rights to read config.xml.
   For more information refer to System Status https://wiki.servarr.com/radarr/system#status documentation.
 ---
 
 # radarr_system_status (Data Source)
 
-<!-- subcategory:System -->System Status resource. User must have rights to read `config.xml`.
+<!-- subcategory:System -->
+System Status resource. User must have rights to read `config.xml`.
 For more information refer to [System Status](https://wiki.servarr.com/radarr/system#status) documentation.
 
 ## Example Usage

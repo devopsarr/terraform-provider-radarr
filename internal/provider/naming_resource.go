@@ -51,7 +51,7 @@ func (r *NamingResource) Metadata(_ context.Context, req resource.MetadataReques
 
 func (r *NamingResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Media Management -->Naming resource.\nFor more information refer to [Naming](https://wiki.servarr.com/radarr/settings#community-naming-suggestions) documentation.",
+		MarkdownDescription: "<!-- subcategory:Media Management -->\nNaming resource.\nFor more information refer to [Naming](https://wiki.servarr.com/radarr/settings#community-naming-suggestions) documentation.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
 				MarkdownDescription: "Naming ID.",

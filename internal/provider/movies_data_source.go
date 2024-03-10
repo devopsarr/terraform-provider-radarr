@@ -40,7 +40,7 @@ func (d *MoviesDataSource) Metadata(_ context.Context, req datasource.MetadataRe
 func (d *MoviesDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "<!-- subcategory:Movies -->List all available [Movies](../resources/movie).",
+		MarkdownDescription: "<!-- subcategory:Movies -->\nList all available [Movies](../resources/movie).",
 		Attributes: map[string]schema.Attribute{
 			// TODO: remove ID once framework support tests without ID https://www.terraform.io/plugin/framework/acctests#implement-id-attribute
 			"id": schema.StringAttribute{

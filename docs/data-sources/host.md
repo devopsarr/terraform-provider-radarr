@@ -3,12 +3,13 @@
 page_title: "radarr_host Data Source - terraform-provider-radarr"
 subcategory: "System"
 description: |-
-  
+  Host ../resources/host.
 ---
 
 # radarr_host (Data Source)
 
-<!-- subcategory:System -->[Host](../resources/host).
+<!-- subcategory:System -->
+[Host](../resources/host).
 
 ## Example Usage
 

@@ -101,7 +101,7 @@ func (r *DownloadClientNzbvortexResource) Metadata(_ context.Context, req resour
 
 func (r *DownloadClientNzbvortexResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Download Clients -->Download Client Nzbvortex resource.\nFor more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [Nzbvortex](https://wiki.servarr.com/radarr/supported#nzbvortex).",
+		MarkdownDescription: "<!-- subcategory:Download Clients -->\nDownload Client Nzbvortex resource.\nFor more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [Nzbvortex](https://wiki.servarr.com/radarr/supported#nzbvortex).",
 		Attributes: map[string]schema.Attribute{
 			"enable": schema.BoolAttribute{
 				MarkdownDescription: "Enable flag.",

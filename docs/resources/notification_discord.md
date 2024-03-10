@@ -3,12 +3,14 @@
 page_title: "radarr_notification_discord Resource - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
+  Notification Discord resource.
   For more information refer to Notification https://wiki.servarr.com/radarr/settings#connect and Discord https://wiki.servarr.com/radarr/supported#discord.
 ---
 
 # radarr_notification_discord (Resource)
 
-<!-- subcategory:Notifications -->Notification Discord resource.
+<!-- subcategory:Notifications -->
+Notification Discord resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Discord](https://wiki.servarr.com/radarr/supported#discord).
 
 ## Example Usage

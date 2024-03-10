@@ -3,12 +3,14 @@
 page_title: "radarr_notification_apprise Resource - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
+  Notification Apprise resource.
   For more information refer to Notification https://wiki.servarr.com/radarr/settings#connect and Apprise https://wiki.servarr.com/radarr/supported#apprise.
 ---
 
 # radarr_notification_apprise (Resource)
 
-<!-- subcategory:Notifications -->Notification Apprise resource.
+<!-- subcategory:Notifications -->
+Notification Apprise resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Apprise](https://wiki.servarr.com/radarr/supported#apprise).
 
 ## Example Usage

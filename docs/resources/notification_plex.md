@@ -3,12 +3,14 @@
 page_title: "radarr_notification_plex Resource - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
+  Notification Plex resource.
   For more information refer to Notification https://wiki.servarr.com/radarr/settings#connect and Plex https://wiki.servarr.com/radarr/supported#plexserver.
 ---
 
 # radarr_notification_plex (Resource)
 
-<!-- subcategory:Notifications -->Notification Plex resource.
+<!-- subcategory:Notifications -->
+Notification Plex resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Plex](https://wiki.servarr.com/radarr/supported#plexserver).
 
 ## Example Usage

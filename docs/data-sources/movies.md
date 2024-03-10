@@ -3,12 +3,13 @@
 page_title: "radarr_movies Data Source - terraform-provider-radarr"
 subcategory: "Movies"
 description: |-
-  
+  List all available Movies ../resources/movie.
 ---
 
 # radarr_movies (Data Source)
 
-<!-- subcategory:Movies -->List all available [Movies](../resources/movie).
+<!-- subcategory:Movies -->
+List all available [Movies](../resources/movie).
 
 ## Example Usage
 

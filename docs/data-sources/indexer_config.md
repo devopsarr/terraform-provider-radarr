@@ -3,12 +3,13 @@
 page_title: "radarr_indexer_config Data Source - terraform-provider-radarr"
 subcategory: "Indexers"
 description: |-
-  
+  Indexer Config ../resources/indexer_config.
 ---
 
 # radarr_indexer_config (Data Source)
 
-<!-- subcategory:Indexers -->[Indexer Config](../resources/indexer_config).
+<!-- subcategory:Indexers -->
+[Indexer Config](../resources/indexer_config).
 
 ## Example Usage
 

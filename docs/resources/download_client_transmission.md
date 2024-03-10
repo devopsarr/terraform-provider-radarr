@@ -3,12 +3,14 @@
 page_title: "radarr_download_client_transmission Resource - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
+  Download Client Transmission resource.
   For more information refer to Download Client https://wiki.servarr.com/radarr/settings#download-clients and Transmission https://wiki.servarr.com/radarr/supported#transmission.
 ---
 
 # radarr_download_client_transmission (Resource)
 
-<!-- subcategory:Download Clients -->Download Client Transmission resource.
+<!-- subcategory:Download Clients -->
+Download Client Transmission resource.
 For more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [Transmission](https://wiki.servarr.com/radarr/supported#transmission).
 
 ## Example Usage

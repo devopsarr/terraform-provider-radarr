@@ -76,7 +76,7 @@ func (r *MetadataRoksboxResource) Metadata(_ context.Context, req resource.Metad
 
 func (r *MetadataRoksboxResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Metadata -->Metadata Roksbox resource.\nFor more information refer to [Metadata](https://wiki.servarr.com/radarr/settings#metadata) and [ROKSBOX](https://wiki.servarr.com/radarr/supported#roksboxmetadata).",
+		MarkdownDescription: "<!-- subcategory:Metadata -->\nMetadata Roksbox resource.\nFor more information refer to [Metadata](https://wiki.servarr.com/radarr/settings#metadata) and [ROKSBOX](https://wiki.servarr.com/radarr/supported#roksboxmetadata).",
 		Attributes: map[string]schema.Attribute{
 			"enable": schema.BoolAttribute{
 				MarkdownDescription: "Enable flag.",

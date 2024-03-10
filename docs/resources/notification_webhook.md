@@ -3,12 +3,14 @@
 page_title: "radarr_notification_webhook Resource - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
+  Notification Webhook resource.
   For more information refer to Notification https://wiki.servarr.com/radarr/settings#connect and Webhook https://wiki.servarr.com/radarr/supported#webhook.
 ---
 
 # radarr_notification_webhook (Resource)
 
-<!-- subcategory:Notifications -->Notification Webhook resource.
+<!-- subcategory:Notifications -->
+Notification Webhook resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Webhook](https://wiki.servarr.com/radarr/supported#webhook).
 
 ## Example Usage

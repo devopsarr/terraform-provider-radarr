@@ -94,7 +94,7 @@ func (r *NotificationSynologyResource) Metadata(_ context.Context, req resource.
 
 func (r *NotificationSynologyResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Notifications -->Notification Synology Indexer resource.\nFor more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Synology](https://wiki.servarr.com/radarr/supported#synologyindexer).",
+		MarkdownDescription: "<!-- subcategory:Notifications -->\nNotification Synology Indexer resource.\nFor more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Synology](https://wiki.servarr.com/radarr/supported#synologyindexer).",
 		Attributes: map[string]schema.Attribute{
 			"on_download": schema.BoolAttribute{
 				MarkdownDescription: "On download flag.",

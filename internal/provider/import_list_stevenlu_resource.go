@@ -98,7 +98,7 @@ func (r *ImportListStevenluResource) Metadata(_ context.Context, req resource.Me
 
 func (r *ImportListStevenluResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List Stevenlu resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Stevenlu](https://wiki.servarr.com/radarr/supported#stevenluimport).",
+		MarkdownDescription: "<!-- subcategory:Import Lists -->\nImport List Stevenlu resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Stevenlu](https://wiki.servarr.com/radarr/supported#stevenluimport).",
 		Attributes: map[string]schema.Attribute{
 			"enable_auto": schema.BoolAttribute{
 				MarkdownDescription: "Enable automatic add flag.",

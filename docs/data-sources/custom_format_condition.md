@@ -3,13 +3,15 @@
 page_title: "radarr_custom_format_condition Data Source - terraform-provider-radarr"
 subcategory: "Profiles"
 description: |-
+  Generic Custom Format Condition data source. When possible use a specific data source instead.
   For more information refer to Custom Format Conditions https://wiki.servarr.com/radarr/settings#conditions.
   To be used in conjunction with Custom Format ../resources/custom_format.
 ---
 
 # radarr_custom_format_condition (Data Source)
 
-<!-- subcategory:Profiles --> Generic Custom Format Condition data source. When possible use a specific data source instead.
+<!-- subcategory:Profiles -->
+ Generic Custom Format Condition data source. When possible use a specific data source instead.
 For more information refer to [Custom Format Conditions](https://wiki.servarr.com/radarr/settings#conditions).
  To be used in conjunction with [Custom Format](../resources/custom_format).
 

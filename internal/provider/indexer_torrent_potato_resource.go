@@ -108,7 +108,7 @@ func (r *IndexerTorrentPotatoResource) Metadata(_ context.Context, req resource.
 
 func (r *IndexerTorrentPotatoResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Indexers -->Indexer TorrentPotato resource.\nFor more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [TorrentPotato](https://wiki.servarr.com/radarr/supported#torrentpotato).",
+		MarkdownDescription: "<!-- subcategory:Indexers -->\nIndexer TorrentPotato resource.\nFor more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [TorrentPotato](https://wiki.servarr.com/radarr/supported#torrentpotato).",
 		Attributes: map[string]schema.Attribute{
 			"enable_automatic_search": schema.BoolAttribute{
 				MarkdownDescription: "Enable automatic search flag.",

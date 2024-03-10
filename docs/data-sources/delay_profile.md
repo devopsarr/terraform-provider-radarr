@@ -3,12 +3,13 @@
 page_title: "radarr_delay_profile Data Source - terraform-provider-radarr"
 subcategory: "Profiles"
 description: |-
-  
+  Single Delay Profile ../resources/delay_profile.
 ---
 
 # radarr_delay_profile (Data Source)
 
-<!-- subcategory:Profiles -->Single [Delay Profile](../resources/delay_profile).
+<!-- subcategory:Profiles -->
+Single [Delay Profile](../resources/delay_profile).
 
 ## Example Usage
 

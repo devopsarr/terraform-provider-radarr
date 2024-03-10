@@ -3,12 +3,14 @@
 page_title: "radarr_download_client_usenet_download_station Resource - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
+  Download Client UsenetDownloadStation resource.
   For more information refer to Download Client https://wiki.servarr.com/radarr/settings#download-clients and UsenetDownloadStation https://wiki.servarr.com/radarr/supported#usenetdownloadstation.
 ---
 
 # radarr_download_client_usenet_download_station (Resource)
 
-<!-- subcategory:Download Clients -->Download Client UsenetDownloadStation resource.
+<!-- subcategory:Download Clients -->
+Download Client UsenetDownloadStation resource.
 For more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [UsenetDownloadStation](https://wiki.servarr.com/radarr/supported#usenetdownloadstation).
 
 ## Example Usage

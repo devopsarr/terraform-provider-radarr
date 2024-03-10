@@ -98,7 +98,7 @@ func (r *ImportListCustomResource) Metadata(_ context.Context, req resource.Meta
 
 func (r *ImportListCustomResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List Custom resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Custom List](https://wiki.servarr.com/radarr/supported#radarrlistimport).",
+		MarkdownDescription: "<!-- subcategory:Import Lists -->\nImport List Custom resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Custom List](https://wiki.servarr.com/radarr/supported#radarrlistimport).",
 		Attributes: map[string]schema.Attribute{
 			"enable_auto": schema.BoolAttribute{
 				MarkdownDescription: "Enable automatic add flag.",

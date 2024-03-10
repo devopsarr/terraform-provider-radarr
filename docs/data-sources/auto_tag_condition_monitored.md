@@ -3,12 +3,14 @@
 page_title: "radarr_auto_tag_condition_monitored Data Source - terraform-provider-radarr"
 subcategory: "Tags"
 description: |-
+  Auto Tag Condition Monitored data source.
   For more intagion refer to Auto Tag Conditions https://wiki.servarr.com/radarr/settings#conditions.
 ---
 
 # radarr_auto_tag_condition_monitored (Data Source)
 
-<!-- subcategory:Tags --> Auto Tag Condition Monitored data source.
+<!-- subcategory:Tags -->
+ Auto Tag Condition Monitored data source.
 For more intagion refer to [Auto Tag Conditions](https://wiki.servarr.com/radarr/settings#conditions).
 
 ## Example Usage

@@ -3,12 +3,13 @@
 page_title: "radarr_quality_profile Data Source - terraform-provider-radarr"
 subcategory: "Profiles"
 description: |-
-  
+  Single Quality Profile ../resources/quality_profile.
 ---
 
 # radarr_quality_profile (Data Source)
 
-<!-- subcategory:Profiles -->Single [Quality Profile](../resources/quality_profile).
+<!-- subcategory:Profiles -->
+Single [Quality Profile](../resources/quality_profile).
 
 ## Example Usage
 

@@ -3,12 +3,14 @@
 page_title: "radarr_download_client_nzbget Resource - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
+  Download Client NZBGet resource.
   For more information refer to Download Client https://wiki.servarr.com/radarr/settings#download-clients and NZBGet https://wiki.servarr.com/radarr/supported#nzbget.
 ---
 
 # radarr_download_client_nzbget (Resource)
 
-<!-- subcategory:Download Clients -->Download Client NZBGet resource.
+<!-- subcategory:Download Clients -->
+Download Client NZBGet resource.
 For more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [NZBGet](https://wiki.servarr.com/radarr/supported#nzbget).
 
 ## Example Usage

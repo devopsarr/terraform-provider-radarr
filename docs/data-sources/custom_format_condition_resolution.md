@@ -3,12 +3,14 @@
 page_title: "radarr_custom_format_condition_resolution Data Source - terraform-provider-radarr"
 subcategory: "Profiles"
 description: |-
+  Custom Format Condition Resolution data source.
   For more information refer to Custom Format Conditions https://wiki.servarr.com/radarr/settings#conditions.
 ---
 
 # radarr_custom_format_condition_resolution (Data Source)
 
-<!-- subcategory:Profiles --> Custom Format Condition Resolution data source.
+<!-- subcategory:Profiles -->
+ Custom Format Condition Resolution data source.
 For more information refer to [Custom Format Conditions](https://wiki.servarr.com/radarr/settings#conditions).
 
 ## Example Usage

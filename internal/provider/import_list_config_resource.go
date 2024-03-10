@@ -47,7 +47,7 @@ func (r *ImportListConfigResource) Metadata(_ context.Context, req resource.Meta
 
 func (r *ImportListConfigResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List Config resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#completed-download-handling) documentation.",
+		MarkdownDescription: "<!-- subcategory:Import Lists -->\nImport List Config resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#completed-download-handling) documentation.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
 				MarkdownDescription: "Import List Config ID.",

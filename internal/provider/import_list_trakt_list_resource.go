@@ -119,7 +119,7 @@ func (r *ImportListTraktListResource) Metadata(_ context.Context, req resource.M
 
 func (r *ImportListTraktListResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Import Lists -->Import List TraktList resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Trakt List](https://wiki.servarr.com/radarr/supported#traktlistimport).",
+		MarkdownDescription: "<!-- subcategory:Import Lists -->\nImport List TraktList resource.\nFor more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Trakt List](https://wiki.servarr.com/radarr/supported#traktlistimport).",
 		Attributes: map[string]schema.Attribute{
 			"enable_auto": schema.BoolAttribute{
 				MarkdownDescription: "Enable automatic add flag.",

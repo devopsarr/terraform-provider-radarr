@@ -3,12 +3,14 @@
 page_title: "radarr_notification_prowl Resource - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
+  Notification Prowl resource.
   For more information refer to Notification https://wiki.servarr.com/radarr/settings#connect and Prowl https://wiki.servarr.com/radarr/supported#prowl.
 ---
 
 # radarr_notification_prowl (Resource)
 
-<!-- subcategory:Notifications -->Notification Prowl resource.
+<!-- subcategory:Notifications -->
+Notification Prowl resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Prowl](https://wiki.servarr.com/radarr/supported#prowl).
 
 ## Example Usage

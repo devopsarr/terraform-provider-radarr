@@ -129,7 +129,7 @@ func (r *IndexerResource) Metadata(_ context.Context, req resource.MetadataReque
 
 func (r *IndexerResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Indexers -->Generic Indexer resource. When possible use a specific resource instead.\nFor more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) documentation.",
+		MarkdownDescription: "<!-- subcategory:Indexers -->\nGeneric Indexer resource. When possible use a specific resource instead.\nFor more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) documentation.",
 		Attributes: map[string]schema.Attribute{
 			"enable_automatic_search": schema.BoolAttribute{
 				MarkdownDescription: "Enable automatic search flag.",

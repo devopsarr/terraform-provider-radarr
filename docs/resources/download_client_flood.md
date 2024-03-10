@@ -3,12 +3,14 @@
 page_title: "radarr_download_client_flood Resource - terraform-provider-radarr"
 subcategory: "Download Clients"
 description: |-
+  Download Client Flood resource.
   For more information refer to Download Client https://wiki.servarr.com/radarr/settings#download-clients and Flood https://wiki.servarr.com/radarr/supported#flood.
 ---
 
 # radarr_download_client_flood (Resource)
 
-<!-- subcategory:Download Clients -->Download Client Flood resource.
+<!-- subcategory:Download Clients -->
+Download Client Flood resource.
 For more information refer to [Download Client](https://wiki.servarr.com/radarr/settings#download-clients) and [Flood](https://wiki.servarr.com/radarr/supported#flood).
 
 ## Example Usage

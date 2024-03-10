@@ -3,12 +3,13 @@
 page_title: "radarr_custom_formats Data Source - terraform-provider-radarr"
 subcategory: "Profiles"
 description: |-
-  
+  List all available Custom Formats ../resources/custom_format.
 ---
 
 # radarr_custom_formats (Data Source)
 
-<!-- subcategory:Profiles -->List all available [Custom Formats](../resources/custom_format).
+<!-- subcategory:Profiles -->
+List all available [Custom Formats](../resources/custom_format).
 
 ## Example Usage
 

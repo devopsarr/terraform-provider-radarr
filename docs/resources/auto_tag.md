@@ -3,12 +3,14 @@
 page_title: "radarr_auto_tag Resource - terraform-provider-radarr"
 subcategory: "Tags"
 description: |-
+  Auto Tag resource.
   For more information refer to Tags https://wiki.servarr.com/radarr/settings#tags documentation.
 ---
 
 # radarr_auto_tag (Resource)
 
-<!-- subcategory:Tags -->Auto Tag resource.
+<!-- subcategory:Tags -->
+Auto Tag resource.
 For more information refer to [Tags](https://wiki.servarr.com/radarr/settings#tags) documentation.
 
 ## Example Usage

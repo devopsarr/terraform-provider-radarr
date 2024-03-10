@@ -35,7 +35,7 @@ func (d *MovieDataSource) Metadata(_ context.Context, req datasource.MetadataReq
 func (d *MovieDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "<!-- subcategory:Movies -->Single [Movie](../resources/movie).",
+		MarkdownDescription: "<!-- subcategory:Movies -->\nSingle [Movie](../resources/movie).",
 		Attributes: map[string]schema.Attribute{
 			"monitored": schema.BoolAttribute{
 				MarkdownDescription: "Monitored flag.",

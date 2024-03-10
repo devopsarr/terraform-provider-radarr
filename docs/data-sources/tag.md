@@ -3,12 +3,13 @@
 page_title: "radarr_tag Data Source - terraform-provider-radarr"
 subcategory: "Tags"
 description: |-
-  
+  Single Tag ../resources/tag.
 ---
 
 # radarr_tag (Data Source)
 
-<!-- subcategory:Tags -->Single [Tag](../resources/tag).
+<!-- subcategory:Tags -->
+Single [Tag](../resources/tag).
 
 ## Example Usage
 

@@ -3,12 +3,14 @@
 page_title: "radarr_import_list_tmdb_keyword Resource - terraform-provider-radarr"
 subcategory: "Import Lists"
 description: |-
+  Import List TMDB Keyword resource.
   For more information refer to Import List https://wiki.servarr.com/radarr/settings#import-lists and TMDB Keyword https://wiki.servarr.com/radarr/supported#tmdbkeywordimport.
 ---
 
 # radarr_import_list_tmdb_keyword (Resource)
 
-<!-- subcategory:Import Lists -->Import List TMDB Keyword resource.
+<!-- subcategory:Import Lists -->
+Import List TMDB Keyword resource.
 For more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [TMDB Keyword](https://wiki.servarr.com/radarr/supported#tmdbkeywordimport).
 
 ## Example Usage

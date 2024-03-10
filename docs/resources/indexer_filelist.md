@@ -3,12 +3,14 @@
 page_title: "radarr_indexer_filelist Resource - terraform-provider-radarr"
 subcategory: "Indexers"
 description: |-
+  Indexer FileList resource.
   For more information refer to Indexer https://wiki.servarr.com/radarr/settings#indexers and FileList https://wiki.servarr.com/radarr/supported#filelist.
 ---
 
 # radarr_indexer_filelist (Resource)
 
-<!-- subcategory:Indexers -->Indexer FileList resource.
+<!-- subcategory:Indexers -->
+Indexer FileList resource.
 For more information refer to [Indexer](https://wiki.servarr.com/radarr/settings#indexers) and [FileList](https://wiki.servarr.com/radarr/supported#filelist).
 
 ## Example Usage

@@ -3,12 +3,14 @@
 page_title: "radarr_delay_profile Resource - terraform-provider-radarr"
 subcategory: "Profiles"
 description: |-
+  Delay Profile resource.
   For more information refer to Delay Profiles https://wiki.servarr.com/radarr/settings#delay-profiles documentation.
 ---
 
 # radarr_delay_profile (Resource)
 
-<!-- subcategory:Profiles -->Delay Profile resource.
+<!-- subcategory:Profiles -->
+Delay Profile resource.
 For more information refer to [Delay Profiles](https://wiki.servarr.com/radarr/settings#delay-profiles) documentation.
 
 ## Example Usage

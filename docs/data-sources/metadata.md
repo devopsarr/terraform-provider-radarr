@@ -3,12 +3,13 @@
 page_title: "radarr_metadata Data Source - terraform-provider-radarr"
 subcategory: "Metadata"
 description: |-
-  
+  Single Metadata ../resources/metadata.
 ---
 
 # radarr_metadata (Data Source)
 
-<!-- subcategory:Metadata -->Single [Metadata](../resources/metadata).
+<!-- subcategory:Metadata -->
+Single [Metadata](../resources/metadata).
 
 ## Example Usage
 

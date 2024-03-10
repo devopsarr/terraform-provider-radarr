@@ -73,7 +73,7 @@ func (r *MetadataEmbyResource) Metadata(_ context.Context, req resource.Metadata
 
 func (r *MetadataEmbyResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "<!-- subcategory:Metadata -->Metadata Emby resource.\nFor more information refer to [Metadata](https://wiki.servarr.com/radarr/settings#metadata) and [Emby](https://wiki.servarr.com/radarr/supported#mediabrowsermetadata).",
+		MarkdownDescription: "<!-- subcategory:Metadata -->\nMetadata Emby resource.\nFor more information refer to [Metadata](https://wiki.servarr.com/radarr/settings#metadata) and [Emby](https://wiki.servarr.com/radarr/supported#mediabrowsermetadata).",
 		Attributes: map[string]schema.Attribute{
 			"enable": schema.BoolAttribute{
 				MarkdownDescription: "Enable flag.",

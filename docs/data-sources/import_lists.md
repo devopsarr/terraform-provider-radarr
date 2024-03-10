@@ -3,12 +3,13 @@
 page_title: "radarr_import_lists Data Source - terraform-provider-radarr"
 subcategory: "Import Lists"
 description: |-
-  
+  List all available Import Lists ../resources/import_list.
 ---
 
 # radarr_import_lists (Data Source)
 
-<!-- subcategory:Import Lists -->List all available [Import Lists](../resources/import_list).
+<!-- subcategory:Import Lists -->
+List all available [Import Lists](../resources/import_list).
 
 ## Example Usage
 

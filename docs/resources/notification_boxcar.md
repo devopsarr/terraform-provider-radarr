@@ -3,12 +3,14 @@
 page_title: "radarr_notification_boxcar Resource - terraform-provider-radarr"
 subcategory: "Notifications"
 description: |-
+  Notification Boxcar resource.
   For more information refer to Notification https://wiki.servarr.com/radarr/settings#connect and Boxcar https://wiki.servarr.com/radarr/supported#boxcar.
 ---
 
 # radarr_notification_boxcar (Resource)
 
-<!-- subcategory:Notifications -->Notification Boxcar resource.
+<!-- subcategory:Notifications -->
+Notification Boxcar resource.
 For more information refer to [Notification](https://wiki.servarr.com/radarr/settings#connect) and [Boxcar](https://wiki.servarr.com/radarr/supported#boxcar).
 
 ## Example Usage

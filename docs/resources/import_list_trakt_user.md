@@ -3,12 +3,14 @@
 page_title: "radarr_import_list_trakt_user Resource - terraform-provider-radarr"
 subcategory: "Import Lists"
 description: |-
+  Import List Trakt User resource.
   For more information refer to Import List https://wiki.servarr.com/radarr/settings#import-lists and Trakt User https://wiki.servarr.com/radarr/supported#traktuserimport.
 ---
 
 # radarr_import_list_trakt_user (Resource)
 
-<!-- subcategory:Import Lists -->Import List Trakt User resource.
+<!-- subcategory:Import Lists -->
+Import List Trakt User resource.
 For more information refer to [Import List](https://wiki.servarr.com/radarr/settings#import-lists) and [Trakt User](https://wiki.servarr.com/radarr/supported#traktuserimport).
 
 ## Example Usage
