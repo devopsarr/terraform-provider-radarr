@@ -41,5 +41,11 @@ const testUnauthorizedProvider = `
 provider "radarr" {
 	url = "http://localhost:7878"
 	api_key = "ErrorAPIKey"
+	extra_headers = [
+		{
+			name = "testName"
+			value = "testValue"
+		}
+	]
   }
 `
