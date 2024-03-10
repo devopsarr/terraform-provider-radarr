@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.2.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.1.0...v2.2.0) (2024-03-10)
+
+
+### Features
+
+* add fields to use client extra headers ([626afbf](https://github.com/devopsarr/terraform-provider-radarr/commit/626afbf2719a38c45355da6d0dd93ad881f9f89a))
+* move to context based authentication ([1da831a](https://github.com/devopsarr/terraform-provider-radarr/commit/1da831a3d2fddccc33cc1cf829f5834479e2ca57))
+* remove deprecated notification boxcar ([099a782](https://github.com/devopsarr/terraform-provider-radarr/commit/099a782d81d52046c86ab6652e4f51221384607f))
+* update go version to 1.21 ([382bfad](https://github.com/devopsarr/terraform-provider-radarr/commit/382bfad4669cda1dc00fec15731e756a7f21bbdf))
+
+
+### Bug Fixes
+
+* email notification encryption field ([70c768c](https://github.com/devopsarr/terraform-provider-radarr/commit/70c768cb5799e9231783d22e494b809edd0f2f5c))
+* update host authentication fields ([8d85262](https://github.com/devopsarr/terraform-provider-radarr/commit/8d852626aa28ce134a6cb4022ac85a0b38cd32a5))
+
 ## [2.1.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.0.1...v2.1.0) (2023-10-14)
 
 
