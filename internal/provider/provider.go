@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
@@ -31,8 +32,21 @@ type RadarrProvider struct {
 
 // Radarr describes the provider data model.
 type Radarr struct {
-	APIKey types.String `tfsdk:"api_key"`
-	URL    types.String `tfsdk:"url"`
+	ExtraHeaders types.Set    `tfsdk:"extra_headers"`
+	APIKey       types.String `tfsdk:"api_key"`
+	URL          types.String `tfsdk:"url"`
+}
+
+// ExtraHeader is part of Radarr.
+type ExtraHeader struct {
+	Name  types.String `tfsdk:"name"`
+	Value types.String `tfsdk:"value"`
+}
+
+// RadarrData defines auth and client to be used when connecting to Radarr.
+type RadarrData struct {
+	Auth   context.Context
+	Client *radarr.APIClient
 }
 
 func (p *RadarrProvider) Metadata(_ context.Context, _ provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -52,6 +66,22 @@ func (p *RadarrProvider) Schema(_ context.Context, _ provider.SchemaRequest, res
 			"url": schema.StringAttribute{
 				MarkdownDescription: "Full Radarr URL with protocol and port (e.g. `https://test.radarr.tv:7878`). You should **NOT** supply any path (`/api`), the SDK will use the appropriate paths. Can be specified via the `RADARR_URL` environment variable.",
 				Optional:            true,
+			},
+			"extra_headers": schema.SetNestedAttribute{
+				MarkdownDescription: "Extra headers to be sent along with all Radarr requests. If this attribute is unset, it can be specified via environment variables following this pattern `RADARR_EXTRA_HEADER_${Header-Name}=${Header-Value}`.",
+				Optional:            true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"name": schema.StringAttribute{
+							MarkdownDescription: "Header name.",
+							Required:            true,
+						},
+						"value": schema.StringAttribute{
+							MarkdownDescription: "Header value.",
+							Required:            true,
+						},
+					},
+				},
 			},
 		},
 	}
@@ -97,6 +127,26 @@ func (p *RadarrProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		return
 	}
 
+	// Init config
+	config := radarr.NewConfiguration()
+	// Check extra headers
+	if len(data.ExtraHeaders.Elements()) > 0 {
+		headers := make([]ExtraHeader, len(data.ExtraHeaders.Elements()))
+		resp.Diagnostics.Append(data.ExtraHeaders.ElementsAs(ctx, &headers, false)...)
+
+		for _, header := range headers {
+			config.AddDefaultHeader(header.Name.ValueString(), header.Value.ValueString())
+		}
+	} else {
+		env := os.Environ()
+		for _, v := range env {
+			if strings.HasPrefix(v, "RADARR_EXTRA_HEADER_") {
+				header := strings.Split(v, "=")
+				config.AddDefaultHeader(strings.TrimPrefix(header[0], "RADARR_EXTRA_HEADER_"), header[1])
+			}
+		}
+	}
+
 	// Set context for API calls
 	auth := context.WithValue(
 		context.Background(),
@@ -109,8 +159,13 @@ func (p *RadarrProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		"protocol": parsedAPIURL.Scheme,
 		"hostpath": parsedAPIURL.Host,
 	})
-	resp.DataSourceData = auth
-	resp.ResourceData = auth
+
+	radarrData := RadarrData{
+		Auth:   auth,
+		Client: radarr.NewAPIClient(config),
+	}
+	resp.DataSourceData = &radarrData
+	resp.ResourceData = &radarrData
 }
 
 func (p *RadarrProvider) Resources(_ context.Context) []func() resource.Resource {
@@ -326,17 +381,17 @@ func resourceConfigure(_ context.Context, req resource.ConfigureRequest, resp *r
 		return nil, nil
 	}
 
-	providerData, ok := req.ProviderData.(context.Context)
+	providerData, ok := req.ProviderData.(*RadarrData)
 	if !ok {
 		resp.Diagnostics.AddError(
 			helpers.UnexpectedResourceConfigureType,
-			fmt.Sprintf("Expected context.Context, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *RadarrData, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return nil, nil
 	}
 
-	return providerData, radarr.NewAPIClient(radarr.NewConfiguration())
+	return providerData.Auth, providerData.Client
 }
 
 func dataSourceConfigure(_ context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) (context.Context, *radarr.APIClient) {
@@ -345,15 +400,15 @@ func dataSourceConfigure(_ context.Context, req datasource.ConfigureRequest, res
 		return nil, nil
 	}
 
-	providerData, ok := req.ProviderData.(context.Context)
+	providerData, ok := req.ProviderData.(*RadarrData)
 	if !ok {
 		resp.Diagnostics.AddError(
 			helpers.UnexpectedDataSourceConfigureType,
-			fmt.Sprintf("Expected context.Context, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *RadarrData, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return nil, nil
 	}
 
-	return providerData, radarr.NewAPIClient(radarr.NewConfiguration())
+	return providerData.Auth, providerData.Client
 }

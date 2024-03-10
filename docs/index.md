@@ -16,6 +16,12 @@ The Radarr provider is used to interact with any [Radarr](https://radarr.video/)
 provider "radarr" {
   url     = "http://example.radarr.tv:8989"
   api_key = "APIkey-example"
+  extra_headers = [
+    {
+      name  = "exampleName"
+      value = "exanpleValue"
+    }
+  ]
 }
 ```
 
@@ -25,4 +31,13 @@ provider "radarr" {
 ### Optional
 
 - `api_key` (String, Sensitive) API key for Radarr authentication. Can be specified via the `RADARR_API_KEY` environment variable.
+- `extra_headers` (Attributes Set) Extra headers to be sent along with all Radarr requests. If this attribute is unset, it can be specified via environment variables following this pattern `RADARR_EXTRA_HEADER_${Header-Name}=${Header-Value}`. (see [below for nested schema](#nestedatt--extra_headers))
 - `url` (String) Full Radarr URL with protocol and port (e.g. `https://test.radarr.tv:7878`). You should **NOT** supply any path (`/api`), the SDK will use the appropriate paths. Can be specified via the `RADARR_URL` environment variable.
+
+<a id="nestedatt--extra_headers"></a>
+### Nested Schema for `extra_headers`
+
+Required:
+
+- `name` (String) Header name.
+- `value` (String) Header value.
