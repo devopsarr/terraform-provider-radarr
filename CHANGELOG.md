@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.1](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.2.0...v2.2.1) (2024-08-07)
+
+
+### Bug Fixes
+
+* bump golangci-lint version ([cffe831](https://github.com/devopsarr/terraform-provider-radarr/commit/cffe83177e7470597eb4f37150641bdd2dbc21d0))
+* correct goreleaser syntax ([42f3100](https://github.com/devopsarr/terraform-provider-radarr/commit/42f310022ea168ef5bc926c7a165c0f44d0138cf))
+
 ## [2.2.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.1.0...v2.2.0) (2024-03-10)
 
 
