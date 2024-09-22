@@ -1,8 +1,6 @@
 module github.com/devopsarr/terraform-provider-radarr
 
-go 1.22.0
-
-toolchain go1.23.1
+go 1.23.1
 
 require (
 	github.com/devopsarr/radarr-go v1.1.1
