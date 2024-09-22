@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.3.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.2.0...v2.3.0) (2024-09-22)
+
+
+### Features
+
+* add host log_size_limit attribute ([899ff03](https://github.com/devopsarr/terraform-provider-radarr/commit/899ff0327089e85d281932d174a8a7b2db1cb856))
+* add quality profile min_upgrade_format_score field ([b8ce1e7](https://github.com/devopsarr/terraform-provider-radarr/commit/b8ce1e7cac9e2c756063ee632ad2037d6f1095b8))
+* update to go 1.23.1 ([d1996ab](https://github.com/devopsarr/terraform-provider-radarr/commit/d1996abb66663e33efca4956068dcd5f0f0865c0))
+
+
+### Bug Fixes
+
+* bump golangci-lint version ([cffe831](https://github.com/devopsarr/terraform-provider-radarr/commit/cffe83177e7470597eb4f37150641bdd2dbc21d0))
+* correct goreleaser syntax ([42f3100](https://github.com/devopsarr/terraform-provider-radarr/commit/42f310022ea168ef5bc926c7a165c0f44d0138cf))
+* **deps:** update terraform-framework ([c056e7b](https://github.com/devopsarr/terraform-provider-radarr/commit/c056e7b6b247ec374ea705eccae2925d8be1d929))
+* **deps:** update terraform-framework ([5835bd0](https://github.com/devopsarr/terraform-provider-radarr/commit/5835bd0c4501a890e7b357ee97e51756c4b21089))
+
 ## [2.2.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.1.0...v2.2.0) (2024-03-10)
 
 
