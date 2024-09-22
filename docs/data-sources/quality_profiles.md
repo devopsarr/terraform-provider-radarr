@@ -37,6 +37,7 @@ Read-Only:
 - `id` (Number) Quality Profile ID.
 - `language` (Attributes) Language. (see [below for nested schema](#nestedatt--quality_profiles--language))
 - `min_format_score` (Number) Min format score.
+- `min_upgrade_format_score` (Number) Min upgrade format score.
 - `name` (String) Quality Profile Name.
 - `quality_groups` (Attributes List) Quality groups. (see [below for nested schema](#nestedatt--quality_profiles--quality_groups))
 - `upgrade_allowed` (Boolean) Upgrade allowed flag.
