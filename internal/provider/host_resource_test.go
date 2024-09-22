@@ -70,6 +70,7 @@ func testAccHostResourceConfig(name, password string) string {
 		}
 		logging = {
 			log_level = "info"
+			log_size_limit = 1
 		}
 		backup = {
 			folder = "/backup"

@@ -82,7 +82,7 @@ func (d *ImportListExclusionsDataSource) Configure(ctx context.Context, req data
 
 func (d *ImportListExclusionsDataSource) Read(ctx context.Context, _ datasource.ReadRequest, resp *datasource.ReadResponse) {
 	// Get importListExclusions current value
-	response, _, err := d.client.ImportExclusionsAPI.ListExclusions(d.auth).Execute()
+	response, _, err := d.client.ImportListExclusionAPI.ListExclusions(d.auth).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListExclusionsDataSourceName, err))
 

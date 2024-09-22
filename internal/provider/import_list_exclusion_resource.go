@@ -103,7 +103,7 @@ func (r *ImportListExclusionResource) Create(ctx context.Context, req resource.C
 	// Create new ImportListExclusion
 	request := importListExclusion.read()
 
-	response, _, err := r.client.ImportExclusionsAPI.CreateExclusions(r.auth).ImportExclusionsResource(*request).Execute()
+	response, _, err := r.client.ImportListExclusionAPI.CreateExclusions(r.auth).ImportListExclusionResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Create, importListExclusionResourceName, err))
 
@@ -127,7 +127,7 @@ func (r *ImportListExclusionResource) Read(ctx context.Context, req resource.Rea
 	}
 
 	// Get importListExclusion current value
-	response, _, err := r.client.ImportExclusionsAPI.GetExclusionsById(r.auth, int32(importListExclusion.ID.ValueInt64())).Execute()
+	response, _, err := r.client.ImportListExclusionAPI.GetExclusionsById(r.auth, int32(importListExclusion.ID.ValueInt64())).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, importListExclusionResourceName, err))
 
@@ -153,7 +153,7 @@ func (r *ImportListExclusionResource) Update(ctx context.Context, req resource.U
 	// Update ImportListExclusion
 	request := importListExclusion.read()
 
-	response, _, err := r.client.ImportExclusionsAPI.UpdateExclusions(r.auth, strconv.Itoa(int(request.GetId()))).ImportExclusionsResource(*request).Execute()
+	response, _, err := r.client.ImportListExclusionAPI.UpdateExclusions(r.auth, strconv.Itoa(int(request.GetId()))).ImportListExclusionResource(*request).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Update, importListExclusionResourceName, err))
 
@@ -176,7 +176,7 @@ func (r *ImportListExclusionResource) Delete(ctx context.Context, req resource.D
 	}
 
 	// Delete importListExclusion current value
-	_, err := r.client.ImportExclusionsAPI.DeleteExclusions(r.auth, int32(ID)).Execute()
+	_, err := r.client.ImportListExclusionAPI.DeleteExclusions(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListExclusionResourceName, err))
 
@@ -192,15 +192,15 @@ func (r *ImportListExclusionResource) ImportState(ctx context.Context, req resou
 	tflog.Trace(ctx, "imported "+importListExclusionResourceName+": "+req.ID)
 }
 
-func (i *ImportListExclusion) write(importListExclusion *radarr.ImportExclusionsResource) {
+func (i *ImportListExclusion) write(importListExclusion *radarr.ImportListExclusionResource) {
 	i.ID = types.Int64Value(int64(importListExclusion.GetId()))
 	i.TMDBID = types.Int64Value(int64(importListExclusion.GetTmdbId()))
 	i.Title = types.StringValue(importListExclusion.GetMovieTitle())
 	i.Year = types.Int64Value(int64(importListExclusion.GetMovieYear()))
 }
 
-func (i *ImportListExclusion) read() *radarr.ImportExclusionsResource {
-	exclusion := radarr.NewImportExclusionsResource()
+func (i *ImportListExclusion) read() *radarr.ImportListExclusionResource {
+	exclusion := radarr.NewImportListExclusionResource()
 	exclusion.SetId(int32(i.ID.ValueInt64()))
 	exclusion.SetMovieTitle(i.Title.ValueString())
 	exclusion.SetTmdbId(int32(i.TMDBID.ValueInt64()))
