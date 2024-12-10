@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.3.1](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.3.0...v2.3.1) (2024-12-10)
+
+
+### Bug Fixes
+
+* **#273:** allow smart colon replacement format ([c6dfb80](https://github.com/devopsarr/terraform-provider-radarr/commit/c6dfb80a9a75847f0bdf879d238e879b23cee65c))
+* **deps:** update module github.com/devopsarr/radarr-go to v1.1.2 ([24d4176](https://github.com/devopsarr/terraform-provider-radarr/commit/24d41760cfc38f1c993c18c4a5c83eabe9fc6e73))
+* **deps:** update module github.com/stretchr/testify to v1.10.0 ([9c510dd](https://github.com/devopsarr/terraform-provider-radarr/commit/9c510dd09628f1c7e1c3e8bf9759d267b75c1e81))
+
 ## [2.3.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.2.0...v2.3.0) (2024-09-22)
 
 
