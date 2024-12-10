@@ -47,7 +47,7 @@ func (d *NamingDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 				Computed:            true,
 			},
 			"colon_replacement_format": schema.StringAttribute{
-				MarkdownDescription: "Change how Radarr handles colon replacement. Valid values are: 'delete', 'dash', 'spaceDash', and 'spaceDashSpace'.",
+				MarkdownDescription: "Change how Radarr handles colon replacement.",
 				Computed:            true,
 			},
 			"movie_folder_format": schema.StringAttribute{

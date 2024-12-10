@@ -69,10 +69,10 @@ func (r *NamingResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 				Required:            true,
 			},
 			"colon_replacement_format": schema.StringAttribute{
-				MarkdownDescription: "Change how Radarr handles colon replacement. Valid values are: 'delete', 'dash', 'spaceDash', and 'spaceDashSpace'.",
+				MarkdownDescription: "Change how Radarr handles colon replacement. Valid values are: 'smart', 'delete', 'dash', 'spaceDash', and 'spaceDashSpace'.",
 				Required:            true,
 				Validators: []validator.String{
-					stringvalidator.OneOf("delete", "dash", "spaceDash", "spaceDashSpace"),
+					stringvalidator.OneOf("delete", "dash", "spaceDash", "spaceDashSpace", "smart"),
 				},
 			},
 			"movie_folder_format": schema.StringAttribute{
