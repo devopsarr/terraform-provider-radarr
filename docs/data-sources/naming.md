@@ -23,7 +23,7 @@ data "radarr_naming" "example" {
 
 ### Read-Only
 
-- `colon_replacement_format` (String) Change how Radarr handles colon replacement. Valid values are: 'delete', 'dash', 'spaceDash', and 'spaceDashSpace'.
+- `colon_replacement_format` (String) Change how Radarr handles colon replacement.
 - `id` (Number) Delay Profile ID.
 - `movie_folder_format` (String) Movie folder format.
 - `rename_movies` (Boolean) Radarr will use the existing file name if false.
