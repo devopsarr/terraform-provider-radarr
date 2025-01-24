@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.2](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.3.1...v2.3.2) (2025-01-24)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/devopsarr/radarr-go to v1.2.0 ([a4bcd3e](https://github.com/devopsarr/terraform-provider-radarr/commit/a4bcd3ebec2cffeca6faceae8fe485aa2e3d7863))
+
 ## [2.3.1](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.3.0...v2.3.1) (2024-12-10)
 
 
