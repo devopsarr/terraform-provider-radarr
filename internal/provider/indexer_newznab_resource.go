@@ -70,7 +70,7 @@ func (i IndexerNewznab) toIndexer() *Indexer {
 		Name:                    i.Name,
 		AdditionalParameters:    i.AdditionalParameters,
 		APIKey:                  i.APIKey,
-		APIPath:                 i.APIKey,
+		APIPath:                 i.APIPath,
 		BaseURL:                 i.BaseURL,
 		MultiLanguages:          i.MultiLanguages,
 		Categories:              i.Categories,
