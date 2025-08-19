@@ -55,6 +55,7 @@ func testAccIndexerTorrentRssResourceConfig(name, url string) string {
 	return fmt.Sprintf(`
 	resource "radarr_indexer_torrent_rss" "test" {
 		enable_rss = false
+		priority = 1
 		name = "%s"
 		base_url = "%s"
 		allow_zero_size = true

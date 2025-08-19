@@ -73,6 +73,7 @@ func testAccIndexerResourceConfig(name, aSearch string) string {
 
 	resource "radarr_indexer" "test_sensitive" {
 		enable_automatic_search = false
+		priority = 1
 		name = "%sWithSensitive"
 		base_url = "https://filelist.io"
 		username = "test"

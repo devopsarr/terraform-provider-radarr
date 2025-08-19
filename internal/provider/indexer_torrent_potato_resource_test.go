@@ -56,6 +56,7 @@ func testAccIndexerTorrentPotatoResourceConfig(name string, seeders int) string 
 	return fmt.Sprintf(`
 	resource "radarr_indexer_torrent_potato" "test" {
 		enable_automatic_search = false
+		priority = 1
 		name = "%s"
 		base_url = "http://127.0.0.1"
 		user = "testUser"

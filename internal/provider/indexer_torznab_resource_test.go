@@ -56,6 +56,7 @@ func testAccIndexerTorznabResourceConfig(name string, seeders int) string {
 	resource "radarr_indexer_torznab" "test" {
 		enable_automatic_search = false
 		name = "%s"
+		priority = 1
 		base_url = "https://feed.animetosho.org"
 		api_path = "/nabapi"
 		minimum_seeders = %d

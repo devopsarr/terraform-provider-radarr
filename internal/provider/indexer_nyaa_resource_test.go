@@ -55,6 +55,7 @@ func testAccIndexerNyaaResourceConfig(name, url string) string {
 	return fmt.Sprintf(`
 	resource "radarr_indexer_nyaa" "test" {
 		enable_automatic_search = false
+		priority = 1
 		name = "%s"
 		base_url = "%s"
 		minimum_seeders = 1
