@@ -55,6 +55,7 @@ func testAccIndexerPassThePopcornResourceConfig(name string, seeders int) string
 	return fmt.Sprintf(`
 	resource "radarr_indexer_pass_the_popcorn" "test" {
 		enable_automatic_search = false
+		priority = 1
 		name = "%s"
 		base_url = "https://passthepopcorn.me"
 		api_user = "test"

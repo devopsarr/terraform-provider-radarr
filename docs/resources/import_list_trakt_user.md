@@ -55,7 +55,6 @@ resource "radarr_import_list_trakt_user" "example" {
 - `refresh_token` (String, Sensitive) Refresh token.
 - `search_on_add` (Boolean) Search on add flag.
 - `tags` (Set of Number) List of associated tags.
-- `trakt_additional_parameters` (String) Trakt additional parameters.
 - `trakt_list_type` (Number) Trakt list type.`0` UserWatchList, `1` UserWatchedList, `2` UserCollectionList.
 - `username` (String) Username.
 

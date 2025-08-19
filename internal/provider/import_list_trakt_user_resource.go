@@ -44,51 +44,49 @@ type ImportListTraktUserResource struct {
 
 // ImportListTraktUser describes the import list data model.
 type ImportListTraktUser struct {
-	Tags                      types.Set    `tfsdk:"tags"`
-	Name                      types.String `tfsdk:"name"`
-	Monitor                   types.String `tfsdk:"monitor"`
-	MinimumAvailability       types.String `tfsdk:"minimum_availability"`
-	RootFolderPath            types.String `tfsdk:"root_folder_path"`
-	AuthUser                  types.String `tfsdk:"auth_user"`
-	TraktAdditionalParameters types.String `tfsdk:"trakt_additional_parameters"`
-	AccessToken               types.String `tfsdk:"access_token"`
-	RefreshToken              types.String `tfsdk:"refresh_token"`
-	Expires                   types.String `tfsdk:"expires"`
-	Username                  types.String `tfsdk:"username"`
-	TraktListType             types.Int64  `tfsdk:"trakt_list_type"`
-	Limit                     types.Int64  `tfsdk:"limit"`
-	ListOrder                 types.Int64  `tfsdk:"list_order"`
-	ID                        types.Int64  `tfsdk:"id"`
-	QualityProfileID          types.Int64  `tfsdk:"quality_profile_id"`
-	Enabled                   types.Bool   `tfsdk:"enabled"`
-	EnableAuto                types.Bool   `tfsdk:"enable_auto"`
-	SearchOnAdd               types.Bool   `tfsdk:"search_on_add"`
+	Tags                types.Set    `tfsdk:"tags"`
+	Name                types.String `tfsdk:"name"`
+	Monitor             types.String `tfsdk:"monitor"`
+	MinimumAvailability types.String `tfsdk:"minimum_availability"`
+	RootFolderPath      types.String `tfsdk:"root_folder_path"`
+	AuthUser            types.String `tfsdk:"auth_user"`
+	AccessToken         types.String `tfsdk:"access_token"`
+	RefreshToken        types.String `tfsdk:"refresh_token"`
+	Expires             types.String `tfsdk:"expires"`
+	Username            types.String `tfsdk:"username"`
+	TraktListType       types.Int64  `tfsdk:"trakt_list_type"`
+	Limit               types.Int64  `tfsdk:"limit"`
+	ListOrder           types.Int64  `tfsdk:"list_order"`
+	ID                  types.Int64  `tfsdk:"id"`
+	QualityProfileID    types.Int64  `tfsdk:"quality_profile_id"`
+	Enabled             types.Bool   `tfsdk:"enabled"`
+	EnableAuto          types.Bool   `tfsdk:"enable_auto"`
+	SearchOnAdd         types.Bool   `tfsdk:"search_on_add"`
 }
 
 func (i ImportListTraktUser) toImportList() *ImportList {
 	return &ImportList{
-		Tags:                      i.Tags,
-		Name:                      i.Name,
-		Monitor:                   i.Monitor,
-		MinimumAvailability:       i.MinimumAvailability,
-		RootFolderPath:            i.RootFolderPath,
-		ListOrder:                 i.ListOrder,
-		RefreshToken:              i.RefreshToken,
-		AccessToken:               i.AccessToken,
-		Expires:                   i.Expires,
-		AuthUser:                  i.AuthUser,
-		TraktAdditionalParameters: i.TraktAdditionalParameters,
-		Username:                  i.Username,
-		TraktListType:             i.TraktListType,
-		Limit:                     i.Limit,
-		ID:                        i.ID,
-		QualityProfileID:          i.QualityProfileID,
-		Enabled:                   i.Enabled,
-		EnableAuto:                i.EnableAuto,
-		SearchOnAdd:               i.SearchOnAdd,
-		Implementation:            types.StringValue(importListTraktUserImplementation),
-		ConfigContract:            types.StringValue(importListTraktUserConfigContract),
-		ListType:                  types.StringValue(importListTraktUserType),
+		Tags:                i.Tags,
+		Name:                i.Name,
+		Monitor:             i.Monitor,
+		MinimumAvailability: i.MinimumAvailability,
+		RootFolderPath:      i.RootFolderPath,
+		ListOrder:           i.ListOrder,
+		RefreshToken:        i.RefreshToken,
+		AccessToken:         i.AccessToken,
+		Expires:             i.Expires,
+		AuthUser:            i.AuthUser,
+		Username:            i.Username,
+		TraktListType:       i.TraktListType,
+		Limit:               i.Limit,
+		ID:                  i.ID,
+		QualityProfileID:    i.QualityProfileID,
+		Enabled:             i.Enabled,
+		EnableAuto:          i.EnableAuto,
+		SearchOnAdd:         i.SearchOnAdd,
+		Implementation:      types.StringValue(importListTraktUserImplementation),
+		ConfigContract:      types.StringValue(importListTraktUserConfigContract),
+		ListType:            types.StringValue(importListTraktUserType),
 	}
 }
 
@@ -102,7 +100,6 @@ func (i *ImportListTraktUser) fromImportList(importList *ImportList) {
 	i.AccessToken = importList.AccessToken
 	i.Expires = importList.Expires
 	i.AuthUser = importList.AuthUser
-	i.TraktAdditionalParameters = importList.TraktAdditionalParameters
 	i.Username = importList.Username
 	i.TraktListType = importList.TraktListType
 	i.Limit = importList.Limit
@@ -216,11 +213,6 @@ func (r *ImportListTraktUserResource) Schema(_ context.Context, _ resource.Schem
 			},
 			"expires": schema.StringAttribute{
 				MarkdownDescription: "Expires.",
-				Optional:            true,
-				Computed:            true,
-			},
-			"trakt_additional_parameters": schema.StringAttribute{
-				MarkdownDescription: "Trakt additional parameters.",
 				Optional:            true,
 				Computed:            true,
 			},

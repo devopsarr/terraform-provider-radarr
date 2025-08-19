@@ -56,6 +56,7 @@ func testAccIndexerHdbitsResourceConfig(name, username string) string {
 	return fmt.Sprintf(`
 	resource "radarr_indexer_hdbits" "test" {
 		enable_automatic_search = false
+		priority = 1
 		name = "%s"
 		base_url = "https://hdbits.org"
 		username = "%s"
