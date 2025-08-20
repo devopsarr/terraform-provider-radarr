@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.3.3](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.3.2...v2.3.3) (2025-08-20)
+
+
+### Bug Fixes
+
+* APIPath mapping ([99de355](https://github.com/devopsarr/terraform-provider-radarr/commit/99de3550ea9139e19df68ff682d801d44c022101))
+* remove trakt_additional_parameters from trakt user and list resource ([02d9a2b](https://github.com/devopsarr/terraform-provider-radarr/commit/02d9a2be7916bb5b9807de182566981d82c47b6e))
+
 ## [2.3.2](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.3.1...v2.3.2) (2025-01-24)
 
 
