@@ -2,7 +2,7 @@
 version: "3.9"
 services:
   radarr:
-    image: ghcr.io/hotio/radarr:release-5.26.2.10099@sha256:200b1061623859944f4a3d8952eacca3cf4ff552582d34ba4146b2e08c75bdb6
+    image: ghcr.io/hotio/radarr:release-5.26.2.10099@sha256:e1f1c89eea5bfaaf61772d819db6720fd864eab63a34fe3eabe35c45869fa1f1
     container_name: radarr
     depends_on:
       - transmission
