@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.3.4](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.3.3...v2.3.4) (2025-09-13)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/devopsarr/radarr-go to v1.2.1 ([5963ce8](https://github.com/devopsarr/terraform-provider-radarr/commit/5963ce81fc04de658e824d13bc50b278a3f9b57e))
+* **deps:** update module github.com/stretchr/testify to v1.11.1 ([2d128a1](https://github.com/devopsarr/terraform-provider-radarr/commit/2d128a1fee001c63e98a925474a97c18cfad997e))
+
 ## [2.3.3](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.3.2...v2.3.3) (2025-08-20)
 
 
