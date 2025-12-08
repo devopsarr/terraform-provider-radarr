@@ -332,8 +332,7 @@ func (m *Movie) write(ctx context.Context, movie *radarr.MovieResource, diags *d
 	m.Website = types.StringValue(movie.GetWebsite())
 	language := QualityLanguage{}
 	language.write(movie.OriginalLanguage)
-	m.OriginalLanguage, tempDiag = types.ObjectValueFrom(ctx, QualityLanguage{}.getType().(attr.TypeWithAttributeTypes).AttributeTypes(), language)
-	diags.Append(tempDiag...)
+	assignObjectValue(ctx, diags, &m.OriginalLanguage, "language", language, QualityLanguage{}.getType())
 	m.Genres, tempDiag = types.SetValueFrom(ctx, types.StringType, movie.GetGenres())
 	diags.Append(tempDiag...)
 	m.Tags, tempDiag = types.SetValueFrom(ctx, types.Int64Type, movie.GetTags())

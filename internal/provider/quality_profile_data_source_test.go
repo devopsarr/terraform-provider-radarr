@@ -30,7 +30,7 @@ func TestAccQualityProfileDataSource(t *testing.T) {
 				Config: testAccQualityProfileDataSourceConfig("Any"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.radarr_quality_profile.test", "id"),
-					resource.TestCheckResourceAttr("data.radarr_quality_profile.test", "language.id", "1")),
+					resource.TestCheckResourceAttr("data.radarr_quality_profile.test", "language.id", "-2")),
 			},
 		},
 	})

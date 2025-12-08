@@ -434,8 +434,7 @@ func (p *QualityProfile) write(ctx context.Context, profile *radarr.QualityProfi
 	language := QualityLanguage{}
 	language.write(profile.Language)
 
-	p.Language, tempDiag = types.ObjectValueFrom(ctx, language.getType().(attr.TypeWithAttributeTypes).AttributeTypes(), language)
-	diags.Append(tempDiag...)
+	assignObjectValue(ctx, diags, &p.Language, "language", language, QualityLanguage{}.getType())
 	p.QualityGroups, tempDiag = types.ListValueFrom(ctx, QualityGroup{}.getType(), qualityGroups)
 	diags.Append(tempDiag...)
 	p.FormatItems, tempDiag = types.SetValueFrom(ctx, FormatItem{}.getType(), formatItems)
