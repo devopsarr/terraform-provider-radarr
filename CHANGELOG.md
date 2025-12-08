@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.3.4](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.3.3...v2.3.4) (2025-12-08)
+
+
+### Bug Fixes
+
+* bump golangci-lint to v2 ([aec8150](https://github.com/devopsarr/terraform-provider-radarr/commit/aec8150f25be2742c4eb511859316a775f7087bb))
+* **deps:** update module github.com/devopsarr/radarr-go to v1.2.1 ([5963ce8](https://github.com/devopsarr/terraform-provider-radarr/commit/5963ce81fc04de658e824d13bc50b278a3f9b57e))
+* **deps:** update module github.com/stretchr/testify to v1.11.1 ([2d128a1](https://github.com/devopsarr/terraform-provider-radarr/commit/2d128a1fee001c63e98a925474a97c18cfad997e))
+* Switch mixed up examples for media-management and naming ([2f620f8](https://github.com/devopsarr/terraform-provider-radarr/commit/2f620f807c6f6f7bd58bebd678d5a5ba27f8c7e7))
+* v6 tests changed requirements ([7538261](https://github.com/devopsarr/terraform-provider-radarr/commit/753826147664a4713a9b783e32f23a3632c82511))
+
 ## [2.3.3](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.3.2...v2.3.3) (2025-08-20)
 
 
