@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.5](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.3.4...v2.3.5) (2026-02-01)
+
+
+### Bug Fixes
+
+* **#304:** remove duplicate allowed formats from quality profile ([651d19d](https://github.com/devopsarr/terraform-provider-radarr/commit/651d19d5d983fa5414c69eecff9afdf413590497))
+
 ## [2.3.4](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.3.3...v2.3.4) (2025-12-08)
 
 
