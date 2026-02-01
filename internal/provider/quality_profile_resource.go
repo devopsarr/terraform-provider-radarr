@@ -524,6 +524,7 @@ func (p *QualityProfile) read(ctx context.Context, qualitiesIDs []int32, formatI
 	formatItems := make([]radarr.ProfileFormatItemResource, 0, len(formats))
 	for _, f := range formats {
 		formatItems = append(formatItems, *f.read())
+		allowedFormats = append(allowedFormats, int32(f.Format.ValueInt64()))
 	}
 
 	// Fill with irrelevant formats
