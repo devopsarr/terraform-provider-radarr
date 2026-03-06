@@ -157,7 +157,7 @@ func (p *RadarrProvider) Configure(ctx context.Context, req provider.ConfigureRe
 	)
 	auth = context.WithValue(auth, radarr.ContextServerVariables, map[string]string{
 		"protocol": parsedAPIURL.Scheme,
-		"hostpath": parsedAPIURL.Host,
+		"hostpath": parsedAPIURL.Host + parsedAPIURL.Path,
 	})
 
 	radarrData := RadarrData{
