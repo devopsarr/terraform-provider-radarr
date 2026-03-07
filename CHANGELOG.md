@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.6](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.3.5...v2.3.6) (2026-03-06)
+
+
+### Bug Fixes
+
+* update hostpath to include URL path in configuration when needed ([4280a8b](https://github.com/devopsarr/terraform-provider-radarr/commit/4280a8b14e4cf49ee8d673ec4fc226b1cd67e2bd))
+
 ## [2.3.5](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.3.4...v2.3.5) (2026-02-01)
 
 
