@@ -36,6 +36,7 @@ resource "radarr_download_client_transmission" "example" {
 ### Optional
 
 - `add_paused` (Boolean) Add paused flag.
+- `category` (String) Category.
 - `enable` (Boolean) Enable flag.
 - `host` (String) host.
 - `movie_category` (String) Movie category.

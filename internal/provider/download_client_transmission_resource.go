@@ -49,6 +49,7 @@ type DownloadClientTransmission struct {
 	URLBase                  types.String `tfsdk:"url_base"`
 	Username                 types.String `tfsdk:"username"`
 	Password                 types.String `tfsdk:"password"`
+	Category                 types.String `tfsdk:"category"`
 	MovieCategory            types.String `tfsdk:"movie_category"`
 	MovieDirectory           types.String `tfsdk:"movie_directory"`
 	RecentMoviePriority      types.Int64  `tfsdk:"recent_movie_priority"`
@@ -71,6 +72,7 @@ func (d DownloadClientTransmission) toDownloadClient() *DownloadClient {
 		URLBase:                  d.URLBase,
 		Username:                 d.Username,
 		Password:                 d.Password,
+		Category:                 d.Category,
 		MovieCategory:            d.MovieCategory,
 		MovieDirectory:           d.MovieDirectory,
 		RecentMoviePriority:      d.RecentMoviePriority,
@@ -96,6 +98,7 @@ func (d *DownloadClientTransmission) fromDownloadClient(client *DownloadClient) 
 	d.URLBase = client.URLBase
 	d.Username = client.Username
 	d.Password = client.Password
+	d.Category = client.Category
 	d.MovieCategory = client.MovieCategory
 	d.MovieDirectory = client.MovieDirectory
 	d.RecentMoviePriority = client.RecentMoviePriority
@@ -215,6 +218,11 @@ func (r *DownloadClientTransmissionResource) Schema(_ context.Context, _ resourc
 			},
 			"movie_directory": schema.StringAttribute{
 				MarkdownDescription: "Movie directory.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"category": schema.StringAttribute{
+				MarkdownDescription: "Category.",
 				Optional:            true,
 				Computed:            true,
 			},

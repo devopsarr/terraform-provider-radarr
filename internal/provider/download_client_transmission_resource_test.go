@@ -17,28 +17,30 @@ func TestAccDownloadClientTransmissionResource(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Unauthorized Create
 			{
-				Config:      testAccDownloadClientTransmissionResourceConfig("error", "false") + testUnauthorizedProvider,
+				Config:      testAccDownloadClientTransmissionResourceConfig("error", "false", "radarr") + testUnauthorizedProvider,
 				ExpectError: regexp.MustCompile("Client Error"),
 			},
 			// Create and Read testing
 			{
-				Config: testAccDownloadClientTransmissionResourceConfig("resourceTransmissionTest", "false"),
+				Config: testAccDownloadClientTransmissionResourceConfig("resourceTransmissionTest", "false", "radarr"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("radarr_download_client_transmission.test", "enable", "false"),
 					resource.TestCheckResourceAttr("radarr_download_client_transmission.test", "url_base", "/transmission/"),
+					resource.TestCheckResourceAttr("radarr_download_client_transmission.test", "category", "radarr"),
 					resource.TestCheckResourceAttrSet("radarr_download_client_transmission.test", "id"),
 				),
 			},
 			// Unauthorized Read
 			{
-				Config:      testAccDownloadClientTransmissionResourceConfig("error", "false") + testUnauthorizedProvider,
+				Config:      testAccDownloadClientTransmissionResourceConfig("error", "false", "radarr") + testUnauthorizedProvider,
 				ExpectError: regexp.MustCompile("Client Error"),
 			},
 			// Update and Read testing
 			{
-				Config: testAccDownloadClientTransmissionResourceConfig("resourceTransmissionTest", "true"),
+				Config: testAccDownloadClientTransmissionResourceConfig("resourceTransmissionTest", "true", "radarr-updated"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("radarr_download_client_transmission.test", "enable", "true"),
+					resource.TestCheckResourceAttr("radarr_download_client_transmission.test", "category", "radarr-updated"),
 				),
 			},
 			// ImportState testing
@@ -52,7 +54,7 @@ func TestAccDownloadClientTransmissionResource(t *testing.T) {
 	})
 }
 
-func testAccDownloadClientTransmissionResourceConfig(name, enable string) string {
+func testAccDownloadClientTransmissionResourceConfig(name, enable, category string) string {
 	return fmt.Sprintf(`
 	resource "radarr_download_client_transmission" "test" {
 		enable = %s
@@ -61,5 +63,6 @@ func testAccDownloadClientTransmissionResourceConfig(name, enable string) string
 		host = "transmission"
 		url_base = "/transmission/"
 		port = 9091
-	}`, enable, name)
+		category = "%s"
+	}`, enable, name, category)
 }
