@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.3.6...v2.4.0) (2026-03-12)
+
+
+### Features
+
+* **notification:** add access_token field to ntfy notification resource ([68723d1](https://github.com/devopsarr/terraform-provider-radarr/commit/68723d1820e425ef10103a6c356684af3308e884))
+
 ## [2.3.6](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.3.5...v2.3.6) (2026-03-06)
 
 
