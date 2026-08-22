@@ -25,6 +25,8 @@ func TestAccNotificationEmbyResource(t *testing.T) {
 				Config: testAccNotificationEmbyResourceConfig("resourceEmbyTest", "token123"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("radarr_notification_emby.test", "api_key", "token123"),
+					resource.TestCheckResourceAttr("radarr_notification_emby.test", "map_from", "/movies"),
+					resource.TestCheckResourceAttr("radarr_notification_emby.test", "map_to", "/media/movies"),
 					resource.TestCheckResourceAttrSet("radarr_notification_emby.test", "id"),
 				),
 			},
@@ -72,5 +74,9 @@ func testAccNotificationEmbyResourceConfig(name, token string) string {
 		host = "emby.lcl"
 		port = 8096
 		api_key = "%s"
+
+		update_library = true
+		map_from       = "/movies"
+		map_to         = "/media/movies"
 	}`, name, token)
 }
