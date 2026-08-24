@@ -31,6 +31,11 @@ resource "radarr_notification_plex" "example" {
   host       = "plex.lcl"
   port       = 32400
   auth_token = "AuthTOKEN"
+
+  # Path mapping is only applied when update_library is enabled.
+  update_library = true
+  map_from       = "/movies"
+  map_to         = "/media/movies"
 }
 ```
 
@@ -47,6 +52,8 @@ resource "radarr_notification_plex" "example" {
 ### Optional
 
 - `include_health_warnings` (Boolean) Include health warnings.
+- `map_from` (String) Map from. Radarr path, used to modify movie paths when Plex sees library path location differently from Radarr (Requires 'Update Library')
+- `map_to` (String) Map to. Plex path, used to modify movie paths when Plex sees library path location differently from Radarr (Requires 'Update Library')
 - `on_download` (Boolean) On download flag.
 - `on_movie_added` (Boolean) On movie added flag.
 - `on_movie_file_delete` (Boolean) On movie file delete flag.

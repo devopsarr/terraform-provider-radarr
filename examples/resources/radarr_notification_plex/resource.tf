@@ -13,4 +13,10 @@ resource "radarr_notification_plex" "example" {
   host       = "plex.lcl"
   port       = 32400
   auth_token = "AuthTOKEN"
+
+  # optional path mapping, for when Radarr and Plex see the library at different
+  # paths. only applied when update_library is enabled.
+  update_library = true
+  map_from       = "/movies"
+  map_to         = "/media/movies"
 }

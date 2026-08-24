@@ -34,6 +34,11 @@ resource "radarr_notification_emby" "example" {
   host    = "emby.lcl"
   port    = 8096
   api_key = "API_Key"
+
+  # Path mapping is only applied when update_library is enabled.
+  update_library = true
+  map_from       = "/movies"
+  map_to         = "/media/movies"
 }
 ```
 
@@ -50,6 +55,8 @@ resource "radarr_notification_emby" "example" {
 ### Optional
 
 - `include_health_warnings` (Boolean) Include health warnings.
+- `map_from` (String) Map from. Radarr path, used to modify movie paths when Jellyfin sees library path location differently from Radarr (Requires 'Update Library')
+- `map_to` (String) Map to. Jellyfin path, used to modify movie paths when Jellyfin sees library path location differently from Radarr (Requires 'Update Library')
 - `notify` (Boolean) Notify flag.
 - `on_application_update` (Boolean) On application update flag.
 - `on_download` (Boolean) On download flag.

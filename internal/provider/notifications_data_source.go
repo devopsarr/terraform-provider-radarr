@@ -338,11 +338,11 @@ func (d *NotificationsDataSource) Schema(_ context.Context, _ datasource.SchemaR
 							Computed:            true,
 						},
 						"map_from": schema.StringAttribute{
-							MarkdownDescription: "Map From.",
+							MarkdownDescription: "Map from. Radarr path, used to modify movie paths when the media server sees library path location differently from Radarr (Requires 'Update Library')",
 							Computed:            true,
 						},
 						"map_to": schema.StringAttribute{
-							MarkdownDescription: "Map To.",
+							MarkdownDescription: "Map to. Media server path, used to modify movie paths when the media server sees library path location differently from Radarr (Requires 'Update Library')",
 							Computed:            true,
 						},
 						"key": schema.StringAttribute{

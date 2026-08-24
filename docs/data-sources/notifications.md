@@ -74,8 +74,8 @@ Read-Only:
 - `include_health_warnings` (Boolean) Include health warnings.
 - `instance_name` (String) Instance name.
 - `key` (String) Key.
-- `map_from` (String) Map From.
-- `map_to` (String) Map To.
+- `map_from` (String) Map from. Radarr path, used to modify movie paths when the media server sees library path location differently from Radarr (Requires 'Update Library')
+- `map_to` (String) Map to. Media server path, used to modify movie paths when the media server sees library path location differently from Radarr (Requires 'Update Library')
 - `mention` (String) Mention.
 - `method` (Number) Method. `1` POST, `2` PUT.
 - `name` (String) Notification name.
