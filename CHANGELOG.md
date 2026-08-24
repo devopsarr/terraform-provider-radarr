@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.5.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.4.0...v2.5.0) (2026-08-24)
+
+
+### Features
+
+* add map_from and map_to to emby and plex notifications ([78c7af4](https://github.com/devopsarr/terraform-provider-radarr/commit/78c7af4049a974405f9cff249aec75987ef6ebc5))
+* add map_from and map_to to emby and plex notifications ([888038d](https://github.com/devopsarr/terraform-provider-radarr/commit/888038d00f9788eb33dae235a829a90cd49b3add))
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/stretchr/testify to v1.12.1 ([fb7cf5c](https://github.com/devopsarr/terraform-provider-radarr/commit/fb7cf5cda7da3b0544519056d288bfab5b7899ad))
+* **deps:** update module github.com/stretchr/testify to v1.12.1 ([2a86cfb](https://github.com/devopsarr/terraform-provider-radarr/commit/2a86cfbb9db23f09b1410d682aa85a0c7fd6c9c9))
+
 ## [2.4.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.3.6...v2.4.0) (2026-07-02)
 
 
