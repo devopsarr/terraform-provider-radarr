@@ -41,5 +41,7 @@ data "radarr_media_management" "example" {
 - `recycle_bin` (String) Recycle bin absolute path.
 - `recycle_bin_cleanup_days` (Number) Recyle bin days of retention.
 - `rescan_after_refresh` (String) Rescan after refresh policy. valid inputs are: 'always', 'afterManual' and 'never'.
+- `script_import_path` (String) Path to the script used to import downloads. Used in conjunction with 'use_script_import'.
 - `set_permissions_linux` (Boolean) Set permission for imported files.
 - `skip_free_space_check_when_importing` (Boolean) Skip free space check before importing.
+- `use_script_import` (Boolean) Use a custom script to import downloads instead of the default import logic.
