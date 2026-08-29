@@ -70,6 +70,8 @@ func testAccMediaManagementResourceConfig(date string) string {
 		skip_free_space_check_when_importing = false
 		minimum_free_space_when_importing = 100
 		copy_using_hardlinks = true
+		use_script_import = false
+		script_import_path = ""
 		import_extra_files = true
 		extra_file_extensions = "srt"
 		enable_media_info = true

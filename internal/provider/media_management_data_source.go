@@ -78,6 +78,10 @@ func (d *MediaManagementDataSource) Schema(_ context.Context, _ datasource.Schem
 				MarkdownDescription: "Skip free space check before importing.",
 				Computed:            true,
 			},
+			"use_script_import": schema.BoolAttribute{
+				MarkdownDescription: "Use a custom script to import downloads instead of the default import logic.",
+				Computed:            true,
+			},
 			"minimum_free_space_when_importing": schema.Int64Attribute{
 				MarkdownDescription: "Minimum free space in MB to allow import.",
 				Computed:            true,
@@ -92,6 +96,10 @@ func (d *MediaManagementDataSource) Schema(_ context.Context, _ datasource.Schem
 			},
 			"chown_group": schema.StringAttribute{
 				MarkdownDescription: "Group used for permission.",
+				Computed:            true,
+			},
+			"script_import_path": schema.StringAttribute{
+				MarkdownDescription: "Path to the script used to import downloads. Used in conjunction with 'use_script_import'.",
 				Computed:            true,
 			},
 			"download_propers_and_repacks": schema.StringAttribute{
