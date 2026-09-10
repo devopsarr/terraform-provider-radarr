@@ -44,6 +44,7 @@ type MediaManagement struct {
 	ExtraFileExtensions                     types.String `tfsdk:"extra_file_extensions"`
 	DownloadPropersAndRepacks               types.String `tfsdk:"download_propers_and_repacks"`
 	ChownGroup                              types.String `tfsdk:"chown_group"`
+	ScriptImportPath                        types.String `tfsdk:"script_import_path"`
 	ID                                      types.Int64  `tfsdk:"id"`
 	MinimumFreeSpaceWhenImporting           types.Int64  `tfsdk:"minimum_free_space_when_importing"`
 	RecycleBinCleanupDays                   types.Int64  `tfsdk:"recycle_bin_cleanup_days"`
@@ -57,6 +58,7 @@ type MediaManagement struct {
 	CreateEmptyMovieFolders                 types.Bool   `tfsdk:"create_empty_movie_folders"`
 	CopyUsingHardlinks                      types.Bool   `tfsdk:"copy_using_hardlinks"`
 	AutoUnmonitorPreviouslyDownloadedMovies types.Bool   `tfsdk:"auto_unmonitor_previously_downloaded_movies"`
+	UseScriptImport                         types.Bool   `tfsdk:"use_script_import"`
 }
 
 func (r *MediaManagementResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -114,6 +116,10 @@ func (r *MediaManagementResource) Schema(_ context.Context, _ resource.SchemaReq
 				MarkdownDescription: "Skip free space check before importing.",
 				Required:            true,
 			},
+			"use_script_import": schema.BoolAttribute{
+				MarkdownDescription: "Use a custom script to import downloads instead of the default import logic.",
+				Required:            true,
+			},
 			"minimum_free_space_when_importing": schema.Int64Attribute{
 				MarkdownDescription: "Minimum free space in MB to allow import.",
 				Required:            true,
@@ -128,6 +134,10 @@ func (r *MediaManagementResource) Schema(_ context.Context, _ resource.SchemaReq
 			},
 			"chown_group": schema.StringAttribute{
 				MarkdownDescription: "Group used for permission.",
+				Required:            true,
+			},
+			"script_import_path": schema.StringAttribute{
+				MarkdownDescription: "Path to the script used to import downloads. Used in conjunction with 'use_script_import'.",
 				Required:            true,
 			},
 			"download_propers_and_repacks": schema.StringAttribute{
@@ -271,11 +281,13 @@ func (m *MediaManagement) write(mediaMgt *radarr.MediaManagementConfigResource) 
 	m.PathsDefaultStatic = types.BoolValue(mediaMgt.GetPathsDefaultStatic())
 	m.SetPermissionsLinux = types.BoolValue(mediaMgt.GetSetPermissionsLinux())
 	m.SkipFreeSpaceCheckWhenImporting = types.BoolValue(mediaMgt.GetSkipFreeSpaceCheckWhenImporting())
+	m.UseScriptImport = types.BoolValue(mediaMgt.GetUseScriptImport())
 	m.ID = types.Int64Value(int64(mediaMgt.GetId()))
 	m.MinimumFreeSpaceWhenImporting = types.Int64Value(int64(mediaMgt.GetMinimumFreeSpaceWhenImporting()))
 	m.RecycleBinCleanupDays = types.Int64Value(int64(mediaMgt.GetRecycleBinCleanupDays()))
 	m.ChmodFolder = types.StringValue(mediaMgt.GetChmodFolder())
 	m.ChownGroup = types.StringValue(mediaMgt.GetChownGroup())
+	m.ScriptImportPath = types.StringValue(mediaMgt.GetScriptImportPath())
 	m.DownloadPropersAndRepacks = types.StringValue(string(mediaMgt.GetDownloadPropersAndRepacks()))
 	m.ExtraFileExtensions = types.StringValue(mediaMgt.GetExtraFileExtensions())
 	m.FileDate = types.StringValue(string(mediaMgt.GetFileDate()))
@@ -295,11 +307,13 @@ func (m *MediaManagement) read() *radarr.MediaManagementConfigResource {
 	config.SetPathsDefaultStatic(m.PathsDefaultStatic.ValueBool())
 	config.SetSetPermissionsLinux(m.SetPermissionsLinux.ValueBool())
 	config.SetSkipFreeSpaceCheckWhenImporting(m.SkipFreeSpaceCheckWhenImporting.ValueBool())
+	config.SetUseScriptImport(m.UseScriptImport.ValueBool())
 	config.SetId(int32(m.ID.ValueInt64()))
 	config.SetMinimumFreeSpaceWhenImporting(int32(m.MinimumFreeSpaceWhenImporting.ValueInt64()))
 	config.SetRecycleBinCleanupDays(int32(m.RecycleBinCleanupDays.ValueInt64()))
 	config.SetChmodFolder(m.ChmodFolder.ValueString())
 	config.SetChownGroup(m.ChownGroup.ValueString())
+	config.SetScriptImportPath(m.ScriptImportPath.ValueString())
 	config.SetDownloadPropersAndRepacks(radarr.ProperDownloadTypes(m.DownloadPropersAndRepacks.ValueString()))
 	config.SetExtraFileExtensions(m.ExtraFileExtensions.ValueString())
 	config.SetFileDate(radarr.FileDateType(m.FileDate.ValueString()))
