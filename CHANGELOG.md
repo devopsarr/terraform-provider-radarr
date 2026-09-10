@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.6.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.5.0...v2.6.0) (2026-09-10)
+
+
+### Features
+
+* adding support for use_script_import and script_import_path for the media_management data source ([3a2704f](https://github.com/devopsarr/terraform-provider-radarr/commit/3a2704f9843baf81d6adea07a6a9570acc7ce7c5))
+* adding support for use_script_import and script_import_path for the media_management data source ([4d956a6](https://github.com/devopsarr/terraform-provider-radarr/commit/4d956a6bc350871a99513e35478b44aa8d09d25e))
+
 ## [2.5.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.4.0...v2.5.0) (2026-08-24)
 
 
