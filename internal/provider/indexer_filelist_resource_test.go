@@ -1,10 +1,13 @@
 package provider
 
 import (
+	"context"
 	"fmt"
+	"net/http"
 	"regexp"
 	"testing"
 
+	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
@@ -65,4 +68,29 @@ func testAccIndexerFilelistResourceConfig(name, username string) string {
 		minimum_seeders = 1
 		required_flags = [1,4]
 	}`, name, username)
+}
+
+// TestAccIndexerFilelistResourceDisappears is not parallel: it deletes an object outside Terraform, and a parallel test could otherwise take over its freed ID.
+func TestAccIndexerFilelistResourceDisappears(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create, then delete outside Terraform: Read removes it from state instead of failing the plan
+			{
+				Config: testAccIndexerFilelistResourceConfig("filelistResourceTest", "Username"),
+				Check: testAccCheckResourceDisappears("radarr_indexer_filelist.test", func(client *radarr.APIClient, id int32) (*http.Response, error) {
+					return client.IndexerAPI.DeleteIndexer(context.TODO(), id).Execute()
+				}),
+				ExpectNonEmptyPlan: true,
+			},
+			// Create again after the deletion outside Terraform
+			{
+				Config: testAccIndexerFilelistResourceConfig("filelistResourceTest", "Username"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet("radarr_indexer_filelist.test", "id"),
+				),
+			},
+		},
+	})
 }

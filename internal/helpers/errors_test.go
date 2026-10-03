@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"errors"
+	"net/http"
 	"testing"
 
 	"github.com/devopsarr/radarr-go/radarr"
@@ -62,6 +63,40 @@ func TestParseNotFoundError(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			assert.Equal(t, test.expected, ParseNotFoundError(test.kind, test.field, test.search))
+		})
+	}
+}
+
+func TestIsNotFound(t *testing.T) {
+	t.Parallel()
+
+	tests := map[string]struct {
+		response *http.Response
+		expected bool
+	}{
+		"not found": {
+			response: &http.Response{StatusCode: http.StatusNotFound},
+			expected: true,
+		},
+		"unauthorized": {
+			response: &http.Response{StatusCode: http.StatusUnauthorized},
+			expected: false,
+		},
+		"ok": {
+			response: &http.Response{StatusCode: http.StatusOK},
+			expected: false,
+		},
+		"nil": {
+			response: nil,
+			expected: false,
+		},
+	}
+	for name, test := range tests {
+		test := test
+
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			assert.Equal(t, test.expected, IsNotFound(test.response))
 		})
 	}
 }

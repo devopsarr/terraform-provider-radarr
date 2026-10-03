@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/devopsarr/radarr-go/radarr"
 )
@@ -31,4 +32,9 @@ func ParseClientError(action, name string, err error) string {
 	}
 
 	return fmt.Sprintf("Unable to %s %s, got error: %s", action, name, err)
+}
+
+// IsNotFound reports whether the API answered 404 Not Found, meaning the object no longer exists.
+func IsNotFound(response *http.Response) bool {
+	return response != nil && response.StatusCode == http.StatusNotFound
 }
