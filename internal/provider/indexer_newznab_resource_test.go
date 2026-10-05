@@ -17,12 +17,12 @@ func TestAccIndexerNewznabResource(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Unauthorized Create
 			{
-				Config:      testAccIndexerNewznabResourceConfig("error", "25") + testUnauthorizedProvider,
+				Config:      testAccIndexerNewznabResourceConfig("error", "25", "[5030, 5040]") + testUnauthorizedProvider,
 				ExpectError: regexp.MustCompile("Client Error"),
 			},
 			// Create and Read testing
 			{
-				Config: testAccIndexerNewznabResourceConfig("newzabResourceTest", "25"),
+				Config: testAccIndexerNewznabResourceConfig("newzabResourceTest", "25", "[5030, 5040]"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("radarr_indexer_newznab.test", "priority", "25"),
 					resource.TestCheckResourceAttr("radarr_indexer_newznab.test", "base_url", "https://lolo.sickbeard.com"),
@@ -31,14 +31,21 @@ func TestAccIndexerNewznabResource(t *testing.T) {
 			},
 			// Unauthorized Read
 			{
-				Config:      testAccIndexerNewznabResourceConfig("error", "25") + testUnauthorizedProvider,
+				Config:      testAccIndexerNewznabResourceConfig("error", "25", "[5030, 5040]") + testUnauthorizedProvider,
 				ExpectError: regexp.MustCompile("Client Error"),
 			},
 			// Update and Read testing
 			{
-				Config: testAccIndexerNewznabResourceConfig("newzabResourceTest", "30"),
+				Config: testAccIndexerNewznabResourceConfig("newzabResourceTest", "30", "[5030, 5040]"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("radarr_indexer_newznab.test", "priority", "30"),
+				),
+			},
+			// Update to an empty set and Read testing
+			{
+				Config: testAccIndexerNewznabResourceConfig("newzabResourceTest", "30", "[]"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("radarr_indexer_newznab.test", "categories.#", "0"),
 				),
 			},
 			// ImportState testing
@@ -52,13 +59,13 @@ func TestAccIndexerNewznabResource(t *testing.T) {
 	})
 }
 
-func testAccIndexerNewznabResourceConfig(name, aSearch string) string {
+func testAccIndexerNewznabResourceConfig(name, aSearch, categories string) string {
 	return fmt.Sprintf(`
 	resource "radarr_indexer_newznab" "test" {
 		priority = %s
 		name = "%s"
 		base_url = "https://lolo.sickbeard.com"
 		api_path = "/api"
-		categories = [5030, 5040]
-	}`, aSearch, name)
+		categories = %s
+	}`, aSearch, name, categories)
 }
