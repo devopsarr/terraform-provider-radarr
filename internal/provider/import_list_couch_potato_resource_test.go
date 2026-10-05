@@ -82,7 +82,8 @@ func TestAccImportListCouchPotatoResourceDisappears(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create, then delete outside Terraform: Read removes it from state instead of failing the plan
 			{
-				Config: testAccImportListCouchPotatoResourceConfig("resourceCouchPotatoTest", "movieOnly"),
+				PreConfig: rootFolderDSInit,
+				Config:    testAccImportListCouchPotatoResourceConfig("resourceCouchPotatoTest", "movieOnly"),
 				Check: testAccCheckResourceDisappears("radarr_import_list_couch_potato.test", func(client *radarr.APIClient, id int32) (*http.Response, error) {
 					return client.ImportListAPI.DeleteImportList(context.TODO(), id).Execute()
 				}),
