@@ -1,10 +1,13 @@
 package provider
 
 import (
+	"context"
 	"fmt"
+	"net/http"
 	"regexp"
 	"testing"
 
+	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
@@ -59,4 +62,29 @@ func testAccRemotePathMappingResourceConfig(host, remote string) string {
 			local_path = "/config/"
 		}
 	`, host, remote)
+}
+
+// TestAccRemotePathMappingResourceDisappears is not parallel: it deletes an object outside Terraform, and a parallel test could otherwise take over its freed ID.
+func TestAccRemotePathMappingResourceDisappears(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create, then delete outside Terraform: Read removes it from state instead of failing the plan
+			{
+				Config: testAccRemotePathMappingResourceConfig("remotemapResourceTest", "/test2/"),
+				Check: testAccCheckResourceDisappears("radarr_remote_path_mapping.test", func(client *radarr.APIClient, id int32) (*http.Response, error) {
+					return client.RemotePathMappingAPI.DeleteRemotePathMapping(context.TODO(), id).Execute()
+				}),
+				ExpectNonEmptyPlan: true,
+			},
+			// Create again after the deletion outside Terraform
+			{
+				Config: testAccRemotePathMappingResourceConfig("remotemapResourceTest", "/test2/"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet("radarr_remote_path_mapping.test", "id"),
+				),
+			},
+		},
+	})
 }

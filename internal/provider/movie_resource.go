@@ -249,6 +249,13 @@ func (r *MovieResource) Read(ctx context.Context, req resource.ReadRequest, resp
 	// Get movie current value
 	response, _, err := r.client.MovieAPI.GetMovieById(r.auth, int32(movie.ID.ValueInt64())).Execute()
 	if err != nil {
+		if helpers.IsNotFound(err) {
+			tflog.Warn(ctx, "removing "+movieResourceName+" from state, not found")
+			resp.State.RemoveResource(ctx)
+
+			return
+		}
+
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, movieResourceName, err))
 
 		return
@@ -297,7 +304,7 @@ func (r *MovieResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 
 	// Delete movie current value
 	_, err := r.client.MovieAPI.DeleteMovie(r.auth, int32(ID)).Execute()
-	if err != nil {
+	if err != nil && !helpers.IsNotFound(err) {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, movieResourceName, err))
 
 		return
