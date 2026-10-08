@@ -261,9 +261,9 @@ func (r *DownloadClientFreeboxResource) Read(ctx context.Context, req resource.R
 	}
 
 	// Get DownloadClientFreebox current value
-	response, httpResp, err := r.client.DownloadClientAPI.GetDownloadClientById(r.auth, int32(client.ID.ValueInt64())).Execute()
+	response, _, err := r.client.DownloadClientAPI.GetDownloadClientById(r.auth, int32(client.ID.ValueInt64())).Execute()
 	if err != nil {
-		if helpers.IsNotFound(httpResp) {
+		if helpers.IsNotFound(err) {
 			tflog.Warn(ctx, "removing "+downloadClientFreeboxResourceName+" from state, not found")
 			resp.State.RemoveResource(ctx)
 
@@ -317,8 +317,8 @@ func (r *DownloadClientFreeboxResource) Delete(ctx context.Context, req resource
 	}
 
 	// Delete DownloadClientFreebox current value
-	httpResp, err := r.client.DownloadClientAPI.DeleteDownloadClient(r.auth, int32(ID)).Execute()
-	if err != nil && !helpers.IsNotFound(httpResp) {
+	_, err := r.client.DownloadClientAPI.DeleteDownloadClient(r.auth, int32(ID)).Execute()
+	if err != nil && !helpers.IsNotFound(err) {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, downloadClientFreeboxResourceName, err))
 
 		return

@@ -242,9 +242,9 @@ func (r *ImportListCouchPotatoResource) Read(ctx context.Context, req resource.R
 	}
 
 	// Get ImportListCouchPotato current value
-	response, httpResp, err := r.client.ImportListAPI.GetImportListById(r.auth, int32(importList.ID.ValueInt64())).Execute()
+	response, _, err := r.client.ImportListAPI.GetImportListById(r.auth, int32(importList.ID.ValueInt64())).Execute()
 	if err != nil {
-		if helpers.IsNotFound(httpResp) {
+		if helpers.IsNotFound(err) {
 			tflog.Warn(ctx, "removing "+importListCouchPotatoResourceName+" from state, not found")
 			resp.State.RemoveResource(ctx)
 
@@ -298,8 +298,8 @@ func (r *ImportListCouchPotatoResource) Delete(ctx context.Context, req resource
 	}
 
 	// Delete ImportListCouchPotato current value
-	httpResp, err := r.client.ImportListAPI.DeleteImportList(r.auth, int32(ID)).Execute()
-	if err != nil && !helpers.IsNotFound(httpResp) {
+	_, err := r.client.ImportListAPI.DeleteImportList(r.auth, int32(ID)).Execute()
+	if err != nil && !helpers.IsNotFound(err) {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListCouchPotatoResourceName, err))
 
 		return

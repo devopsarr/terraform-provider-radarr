@@ -231,9 +231,9 @@ func (r *ImportListTMDBUserResource) Read(ctx context.Context, req resource.Read
 	}
 
 	// Get ImportListTMDBUser current value
-	response, httpResp, err := r.client.ImportListAPI.GetImportListById(r.auth, int32(importList.ID.ValueInt64())).Execute()
+	response, _, err := r.client.ImportListAPI.GetImportListById(r.auth, int32(importList.ID.ValueInt64())).Execute()
 	if err != nil {
-		if helpers.IsNotFound(httpResp) {
+		if helpers.IsNotFound(err) {
 			tflog.Warn(ctx, "removing "+importListTMDBUserResourceName+" from state, not found")
 			resp.State.RemoveResource(ctx)
 
@@ -287,8 +287,8 @@ func (r *ImportListTMDBUserResource) Delete(ctx context.Context, req resource.De
 	}
 
 	// Delete ImportListTMDBUser current value
-	httpResp, err := r.client.ImportListAPI.DeleteImportList(r.auth, int32(ID)).Execute()
-	if err != nil && !helpers.IsNotFound(httpResp) {
+	_, err := r.client.ImportListAPI.DeleteImportList(r.auth, int32(ID)).Execute()
+	if err != nil && !helpers.IsNotFound(err) {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListTMDBUserResourceName, err))
 
 		return

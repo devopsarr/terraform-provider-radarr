@@ -127,9 +127,9 @@ func (r *ImportListExclusionResource) Read(ctx context.Context, req resource.Rea
 	}
 
 	// Get importListExclusion current value
-	response, httpResp, err := r.client.ImportListExclusionAPI.GetExclusionsById(r.auth, int32(importListExclusion.ID.ValueInt64())).Execute()
+	response, _, err := r.client.ImportListExclusionAPI.GetExclusionsById(r.auth, int32(importListExclusion.ID.ValueInt64())).Execute()
 	if err != nil {
-		if helpers.IsNotFound(httpResp) {
+		if helpers.IsNotFound(err) {
 			tflog.Warn(ctx, "removing "+importListExclusionResourceName+" from state, not found")
 			resp.State.RemoveResource(ctx)
 
@@ -183,8 +183,8 @@ func (r *ImportListExclusionResource) Delete(ctx context.Context, req resource.D
 	}
 
 	// Delete importListExclusion current value
-	httpResp, err := r.client.ImportListExclusionAPI.DeleteExclusions(r.auth, int32(ID)).Execute()
-	if err != nil && !helpers.IsNotFound(httpResp) {
+	_, err := r.client.ImportListExclusionAPI.DeleteExclusions(r.auth, int32(ID)).Execute()
+	if err != nil && !helpers.IsNotFound(err) {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListExclusionResourceName, err))
 
 		return

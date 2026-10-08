@@ -150,9 +150,9 @@ func (r *MetadataEmbyResource) Read(ctx context.Context, req resource.ReadReques
 	}
 
 	// Get MetadataEmby current value
-	response, httpResp, err := r.client.MetadataAPI.GetMetadataById(r.auth, int32(metadata.ID.ValueInt64())).Execute()
+	response, _, err := r.client.MetadataAPI.GetMetadataById(r.auth, int32(metadata.ID.ValueInt64())).Execute()
 	if err != nil {
-		if helpers.IsNotFound(httpResp) {
+		if helpers.IsNotFound(err) {
 			tflog.Warn(ctx, "removing "+metadataEmbyResourceName+" from state, not found")
 			resp.State.RemoveResource(ctx)
 
@@ -206,8 +206,8 @@ func (r *MetadataEmbyResource) Delete(ctx context.Context, req resource.DeleteRe
 	}
 
 	// Delete MetadataEmby current value
-	httpResp, err := r.client.MetadataAPI.DeleteMetadata(r.auth, int32(ID)).Execute()
-	if err != nil && !helpers.IsNotFound(httpResp) {
+	_, err := r.client.MetadataAPI.DeleteMetadata(r.auth, int32(ID)).Execute()
+	if err != nil && !helpers.IsNotFound(err) {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, metadataEmbyResourceName, err))
 
 		return
