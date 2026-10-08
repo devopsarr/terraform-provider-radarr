@@ -5,6 +5,7 @@ resource "radarr_host" "test" {
   bind_address    = "*"
   application_url = ""
   instance_name   = "Radarr"
+  allowed_hosts   = ["localhost", "radarr"]
   proxy = {
     enabled = false
   }
