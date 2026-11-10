@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.6.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.5.0...v2.6.0) (2026-11-10)
+
+
+### Features
+
+* adding support for use_script_import and script_import_path for the media_management data source ([3a2704f](https://github.com/devopsarr/terraform-provider-radarr/commit/3a2704f9843baf81d6adea07a6a9570acc7ce7c5))
+* adding support for use_script_import and script_import_path for the media_management data source ([4d956a6](https://github.com/devopsarr/terraform-provider-radarr/commit/4d956a6bc350871a99513e35478b44aa8d09d25e))
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/devopsarr/radarr-go to v1.2.2 ([369e27b](https://github.com/devopsarr/terraform-provider-radarr/commit/369e27b0988588677a9ae085b91e207be19d2917))
+* **deps:** update module github.com/devopsarr/radarr-go to v1.2.2 ([77be2a4](https://github.com/devopsarr/terraform-provider-radarr/commit/77be2a4e232ea2edf75d02a110fcc339b8559fcb))
+* send an explicitly empty set field instead of omitting it ([992f868](https://github.com/devopsarr/terraform-provider-radarr/commit/992f868dbff62d505cf822cb31b3f10bb38aa7fd))
+* send an explicitly empty set field instead of omitting it ([21eafe1](https://github.com/devopsarr/terraform-provider-radarr/commit/21eafe1307daf0884d415b9fe969fef55adb1629))
+
 ## [2.5.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.4.0...v2.5.0) (2026-08-24)
 
 
