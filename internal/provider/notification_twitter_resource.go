@@ -279,6 +279,13 @@ func (r *NotificationTwitterResource) Read(ctx context.Context, req resource.Rea
 	// Get NotificationTwitter current value
 	response, _, err := r.client.NotificationAPI.GetNotificationById(r.auth, int32(notification.ID.ValueInt64())).Execute()
 	if err != nil {
+		if helpers.IsNotFound(err) {
+			tflog.Warn(ctx, "removing "+notificationTwitterResourceName+" from state, not found")
+			resp.State.RemoveResource(ctx)
+
+			return
+		}
+
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, notificationTwitterResourceName, err))
 
 		return
@@ -327,7 +334,7 @@ func (r *NotificationTwitterResource) Delete(ctx context.Context, req resource.D
 
 	// Delete NotificationTwitter current value
 	_, err := r.client.NotificationAPI.DeleteNotification(r.auth, int32(ID)).Execute()
-	if err != nil {
+	if err != nil && !helpers.IsNotFound(err) {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, notificationTwitterResourceName, err))
 
 		return
