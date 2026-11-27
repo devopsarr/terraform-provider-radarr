@@ -29,6 +29,8 @@ func TestAccHostResource(t *testing.T) {
 					resource.TestCheckResourceAttr("radarr_host.test", "ssl.key_path", ""),
 					resource.TestCheckResourceAttr("radarr_host.test", "authentication.oidc_scopes", "openid profile email"),
 					resource.TestCheckResourceAttr("radarr_host.test", "authentication.trust_cgnat_ip_addresses", "false"),
+					resource.TestCheckTypeSetElemAttr("radarr_host.test", "allowed_hosts.*", "radarr"),
+					resource.TestCheckTypeSetElemAttr("radarr_host.test", "trusted_networks.*", "10.0.0.0/8"),
 				),
 			},
 			// Unauthorized Read
@@ -41,6 +43,7 @@ func TestAccHostResource(t *testing.T) {
 				Config: testAccHostResourceConfig("RadarrTest", "test123"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("radarr_host.test", "port", "7878"),
+					resource.TestCheckTypeSetElemAttr("radarr_host.test", "allowed_hosts.*", "radarrtest"),
 				),
 			},
 			// ImportState testing
@@ -64,6 +67,8 @@ func testAccHostResourceConfig(name, password string) string {
 		bind_address = "*"
 		application_url =  ""
 		instance_name = "%s"
+		allowed_hosts = ["localhost", lower("%[1]s")]
+		trusted_networks = ["192.168.1.0/24", "10.0.0.0/8"]
 		proxy = {
 			enabled = false
 		}
