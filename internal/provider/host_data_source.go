@@ -151,6 +151,31 @@ func (d *HostDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 						MarkdownDescription: "Required for everyone or disabled for local addresses.",
 						Computed:            true,
 					},
+					"oidc_authority": schema.StringAttribute{
+						MarkdownDescription: "OIDC authority URL.",
+						Computed:            true,
+					},
+					"oidc_client_id": schema.StringAttribute{
+						MarkdownDescription: "OIDC client ID.",
+						Computed:            true,
+					},
+					"oidc_client_secret": schema.StringAttribute{
+						MarkdownDescription: "OIDC client secret.",
+						Computed:            true,
+						Sensitive:           true,
+					},
+					"oidc_user_identifier": schema.StringAttribute{
+						MarkdownDescription: "OIDC user identifier claim.",
+						Computed:            true,
+					},
+					"oidc_scopes": schema.StringAttribute{
+						MarkdownDescription: "OIDC scopes.",
+						Computed:            true,
+					},
+					"trust_cgnat_ip_addresses": schema.BoolAttribute{
+						MarkdownDescription: "Treat CGNAT IP addresses as local.",
+						Computed:            true,
+					},
 				},
 			},
 			"ssl": schema.SingleNestedAttribute{
@@ -169,6 +194,10 @@ func (d *HostDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 						MarkdownDescription: "Certificate Password.",
 						Computed:            true,
 						Sensitive:           true,
+					},
+					"key_path": schema.StringAttribute{
+						MarkdownDescription: "Certificate key path.",
+						Computed:            true,
 					},
 					"port": schema.Int64Attribute{
 						MarkdownDescription: "SSL port.",

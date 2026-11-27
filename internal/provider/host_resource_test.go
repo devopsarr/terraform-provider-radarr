@@ -26,6 +26,9 @@ func TestAccHostResource(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("radarr_host.test", "port", "7878"),
 					resource.TestCheckResourceAttrSet("radarr_host.test", "id"),
+					resource.TestCheckResourceAttr("radarr_host.test", "ssl.key_path", ""),
+					resource.TestCheckResourceAttr("radarr_host.test", "authentication.oidc_scopes", "openid profile email"),
+					resource.TestCheckResourceAttr("radarr_host.test", "authentication.trust_cgnat_ip_addresses", "false"),
 				),
 			},
 			// Unauthorized Read

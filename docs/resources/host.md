@@ -83,8 +83,14 @@ Required:
 
 Optional:
 
+- `oidc_authority` (String) OIDC authority URL.
+- `oidc_client_id` (String) OIDC client ID.
+- `oidc_client_secret` (String, Sensitive) OIDC client secret.
+- `oidc_scopes` (String) OIDC scopes.
+- `oidc_user_identifier` (String) OIDC user identifier claim.
 - `password` (String, Sensitive) Password.
 - `required` (String) Required for everyone or disabled for local addresses.
+- `trust_cgnat_ip_addresses` (Boolean) Treat CGNAT IP addresses as local.
 - `username` (String) Username.
 
 Read-Only:
@@ -146,6 +152,7 @@ Optional:
 
 - `cert_password` (String, Sensitive) Certificate Password.
 - `cert_path` (String) Certificate path.
+- `key_path` (String) Certificate key path.
 - `port` (Number) SSL port.
 
 
