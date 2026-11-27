@@ -3,7 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/devopsarr/radarr-go/radarr"
 	"github.com/devopsarr/terraform-provider-radarr/internal/helpers"
@@ -16,6 +18,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -44,19 +47,21 @@ type HostResource struct {
 
 // Host describes the host data model.
 type Host struct {
-	ProxyConfig    types.Object `tfsdk:"proxy"`
-	SSLConfig      types.Object `tfsdk:"ssl"`
-	AuthConfig     types.Object `tfsdk:"authentication"`
-	BackupConfig   types.Object `tfsdk:"backup"`
-	UpdateConfig   types.Object `tfsdk:"update"`
-	LoggingConfig  types.Object `tfsdk:"logging"`
-	InstanceName   types.String `tfsdk:"instance_name"`
-	ApplicationURL types.String `tfsdk:"application_url"`
-	BindAddress    types.String `tfsdk:"bind_address"`
-	URLBase        types.String `tfsdk:"url_base"`
-	ID             types.Int64  `tfsdk:"id"`
-	Port           types.Int64  `tfsdk:"port"`
-	LaunchBrowser  types.Bool   `tfsdk:"launch_browser"`
+	ProxyConfig     types.Object `tfsdk:"proxy"`
+	SSLConfig       types.Object `tfsdk:"ssl"`
+	AuthConfig      types.Object `tfsdk:"authentication"`
+	BackupConfig    types.Object `tfsdk:"backup"`
+	UpdateConfig    types.Object `tfsdk:"update"`
+	LoggingConfig   types.Object `tfsdk:"logging"`
+	InstanceName    types.String `tfsdk:"instance_name"`
+	ApplicationURL  types.String `tfsdk:"application_url"`
+	BindAddress     types.String `tfsdk:"bind_address"`
+	URLBase         types.String `tfsdk:"url_base"`
+	AllowedHosts    types.Set    `tfsdk:"allowed_hosts"`
+	TrustedNetworks types.Set    `tfsdk:"trusted_networks"`
+	ID              types.Int64  `tfsdk:"id"`
+	Port            types.Int64  `tfsdk:"port"`
+	LaunchBrowser   types.Bool   `tfsdk:"launch_browser"`
 }
 
 // ProxyConfig is part of Host.
@@ -90,6 +95,7 @@ type SSLConfig struct {
 	CertificateValidation types.String `tfsdk:"certificate_validation"`
 	CertPath              types.String `tfsdk:"cert_path"`
 	CertPassword          types.String `tfsdk:"cert_password"`
+	KeyPath               types.String `tfsdk:"key_path"`
 	Port                  types.Int64  `tfsdk:"port"`
 	Enabled               types.Bool   `tfsdk:"enabled"`
 }
@@ -100,6 +106,7 @@ func (s SSLConfig) getType() attr.Type {
 			"certificate_validation": types.StringType,
 			"cert_path":              types.StringType,
 			"cert_password":          types.StringType,
+			"key_path":               types.StringType,
 			"port":                   types.Int64Type,
 			"enabled":                types.BoolType,
 		})
@@ -107,21 +114,33 @@ func (s SSLConfig) getType() attr.Type {
 
 // AuthConfig is part of Host.
 type AuthConfig struct {
-	Method            types.String `tfsdk:"method"`
-	Username          types.String `tfsdk:"username"`
-	Password          types.String `tfsdk:"password"`
-	EncryptedPassword types.String `tfsdk:"encrypted_password"`
-	Required          types.String `tfsdk:"required"`
+	Method                types.String `tfsdk:"method"`
+	Username              types.String `tfsdk:"username"`
+	Password              types.String `tfsdk:"password"`
+	EncryptedPassword     types.String `tfsdk:"encrypted_password"`
+	Required              types.String `tfsdk:"required"`
+	OidcAuthority         types.String `tfsdk:"oidc_authority"`
+	OidcClientID          types.String `tfsdk:"oidc_client_id"`
+	OidcClientSecret      types.String `tfsdk:"oidc_client_secret"`
+	OidcUserIdentifier    types.String `tfsdk:"oidc_user_identifier"`
+	OidcScopes            types.String `tfsdk:"oidc_scopes"`
+	TrustCgnatIPAddresses types.Bool   `tfsdk:"trust_cgnat_ip_addresses"`
 }
 
 func (a AuthConfig) getType() attr.Type {
 	return types.ObjectType{}.WithAttributeTypes(
 		map[string]attr.Type{
-			"method":             types.StringType,
-			"username":           types.StringType,
-			"password":           types.StringType,
-			"encrypted_password": types.StringType,
-			"required":           types.StringType,
+			"method":                   types.StringType,
+			"username":                 types.StringType,
+			"password":                 types.StringType,
+			"encrypted_password":       types.StringType,
+			"required":                 types.StringType,
+			"oidc_authority":           types.StringType,
+			"oidc_client_id":           types.StringType,
+			"oidc_client_secret":       types.StringType,
+			"oidc_user_identifier":     types.StringType,
+			"oidc_scopes":              types.StringType,
+			"trust_cgnat_ip_addresses": types.BoolType,
 		})
 }
 
@@ -209,6 +228,24 @@ func (r *HostResource) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 			"bind_address": schema.StringAttribute{
 				MarkdownDescription: "Bind address.",
 				Required:            true,
+			},
+			"allowed_hosts": schema.SetAttribute{
+				MarkdownDescription: "Hostnames allowed to access the application. Required unless `authentication.required` is `enabled`. Defaults to the current value.",
+				Optional:            true,
+				Computed:            true,
+				ElementType:         types.StringType,
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+				},
+			},
+			"trusted_networks": schema.SetAttribute{
+				MarkdownDescription: "IP addresses or CIDR ranges treated as local addresses. Defaults to the current value.",
+				Optional:            true,
+				Computed:            true,
+				ElementType:         types.StringType,
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"application_url": schema.StringAttribute{
 				MarkdownDescription: "Application URL.",
@@ -321,6 +358,43 @@ func (r *HostResource) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 						},
 						Default: stringdefault.StaticString("disabledForLocalAddresses"),
 					},
+					"oidc_authority": schema.StringAttribute{
+						MarkdownDescription: "OIDC authority URL.",
+						Optional:            true,
+						Computed:            true,
+						Default:             stringdefault.StaticString(""),
+					},
+					"oidc_client_id": schema.StringAttribute{
+						MarkdownDescription: "OIDC client ID.",
+						Optional:            true,
+						Computed:            true,
+						Default:             stringdefault.StaticString(""),
+					},
+					"oidc_client_secret": schema.StringAttribute{
+						MarkdownDescription: "OIDC client secret.",
+						Optional:            true,
+						Computed:            true,
+						Sensitive:           true,
+						Default:             stringdefault.StaticString(""),
+					},
+					"oidc_user_identifier": schema.StringAttribute{
+						MarkdownDescription: "OIDC user identifier claim.",
+						Optional:            true,
+						Computed:            true,
+						Default:             stringdefault.StaticString(""),
+					},
+					"oidc_scopes": schema.StringAttribute{
+						MarkdownDescription: "OIDC scopes.",
+						Optional:            true,
+						Computed:            true,
+						Default:             stringdefault.StaticString("openid profile email"),
+					},
+					"trust_cgnat_ip_addresses": schema.BoolAttribute{
+						MarkdownDescription: "Treat CGNAT IP addresses as local.",
+						Optional:            true,
+						Computed:            true,
+						Default:             booldefault.StaticBool(false),
+					},
 				},
 			},
 			"ssl": schema.SingleNestedAttribute{
@@ -341,6 +415,12 @@ func (r *HostResource) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 						Optional:            true,
 						Computed:            true,
 						Sensitive:           true,
+					},
+					"key_path": schema.StringAttribute{
+						MarkdownDescription: "Certificate key path.",
+						Optional:            true,
+						Computed:            true,
+						Default:             stringdefault.StaticString(""),
 					},
 					"port": schema.Int64Attribute{
 						MarkdownDescription: "SSL port.",
@@ -424,6 +504,24 @@ func (r *HostResource) Create(ctx context.Context, req resource.CreateRequest, r
 	request := host.read(ctx, &resp.Diagnostics)
 	request.SetId(1)
 
+	// Unset values must keep the current ones, since the API rejects empty allowed hosts
+	if !request.AllowedHosts.IsSet() || !request.TrustedNetworks.IsSet() {
+		current, _, err := r.client.HostConfigAPI.GetHostConfig(r.auth).Execute()
+		if err != nil {
+			resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Read, hostResourceName, err))
+
+			return
+		}
+
+		if !request.AllowedHosts.IsSet() {
+			request.SetAllowedHosts(current.GetAllowedHosts())
+		}
+
+		if !request.TrustedNetworks.IsSet() {
+			request.SetTrustedNetworks(current.GetTrustedNetworks())
+		}
+	}
+
 	// Create new Host
 	response, _, err := r.client.HostConfigAPI.UpdateHostConfig(r.auth, strconv.Itoa(int(request.GetId()))).HostConfigResource(*request).Execute()
 	if err != nil {
@@ -506,6 +604,8 @@ func (h *Host) write(ctx context.Context, host *radarr.HostConfigResource, diags
 	h.ApplicationURL = types.StringValue(host.GetApplicationUrl())
 	h.BindAddress = types.StringValue(host.GetBindAddress())
 	h.URLBase = types.StringValue(host.GetUrlBase())
+	h.AllowedHosts = splitHostList(ctx, host.GetAllowedHosts(), diags)
+	h.TrustedNetworks = splitHostList(ctx, host.GetTrustedNetworks(), diags)
 	h.ID = types.Int64Value(int64(host.GetId()))
 	h.Port = types.Int64Value(int64(host.GetPort()))
 	h.LaunchBrowser = types.BoolValue(host.GetLaunchBrowser())
@@ -570,12 +670,23 @@ func (a *AuthConfig) write(host *radarr.HostConfigResource) {
 	a.Username = types.StringValue(host.GetUsername())
 	a.EncryptedPassword = types.StringValue(host.GetPassword())
 	a.Required = types.StringValue(string(host.GetAuthenticationRequired()))
+	a.OidcAuthority = types.StringValue(host.GetOidcAuthority())
+	a.OidcClientID = types.StringValue(host.GetOidcClientId())
+	a.OidcUserIdentifier = types.StringValue(host.GetOidcUserIdentifier())
+	a.OidcScopes = types.StringValue(host.GetOidcScopes())
+	a.TrustCgnatIPAddresses = types.BoolValue(host.GetTrustCgnatIpAddresses())
+
+	// The API returns a placeholder when the secret is set, so keep the plan/state value if any
+	if a.OidcClientSecret.IsNull() || a.OidcClientSecret.IsUnknown() {
+		a.OidcClientSecret = types.StringValue(host.GetOidcClientSecret())
+	}
 }
 
 func (s *SSLConfig) write(host *radarr.HostConfigResource) {
 	s.CertificateValidation = types.StringValue(string(host.GetCertificateValidation()))
 	s.CertPath = types.StringValue(host.GetSslCertPath())
 	s.CertPassword = types.StringValue(host.GetSslCertPassword())
+	s.KeyPath = types.StringValue(host.GetSslKeyPath())
 	s.Port = types.Int64Value(int64(host.GetSslPort()))
 	s.Enabled = types.BoolValue(host.GetEnableSsl())
 }
@@ -597,6 +708,15 @@ func (h *Host) read(ctx context.Context, diags *diag.Diagnostics) *radarr.HostCo
 	host.SetApplicationUrl(h.ApplicationURL.ValueString())
 	host.SetBindAddress(h.BindAddress.ValueString())
 	host.SetUrlBase(h.URLBase.ValueString())
+
+	if !h.AllowedHosts.IsUnknown() && !h.AllowedHosts.IsNull() {
+		host.SetAllowedHosts(joinHostList(ctx, h.AllowedHosts, diags))
+	}
+
+	if !h.TrustedNetworks.IsUnknown() && !h.TrustedNetworks.IsNull() {
+		host.SetTrustedNetworks(joinHostList(ctx, h.TrustedNetworks, diags))
+	}
+
 	host.SetId(int32(h.ID.ValueInt64()))
 	host.SetPort(int32(h.Port.ValueInt64()))
 	host.SetLaunchBrowser(h.LaunchBrowser.ValueBool())
@@ -655,12 +775,19 @@ func (a *AuthConfig) read(host *radarr.HostConfigResource) {
 	host.SetAuthenticationRequired(radarr.AuthenticationRequiredType(a.Required.ValueString()))
 	host.SetPassword(a.Password.ValueString())
 	host.SetPasswordConfirmation(a.Password.ValueString())
+	host.SetOidcAuthority(a.OidcAuthority.ValueString())
+	host.SetOidcClientId(a.OidcClientID.ValueString())
+	host.SetOidcClientSecret(a.OidcClientSecret.ValueString())
+	host.SetOidcUserIdentifier(a.OidcUserIdentifier.ValueString())
+	host.SetOidcScopes(a.OidcScopes.ValueString())
+	host.SetTrustCgnatIpAddresses(a.TrustCgnatIPAddresses.ValueBool())
 }
 
 func (s *SSLConfig) read(host *radarr.HostConfigResource) {
 	host.SetCertificateValidation(radarr.CertificateValidationType(s.CertificateValidation.ValueString()))
 	host.SetSslCertPath(s.CertPath.ValueString())
 	host.SetSslCertPassword(s.CertPassword.ValueString())
+	host.SetSslKeyPath(s.KeyPath.ValueString())
 	host.SetSslPort(int32(s.Port.ValueInt64()))
 	host.SetEnableSsl(s.Enabled.ValueBool())
 }
@@ -711,4 +838,29 @@ func assignObjectValue(ctx context.Context, diags *diag.Diagnostics, dest *types
 	diags.Append(tmp...)
 
 	*dest = obj
+}
+
+// splitHostList converts the API comma separated list into a set.
+func splitHostList(ctx context.Context, list string, diags *diag.Diagnostics) types.Set {
+	elements := []string{}
+
+	for _, e := range strings.Split(list, ",") {
+		if e = strings.TrimSpace(e); e != "" {
+			elements = append(elements, e)
+		}
+	}
+
+	set, tempDiag := types.SetValueFrom(ctx, types.StringType, elements)
+	diags.Append(tempDiag...)
+
+	return set
+}
+
+// joinHostList converts a set into the API comma separated list.
+func joinHostList(ctx context.Context, set types.Set, diags *diag.Diagnostics) string {
+	elements := []string{}
+	diags.Append(set.ElementsAs(ctx, &elements, false)...)
+	sort.Strings(elements)
+
+	return strings.Join(elements, ", ")
 }

@@ -23,6 +23,7 @@ data "radarr_host" "example" {
 
 ### Read-Only
 
+- `allowed_hosts` (Set of String) Hostnames allowed to access the application.
 - `application_url` (String) Application URL.
 - `authentication` (Attributes) Authentication configuration. (see [below for nested schema](#nestedatt--authentication))
 - `backup` (Attributes) Backup configuration. (see [below for nested schema](#nestedatt--backup))
@@ -34,6 +35,7 @@ data "radarr_host" "example" {
 - `port` (Number) TCP port.
 - `proxy` (Attributes) Proxy configuration. (see [below for nested schema](#nestedatt--proxy))
 - `ssl` (Attributes) Backup configuration. (see [below for nested schema](#nestedatt--ssl))
+- `trusted_networks` (Set of String) IP addresses or CIDR ranges treated as local addresses.
 - `update` (Attributes) Update configuration. (see [below for nested schema](#nestedatt--update))
 - `url_base` (String) URL base.
 
@@ -44,8 +46,14 @@ Read-Only:
 
 - `encrypted_password` (String, Sensitive) Needed for validation.
 - `method` (String) Authentication method.
+- `oidc_authority` (String) OIDC authority URL.
+- `oidc_client_id` (String) OIDC client ID.
+- `oidc_client_secret` (String, Sensitive) OIDC client secret.
+- `oidc_scopes` (String) OIDC scopes.
+- `oidc_user_identifier` (String) OIDC user identifier claim.
 - `password` (String, Sensitive) Password.
 - `required` (String) Required for everyone or disabled for local addresses.
+- `trust_cgnat_ip_addresses` (Boolean) Treat CGNAT IP addresses as local.
 - `username` (String) Username.
 
 
@@ -94,6 +102,7 @@ Read-Only:
 - `cert_path` (String) Certificate path.
 - `certificate_validation` (String) Certificate validation.
 - `enabled` (Boolean) Enabled.
+- `key_path` (String) Certificate key path.
 - `port` (Number) SSL port.
 
 
