@@ -259,7 +259,7 @@ func (r *IndexerIptorrentsResource) Delete(ctx context.Context, req resource.Del
 	}
 
 	// Delete IndexerIptorrents current value
-	_, err := r.client.IndexerAPI.DeleteIndexer(r.auth, int32(ID)).Execute()
+	_, _, err := r.client.IndexerAPI.DeleteIndexer(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, indexerIptorrentsResourceName, err))
 

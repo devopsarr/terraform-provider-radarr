@@ -259,7 +259,7 @@ func (r *DownloadClientAria2Resource) Delete(ctx context.Context, req resource.D
 	}
 
 	// Delete DownloadClientAria2 current value
-	_, err := r.client.DownloadClientAPI.DeleteDownloadClient(r.auth, int32(ID)).Execute()
+	_, _, err := r.client.DownloadClientAPI.DeleteDownloadClient(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, downloadClientAria2ResourceName, err))
 

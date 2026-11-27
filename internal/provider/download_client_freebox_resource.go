@@ -310,7 +310,7 @@ func (r *DownloadClientFreeboxResource) Delete(ctx context.Context, req resource
 	}
 
 	// Delete DownloadClientFreebox current value
-	_, err := r.client.DownloadClientAPI.DeleteDownloadClient(r.auth, int32(ID)).Execute()
+	_, _, err := r.client.DownloadClientAPI.DeleteDownloadClient(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, downloadClientFreeboxResourceName, err))
 

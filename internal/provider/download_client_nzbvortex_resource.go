@@ -274,7 +274,7 @@ func (r *DownloadClientNzbvortexResource) Delete(ctx context.Context, req resour
 	}
 
 	// Delete DownloadClientNzbvortex current value
-	_, err := r.client.DownloadClientAPI.DeleteDownloadClient(r.auth, int32(ID)).Execute()
+	_, _, err := r.client.DownloadClientAPI.DeleteDownloadClient(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, downloadClientNzbvortexResourceName, err))
 

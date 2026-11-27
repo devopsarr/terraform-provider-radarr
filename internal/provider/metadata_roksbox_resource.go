@@ -206,7 +206,7 @@ func (r *MetadataRoksboxResource) Delete(ctx context.Context, req resource.Delet
 	}
 
 	// Delete MetadataRoksbox current value
-	_, err := r.client.MetadataAPI.DeleteMetadata(r.auth, int32(ID)).Execute()
+	_, _, err := r.client.MetadataAPI.DeleteMetadata(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, metadataRoksboxResourceName, err))
 
