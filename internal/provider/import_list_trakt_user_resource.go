@@ -313,7 +313,7 @@ func (r *ImportListTraktUserResource) Delete(ctx context.Context, req resource.D
 	}
 
 	// Delete ImportListTraktUser current value
-	_, err := r.client.ImportListAPI.DeleteImportList(r.auth, int32(ID)).Execute()
+	_, _, err := r.client.ImportListAPI.DeleteImportList(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, importListTraktUserResourceName, err))
 

@@ -342,7 +342,7 @@ func (r *NotificationAppriseResource) Delete(ctx context.Context, req resource.D
 	}
 
 	// Delete NotificationApprise current value
-	_, err := r.client.NotificationAPI.DeleteNotification(r.auth, int32(ID)).Execute()
+	_, _, err := r.client.NotificationAPI.DeleteNotification(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, notificationAppriseResourceName, err))
 

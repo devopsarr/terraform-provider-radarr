@@ -342,7 +342,7 @@ func (r *NotificationEmbyResource) Delete(ctx context.Context, req resource.Dele
 	}
 
 	// Delete NotificationEmby current value
-	_, err := r.client.NotificationAPI.DeleteNotification(r.auth, int32(ID)).Execute()
+	_, _, err := r.client.NotificationAPI.DeleteNotification(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, notificationEmbyResourceName, err))
 

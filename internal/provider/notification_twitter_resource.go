@@ -326,7 +326,7 @@ func (r *NotificationTwitterResource) Delete(ctx context.Context, req resource.D
 	}
 
 	// Delete NotificationTwitter current value
-	_, err := r.client.NotificationAPI.DeleteNotification(r.auth, int32(ID)).Execute()
+	_, _, err := r.client.NotificationAPI.DeleteNotification(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, notificationTwitterResourceName, err))
 

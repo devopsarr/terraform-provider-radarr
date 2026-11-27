@@ -206,7 +206,7 @@ func (r *MetadataWdtvResource) Delete(ctx context.Context, req resource.DeleteRe
 	}
 
 	// Delete MetadataWdtv current value
-	_, err := r.client.MetadataAPI.DeleteMetadata(r.auth, int32(ID)).Execute()
+	_, _, err := r.client.MetadataAPI.DeleteMetadata(r.auth, int32(ID)).Execute()
 	if err != nil {
 		resp.Diagnostics.AddError(helpers.ClientError, helpers.ParseClientError(helpers.Delete, metadataWdtvResourceName, err))
 
