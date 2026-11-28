@@ -1,5 +1,27 @@
 # Changelog
 
+## 2.6.0 (2026-11-28)
+
+## What's Changed
+* chore(deps): bump google.golang.org/grpc from 1.82.1 to 1.83.1 by @dependabot[bot] in https://github.com/devopsarr/terraform-provider-radarr/pull/332
+* feat: adding support for use_script_import and script_import_path for the media_management data source by @chatton in https://github.com/devopsarr/terraform-provider-radarr/pull/331
+* chore(deps): bump google.golang.org/grpc from 1.83.1 to 1.83.2 by @dependabot[bot] in https://github.com/devopsarr/terraform-provider-radarr/pull/333
+* fix: send an explicitly empty set field instead of omitting it by @RainerEls in https://github.com/devopsarr/terraform-provider-radarr/pull/337
+* fix(deps): update module github.com/devopsarr/radarr-go to v1.2.2 by @renovate[bot] in https://github.com/devopsarr/terraform-provider-radarr/pull/341
+* chore: update changelog type to github by @Fuochi in https://github.com/devopsarr/terraform-provider-radarr/pull/344
+* fix(deps): update module github.com/devopsarr/radarr-go to v1.2.4 by @renovate[bot] in https://github.com/devopsarr/terraform-provider-radarr/pull/342
+* feat: add allowed_hosts and trusted_networks to host resource by @andopando19 in https://github.com/devopsarr/terraform-provider-radarr/pull/340
+* chore(deps): update ghcr.io/hotio/radarr docker tag to v7 by @renovate[bot] in https://github.com/devopsarr/terraform-provider-radarr/pull/343
+* fix: remove a resource deleted outside Terraform from state by @RainerEls in https://github.com/devopsarr/terraform-provider-radarr/pull/336
+* chore(deps): update ghcr.io/hotio/radarr:release-7.0.3.10918 docker digest to dd6887a by @renovate[bot] in https://github.com/devopsarr/terraform-provider-radarr/pull/345
+
+## New Contributors
+* @chatton made their first contribution in https://github.com/devopsarr/terraform-provider-radarr/pull/331
+* @RainerEls made their first contribution in https://github.com/devopsarr/terraform-provider-radarr/pull/337
+* @andopando19 made their first contribution in https://github.com/devopsarr/terraform-provider-radarr/pull/340
+
+**Full Changelog**: https://github.com/devopsarr/terraform-provider-radarr/compare/v2.5.0...v2.6.0
+
 ## [2.5.0](https://github.com/devopsarr/terraform-provider-radarr/compare/v2.4.0...v2.5.0) (2026-08-24)
 
 
